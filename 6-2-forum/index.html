@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#f7f8fa" />
+<title>栈途社区 · 阿栀</title>
+<style>
+:root{
+  --bg:#f5f6f8;--panel:#fff;--ink:#1f2329;--muted:#8a9099;--line:#e9ebef;
+  --brand:#1677ff;--brand-soft:#eaf3ff;--green:#19a974;--orange:#f59e0b;--red:#ef4444;
+  --nav:#fff;--shadow:0 8px 30px rgba(31,35,41,.08);--radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#eef1f5;color:var(--ink)}
+body{min-height:100dvh}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,520px);min-height:100dvh;margin:auto;background:var(--bg);position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.08)}
+.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.top-main{padding:14px 14px 12px;display:flex;align-items:center;gap:11px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#1565d8,#2d8cff);color:#fff;display:grid;place-items:center;font-size:20px;font-weight:900;box-shadow:0 8px 20px rgba(22,119,255,.25)}
+.brand{min-width:0;flex:1}.brand b{display:block;font-size:17px}.brand span{font-size:11px;color:var(--muted)}
+.top-action{width:36px;height:36px;border:0;border-radius:12px;background:#f3f5f8;position:relative;color:#4e5969;font-size:18px}
+.top-action em{position:absolute;right:5px;top:4px;min-width:15px;height:15px;padding:0 4px;border-radius:999px;background:var(--red);color:#fff;font-style:normal;font-size:9px;display:grid;place-items:center}
+.search-wrap{padding:0 14px 12px}.search{height:40px;border-radius:12px;background:#f2f4f7;display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--muted)}.search input{border:0;outline:0;background:transparent;width:100%;color:var(--ink);font-size:13px}
+.main{padding:12px 12px 92px}.view{display:none}.view.active{display:block;animation:fade .18s ease}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.notice{background:linear-gradient(135deg,#e9f3ff,#f7fbff);border:1px solid #d8e9ff;border-radius:14px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.notice i{font-style:normal;font-size:18px}.notice b{font-size:13px}.notice p{margin:3px 0 0;color:#687386;font-size:11px;line-height:1.5}
+.tabs,.chips{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+.tabs{background:#fff;border-radius:14px;padding:5px;margin-bottom:10px;box-shadow:0 2px 10px rgba(31,35,41,.04)}
+.tabs button{border:0;background:transparent;padding:9px 13px;border-radius:10px;white-space:nowrap;color:#69707d;font-size:13px}.tabs button.active{background:#1f2329;color:#fff;font-weight:700}
+.chips{margin:0 0 10px}.chip{border:1px solid var(--line);background:#fff;color:#606773;border-radius:999px;padding:7px 12px;white-space:nowrap;font-size:12px}.chip.active{background:var(--brand-soft);border-color:#cfe4ff;color:var(--brand);font-weight:700}
+.card{background:var(--panel);border-radius:var(--radius);box-shadow:0 3px 16px rgba(31,35,41,.055);margin-bottom:10px;border:1px solid rgba(233,235,239,.7)}
+.section-title{display:flex;align-items:center;justify-content:space-between;padding:3px 2px 9px}.section-title h2{font-size:16px;margin:0}.section-title button{border:0;background:transparent;color:var(--brand);font-size:12px}
+.board-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.board{border:0;background:#fff;border-radius:14px;padding:11px 4px 9px;box-shadow:0 3px 12px rgba(31,35,41,.045)}.board .bi{width:35px;height:35px;border-radius:12px;display:grid;place-items:center;margin:auto auto 7px;font-size:18px}.board b{display:block;font-size:11px}.board span{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+.hot-list{padding:4px 14px}.hot-item{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.hot-item:last-child{border-bottom:0}.rank{font-weight:800;color:#a2a8b1}.rank.hot{color:#ff5c35}.hot-item b{font-size:13px;line-height:1.4}.hot-item span{font-size:10px;color:var(--muted)}
+.post{padding:14px}.post-head{display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#e8f2ff,#cfe4ff);color:#1c69c9;display:grid;place-items:center;font-size:15px;font-weight:800;flex:none;position:relative}.avatar.green{background:linear-gradient(135deg,#e5f8f0,#c9f0df);color:#15815f}.avatar.orange{background:linear-gradient(135deg,#fff2d8,#ffe1aa);color:#b86c00}.avatar.dark{background:linear-gradient(135deg,#e9ebef,#ccd1d8);color:#374151}.avatar.pink{background:linear-gradient(135deg,#ffeaf2,#ffd0e0);color:#c13f70}.avatar.online:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;right:-1px;bottom:-1px;background:#22c55e;border:2px solid #fff}
+.userline{flex:1;min-width:0}.userline b{font-size:13px;display:flex;align-items:center;gap:5px}.meta{font-size:10px;color:var(--muted);margin-top:3px}.badge{font-size:9px;padding:2px 5px;border-radius:5px;background:#eef4ff;color:#3975d4;font-weight:600}.more{border:0;background:transparent;color:#9aa0a9;font-size:18px}
+.post-title{font-size:16px;font-weight:800;line-height:1.45;margin:12px 0 6px}.post-text{font-size:13px;color:#505866;line-height:1.7;margin:0}.post-img{margin-top:10px;border-radius:13px;min-height:110px;padding:16px;background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#c7e5ff;font-family:Consolas,monospace;font-size:11px;line-height:1.7;overflow:hidden}.post-img.light{background:linear-gradient(135deg,#eff8f1,#dcefe1);color:#2d6440;font-family:inherit;font-size:13px}.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.tag{font-size:10px;color:#527095;background:#f2f6fb;border-radius:6px;padding:4px 7px}.post-foot{display:flex;align-items:center;gap:18px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);color:#848b95}.post-foot button{border:0;background:transparent;color:inherit;padding:0;font-size:12px}.post-foot span{margin-left:auto;font-size:10px}.post-foot button.liked{color:#e84a5f;font-weight:700}
+.pin{font-size:9px;color:#fff;background:#ff6a45;border-radius:4px;padding:2px 5px;margin-right:5px}
+.job{padding:15px}.job-top{display:flex;gap:12px}.job-top>div:first-child{flex:1}.job h3{font-size:16px;margin:0 0 6px}.price{font-size:19px;color:#f04f2f;font-weight:800;white-space:nowrap}.price small{display:block;font-size:9px;color:var(--muted);font-weight:400;text-align:right;margin-top:3px}.job-meta{display:grid;grid-template-columns:repeat(3,1fr);background:#f7f8fa;border-radius:12px;margin:12px 0;padding:10px 5px}.mini{text-align:center}.mini b{display:block;font-size:12px}.mini span{font-size:9px;color:var(--muted)}.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.primary,.secondary{height:43px;border-radius:12px;font-weight:700;border:0}.primary{background:var(--brand);color:#fff}.secondary{background:#f2f4f7;color:#4e5969}.wide{width:100%}.accepted{height:44px;border-radius:12px;background:#e9f8f2;color:#138560;display:grid;place-items:center;font-size:13px;font-weight:800}
+.message-list{overflow:hidden}.message{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:13px;border-bottom:1px solid var(--line);background:#fff}.message:last-child{border-bottom:0}.message-title{font-size:13px;font-weight:800}.message-text{font-size:11px;color:#747b86;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:290px}.time{font-size:9px;color:#a0a5ad;text-align:right}.unread{margin:7px 0 0 auto;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ff4d4f;color:#fff;font-size:9px;display:grid;place-items:center}.message.muted{opacity:.78}
+.profile-card{background:linear-gradient(135deg,#153d78,#1d70d8);color:#fff;border-radius:20px;padding:18px;box-shadow:0 15px 35px rgba(29,112,216,.22)}.profile-main{display:flex;align-items:center;gap:12px}.profile-main .avatar{width:58px;height:58px;border-radius:18px;background:#fff;color:#2d6fc5;font-size:20px}.profile-main h2{margin:0;font-size:20px}.profile-main p{margin:5px 0 0;font-size:11px;opacity:.8}.profile-bio{font-size:12px;line-height:1.65;margin:15px 0;opacity:.9}.profile-stats{display:grid;grid-template-columns:repeat(4,1fr);text-align:center}.profile-stats b{display:block;font-size:15px}.profile-stats span{font-size:9px;opacity:.72}.menu{margin-top:10px;background:#fff;border-radius:16px;overflow:hidden}.menu button{width:100%;border:0;background:#fff;display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:13px;border-bottom:1px solid var(--line);text-align:left}.menu button:last-child{border-bottom:0}.mi{width:34px;height:34px;border-radius:11px;background:#f1f5fa;display:grid;place-items:center;color:#4f6d90}.mt b{display:block;font-size:13px}.mt span{font-size:10px;color:var(--muted);margin-top:3px;display:block}
+.bottom{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,520px);height:74px;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr)}.bottom button{border:0;background:transparent;color:#8b929c;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative}.bottom button b{font-size:19px;font-weight:500}.bottom button.active{color:var(--brand);font-weight:700}.bottom em{position:absolute;top:9px;right:25%;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#ff4d4f;color:#fff;font-size:8px;font-style:normal;display:grid;place-items:center}
+.modal{position:fixed;z-index:80;inset:0;background:rgba(15,23,42,.42);display:none;align-items:flex-end;justify-content:center}.modal.open{display:flex}.sheet{width:min(100%,520px);max-height:92dvh;background:#fff;border-radius:24px 24px 0 0;overflow:auto;box-shadow:0 -20px 50px rgba(15,23,42,.18)}.grab{width:42px;height:5px;border-radius:999px;background:#d9dde3;margin:9px auto}.sheet-inner{padding:5px 16px 22px}.sheet h2{font-size:19px;margin:6px 0 8px}.lead{font-size:12px;color:#69707c;line-height:1.7}.detail-list{display:grid;grid-template-columns:auto 1fr;gap:11px 14px;background:#f7f8fa;border-radius:14px;padding:13px;font-size:12px}.detail-list dt{color:var(--muted)}.detail-list dd{margin:0;text-align:right;font-weight:700}
+.chat-sheet{height:92dvh;display:flex;flex-direction:column;background:#f3f5f7}.chat-head{background:#fff;padding:8px 13px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.back{width:34px;height:34px;border:0;background:#f3f5f7;border-radius:11px;font-size:20px}.chat-peer{flex:1;min-width:0}.chat-peer b{font-size:14px}.chat-peer span{display:block;color:#8b929b;font-size:10px;margin-top:2px}.chat-more{border:0;background:transparent;font-size:20px;color:#8b929b}.chat-body{flex:1;overflow:auto;padding:13px 13px 20px}.day-sep{text-align:center;font-size:9px;color:#a4a9b1;margin:8px 0 12px}.bubble-row{display:flex;align-items:flex-end;gap:8px;margin:10px 0}.bubble-row.me{justify-content:flex-end}.bubble-row .avatar{width:32px;height:32px;border-radius:10px;font-size:11px}.bubble{max-width:76%;padding:10px 12px;border-radius:14px 14px 14px 4px;background:#fff;font-size:12px;line-height:1.6;box-shadow:0 2px 8px rgba(31,35,41,.05);word-break:break-word}.me .bubble{background:#95ec69;border-radius:14px 14px 4px 14px;box-shadow:none}.bubble .small-card{margin-top:8px;background:rgba(255,255,255,.66);border-radius:10px;padding:9px}.bubble .small-card b{display:block;font-size:12px}.bubble .small-card span{font-size:10px;color:#667085}.bubble-time{font-size:8px;color:#a1a6ae;margin:3px 40px}.bubble-time.me{text-align:right}.typing{display:none;color:#9aa0a8;font-size:10px;margin:4px 40px}.typing.show{display:block}
+.chat-quick{display:flex;gap:7px;overflow:auto;padding:8px 12px;background:#fff;border-top:1px solid var(--line)}.chat-quick button{border:1px solid #dbe2ea;background:#fff;color:#526170;border-radius:999px;padding:6px 10px;font-size:10px;white-space:nowrap}.chat-input{display:grid;grid-template-columns:36px 1fr 55px;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff}.chat-input button{border:0}.plus{border-radius:11px;background:#f2f4f7;color:#5f6670;font-size:20px}.chat-input textarea{height:40px;max-height:90px;resize:none;border:1px solid #e3e6eb;border-radius:11px;padding:9px 10px;outline:0;font-size:12px}.send{border-radius:11px;background:#07c160;color:#fff;font-weight:800}
+.comment-sheet{max-height:88dvh}.comment-list{padding-bottom:10px}.comment{display:flex;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.comment .avatar{width:34px;height:34px;border-radius:10px;font-size:11px}.comment-main{flex:1}.comment-main b{font-size:12px}.comment-main p{font-size:12px;line-height:1.6;margin:5px 0;color:#4e5969}.comment-main span{font-size:9px;color:#a0a5ad}.comment-input{display:grid;grid-template-columns:1fr 58px;gap:8px;position:sticky;bottom:0;background:#fff;padding:10px 0}.comment-input input{height:40px;border:1px solid #e3e6eb;border-radius:11px;padding:0 10px;outline:0}.comment-input button{border:0;border-radius:11px;background:var(--brand);color:#fff;font-weight:700}
+.login{position:fixed;z-index:120;inset:0;background:radial-gradient(circle at 80% 10%,#2c84ee,#0d3d80 46%,#071d3e 100%);display:flex;align-items:center;justify-content:center;padding:25px}.login.hidden{display:none}.login-card{width:min(100%,390px);text-align:center;color:#fff}.login-logo{width:82px;height:82px;border-radius:25px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:35px;font-weight:900;margin:0 auto 18px;box-shadow:0 18px 50px rgba(0,0,0,.15)}.login h1{font-size:27px;margin:0}.login p{font-size:12px;opacity:.75;margin:8px 0 25px}.login-profile{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px;text-align:left;margin-bottom:14px}.login-profile .avatar{background:#fff}.login-profile b{display:block;font-size:14px}.login-profile span{display:block;font-size:10px;opacity:.72;margin-top:4px}.login small{display:block;font-size:9px;opacity:.55;margin-top:12px}
+.toast-stack{position:fixed;z-index:110;left:50%;transform:translateX(-50%);top:16px;width:min(calc(100% - 24px),490px);pointer-events:none}.toast{background:rgba(255,255,255,.97);border-radius:15px;padding:11px;box-shadow:0 15px 45px rgba(15,23,42,.2);display:flex;gap:10px;align-items:center;margin-bottom:8px;opacity:0;transform:translateY(-12px);transition:.25s}.toast.show{opacity:1;transform:none}.toast b{font-size:12px}.toast p{font-size:10px;color:#727985;margin:3px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:370px}
+.code-screen{background:#101827;border-radius:15px;color:#b9d7ff;overflow:hidden}.code-head{padding:10px 12px;background:#182237;display:flex;justify-content:space-between;font-size:10px}.progress{height:7px;background:#29354b;margin:12px;border-radius:99px;overflow:hidden}.progress i{display:block;width:78%;height:100%;background:linear-gradient(90deg,#16c79a,#7de3c8)}.progress-label{display:flex;justify-content:space-between;padding:0 12px 10px;font-size:11px}.code{padding:0 13px 14px;font-family:Consolas,monospace;font-size:10px;line-height:1.7;white-space:pre-wrap}.kw{color:#d28cff}.fn{color:#70d7ff}.str{color:#a5df85}.num{color:#ffbd74}.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.module{background:#f5f7fa;border-radius:12px;padding:10px}.module b{font-size:11px;display:block}.module span{font-size:9px;color:var(--muted)}
+.empty{text-align:center;color:#9097a1;padding:45px 20px}.empty b{display:block;color:#555d68;font-size:14px;margin-bottom:5px}
+@media(max-width:520px){.app{box-shadow:none}.message-text{max-width:56vw}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <div class="top-main"><div class="logo">栈</div><div class="brand"><b>栈途社区</b><span>中文开发者交流与项目协作平台</span></div><button class="top-action" id="bellBtn">◉<em id="topUnread">5</em></button></div>
+  <div class="search-wrap"><div class="search">⌕ <input id="searchInput" placeholder="搜索帖子、板块、项目或用户" /></div></div>
+</header>
+<main class="main">
+  <section class="view active" data-view="home">
+    <div class="notice"><i>📌</i><div><b>社区公告：项目交易请走平台担保</b><p>请勿在公开帖子中发布客户原始数据，涉及隐私与商业数据请使用加密工作区。</p></div></div>
+    <div class="tabs" id="homeTabs"><button class="active" data-feed="recommend">推荐</button><button data-feed="latest">最新</button><button data-feed="following">关注</button><button data-feed="hot">热榜</button></div>
+    <div class="section-title"><h2>常逛板块</h2><button id="allBoards">全部板块</button></div>
+    <div class="board-grid">
+      <button class="board" data-topic="python"><span class="bi" style="background:#eef4ff">🐍</span><b>Python</b><span>12.8万帖</span></button>
+      <button class="board" data-topic="data"><span class="bi" style="background:#eaf9f3">📊</span><b>数据分析</b><span>8.6万帖</span></button>
+      <button class="board" data-topic="crawler"><span class="bi" style="background:#fff5e6">🕸</span><b>爬虫</b><span>4.3万帖</span></button>
+      <button class="board" data-topic="campus"><span class="bi" style="background:#fff0f5">🎓</span><b>校园</b><span>6.1万帖</span></button>
+    </div>
+    <div class="card hot-list" id="hotList"></div>
+    <div class="chips" id="homeChips"><button class="chip active" data-topic="all">全部</button><button class="chip" data-topic="python">Python</button><button class="chip" data-topic="data">数据分析</button><button class="chip" data-topic="crawler">爬虫</button><button class="chip" data-topic="algorithm">算法</button><button class="chip" data-topic="campus">校园</button><button class="chip" data-topic="career">职场</button></div>
+    <div id="feed"></div>
+  </section>
+
+  <section class="view" data-view="boards">
+    <div class="section-title"><h2 style="font-size:21px">全部板块</h2><button>今日 3,842 新帖</button></div>
+    <div class="board-grid" id="allBoardGrid"></div>
+    <div class="section-title"><h2>板块动态</h2><button>刷新</button></div>
+    <div class="card hot-list" id="boardActivity"></div>
+  </section>
+
+  <section class="view" data-view="projects">
+    <div class="section-title"><h2 style="font-size:21px">项目大厅</h2><button>平台担保交易</button></div>
+    <div class="chips"><button class="chip active">为你推荐</button><button class="chip">数据分析</button><button class="chip">后端开发</button><button class="chip">自动化</button><button class="chip">长期合作</button></div>
+    <div id="projectList"></div>
+  </section>
+
+  <section class="view" data-view="messages">
+    <div class="section-title"><h2 style="font-size:21px">消息</h2><button id="readAll">全部已读</button></div>
+    <div class="tabs" id="messageTabs"><button class="active" data-msg-filter="all">全部</button><button data-msg-filter="private">私信</button><button data-msg-filter="project">项目</button><button data-msg-filter="notice">通知</button></div>
+    <div class="card message-list" id="messageList"></div>
+  </section>
+
+  <section class="view" data-view="profile">
+    <div class="profile-card">
+      <div class="profile-main"><div class="avatar">栀</div><div><h2>阿栀 <span class="badge" style="background:rgba(255,255,255,.14);color:#fff">Lv.8</span></h2><p>Python / 数据分析 / 算法 · 青岩村</p></div></div>
+      <div class="profile-bio">自学编程，喜欢把复杂的数据问题拆成可落地的工具。正在完善《大数据农产品价格预测系统》。</div>
+      <div class="profile-stats"><div><b>27</b><span>帖子</span></div><div><b>12</b><span>项目</span></div><div><b>4.9</b><span>评分</span></div><div><b>8.6k</b><span>关注</span></div></div>
+    </div>
+    <div class="menu">
+      <button id="openWorkspace"><span class="mi">⌘</span><span class="mt"><b>加密工作区</b><span>农产品价格预测系统 · 78%</span></span><span>›</span></button>
+      <button data-go="projects"><span class="mi">▣</span><span class="mt"><b>我的项目</b><span id="projectStatusText">1个待确认项目</span></span><span>›</span></button>
+      <button><span class="mi">★</span><span class="mt"><b>技术认证</b><span>Python高级 · 数据分析优秀</span></span><span>›</span></button>
+      <button><span class="mi">☷</span><span class="mt"><b>我的帖子</b><span>27篇 · 5篇精华</span></span><span>›</span></button>
+      <button id="resetApp"><span class="mi">↻</span><span class="mt"><b>恢复初始状态</b><span>重置聊天、点赞和接单状态</span></span><span>›</span></button>
+    </div>
+  </section>
+</main>
+<nav class="bottom">
+  <button class="active" data-nav="home"><b>⌂</b>首页</button>
+  <button data-nav="boards"><b>▦</b>板块</button>
+  <button data-nav="projects"><b>▣</b>项目</button>
+  <button data-nav="messages"><b>◫</b>消息<em id="navUnread">5</em></button>
+  <button data-nav="profile"><b>◎</b>我的</button>
+</nav>
+</div>
+
+<div class="login" id="login"><div class="login-card"><div class="login-logo">栈</div><h1>栈途开发者社区</h1><p>连接开发者、项目与真实问题</p><div class="login-profile"><div class="avatar">栀</div><div><b>ID：阿栀</b><span>已通过开发者身份认证 · 账号安全</span></div></div><button class="primary wide" id="enterBtn">进入论坛</button><small>登录即代表同意社区规范与项目服务协议</small></div></div>
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="modal" id="chatModal"><div class="sheet chat-sheet"><div class="chat-head"><button class="back" data-close>‹</button><div class="avatar online" id="chatAvatar">陈</div><div class="chat-peer"><b id="chatName">陈昊</b><span id="chatStatus">在线 · 对方正在查看项目详情</span></div><button class="chat-more">···</button></div><div class="chat-body" id="chatBody"></div><div class="typing" id="typing">对方正在输入…</div><div class="chat-quick" id="chatQuick"></div><div class="chat-input"><button class="plus">＋</button><textarea id="chatInput" placeholder="输入消息"></textarea><button class="send" id="sendChat">发送</button></div></div></div>
+
+<div class="modal" id="commentsModal"><div class="sheet comment-sheet"><div class="grab"></div><div class="sheet-inner"><h2 id="commentTitle">帖子评论</h2><p class="lead" id="commentSummary"></p><div class="comment-list" id="commentList"></div><div class="comment-input"><input id="commentInput" placeholder="友善交流，理性讨论"/><button id="sendComment">发表</button></div><button class="secondary wide" data-close>关闭</button></div></div></div>
+
+<div class="modal" id="jobModal"><div class="sheet"><div class="grab"></div><div class="sheet-inner"><h2 id="jobTitle">项目详情</h2><p class="lead" id="jobLead"></p><dl class="detail-list" id="jobDetail"></dl><br><div class="btn-row"><button class="secondary" data-close>暂不处理</button><button class="primary" id="acceptFromModal">接受项目</button></div></div></div></div>
+
+<div class="modal" id="workspaceModal"><div class="sheet"><div class="grab"></div><div class="sheet-inner"><h2>加密工作区</h2><p class="lead">《大数据农产品价格预测系统》</p><div class="code-screen"><div class="code-head"><b>agri_price_predictor.py</b><span>本地加密 · 自动保存</span></div><div class="progress"><i></i></div><div class="progress-label"><span>整体完成度</span><b style="color:#63e6c9">78%</b></div><div class="code"><span class="kw">class</span> <span class="fn">AgriPricePredictor</span>:
+    <span class="kw">def</span> <span class="fn">fit</span>(self, market_data, weather):
+        features = self.build_features(
+            market_data,
+            weather,
+            solar_terms=<span class="str">"24节气"</span>
+        )
+        self.model.train(features)
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ready"</span>, <span class="str">"progress"</span>: <span class="num">78</span>}</div></div><div class="module-grid"><div class="module"><b>数据清洗</b><span>100% · 已完成</span></div><div class="module"><b>特征工程</b><span>92% · 优化中</span></div><div class="module"><b>预测模型</b><span>76% · 训练中</span></div><div class="module"><b>区域算力测试</b><span>44% · 待清北算力</span></div></div><br><button class="secondary wide" data-close>锁定并返回</button></div></div></div>
+
+<div class="modal" id="successModal"><div class="sheet"><div class="grab"></div><div class="sheet-inner" style="text-align:center"><div style="width:64px;height:64px;border-radius:22px;background:#e7f8f3;color:#07947d;display:grid;place-items:center;font-size:30px;margin:0 auto 13px">✓</div><h2>接单成功</h2><p class="lead">五万元项目已加入“我的项目”。客户将在确认协议后开放数据权限。</p><button class="primary wide" id="successClose">进入消息沟通</button></div></div></div>
+
+<script>
+(() => {
+const initial={entered:false,accepted:false,readChats:[],likes:{},replies:{},comments:{}};
+const state=Object.assign({},initial,JSON.parse(localStorage.getItem('stackwayRealForum')||'{}'));
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const save=()=>localStorage.setItem('stackwayRealForum',JSON.stringify(state));
+const now=()=>new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+
+const posts=[
+{id:'p1',pin:true,topic:'data python',user:'陈昊',avatar:'陈',tone:'green',title:'时间序列预测里，如何处理农产品价格的强季节性？',text:'最近在测试 Prophet 和 LightGBM 的组合，加入节气、天气与批发市场成交量后效果明显。有人尝试过区域图结构特征吗？',tags:['时间序列','LightGBM','农业数据'],time:'8分钟前',board:'数据科学',views:'2.4k',likes:128,comments:36,level:'资深开发者',img:'特征建议：节气 × 产区 × 批发市场\n滞后项：7d / 14d / 28d\n异常值：IQR + 业务阈值'},
+{id:'p2',topic:'crawler python',user:'阿栀',avatar:'栀',tone:'',title:'分享一个低资源环境下的增量爬虫调度思路',text:'核心是把 URL 指纹、失败退避、增量更新时间拆开管理，在低内存设备上也能稳定运行。附上简化后的队列设计和异常恢复方案。',tags:['Python','爬虫','工程实践'],time:'昨天 22:14',board:'Python',views:'8.1k',likes:356,comments:89,level:'高质量创作者',img:'queue = PriorityQueue()\nfingerprint = sha1(url)\nretry_after = backoff(fail_count)\ncheckpoint.save(cursor)'},
+{id:'p3',topic:'algorithm campus',user:'林间算法',avatar:'林',tone:'orange',title:'高考后想系统学算法，先刷题还是先补离散数学？',text:'准备大学学计算机，希望暑假先打基础。看了阿栀的题解，感觉证明能力比代码速度更重要。',tags:['算法入门','大学规划'],time:'2小时前',board:'算法竞赛',views:'1.2k',likes:76,comments:24},
+{id:'p4',topic:'career data',user:'数据搬砖周姐',avatar:'周',tone:'pink',title:'企业真实数据分析项目，五万元预算是否合理？',text:'数据量约680万条，要求清洗、门店销量预测、可视化报告和模型部署说明，交付周期21天。欢迎有项目经验的朋友讨论报价与排期。',tags:['项目报价','数据分析','自由职业'],time:'35分钟前',board:'职场与接单',views:'3.7k',likes:205,comments:71},
+{id:'p5',topic:'python career',user:'后端老蒋',avatar:'蒋',tone:'dark',title:'别只会写脚本：Python项目交付前必须补上的五件事',text:'日志、配置、异常处理、可重复环境和交付文档，缺一个都会让客户觉得项目不稳。最近带新人踩了很多坑，整理成清单。',tags:['项目交付','Python','工程化'],time:'1小时前',board:'工程实践',views:'4.6k',likes:289,comments:54},
+{id:'p6',topic:'crawler',user:'启明数据-李工',avatar:'启',tone:'green',title:'复盘：一个稳定运行30天的采集系统是怎样做容错的',text:'上个月上线的采集程序在网络抖动和目标站改版后仍保持较高准确率，关键是监控、降级和结构变化检测。',tags:['爬虫','监控','容错'],time:'3小时前',board:'爬虫与自动化',views:'2.9k',likes:164,comments:33},
+{id:'p7',topic:'campus',user:'码农小北',avatar:'北',tone:'dark',title:'听说论坛里的阿栀高考720分，是真的吗？',text:'不是八卦，主要想请教一下时间管理。备考和写代码怎么兼顾？我每天刷完题就完全没精力了。',tags:['高考','学习方法','校园'],time:'16分钟前',board:'校园专区',views:'6.8k',likes:418,comments:126},
+{id:'p8',topic:'data algorithm',user:'青石实验室',avatar:'青',tone:'green',title:'农产品价格预测公开数据集整理，含天气与节气字段',text:'整理了2018—2024年部分批发市场价格、天气、节气和运输指数，适合做课程设计与基线模型。',tags:['公开数据','农业','机器学习'],time:'今天 17:20',board:'资源分享',views:'5.4k',likes:332,comments:62},
+{id:'p9',topic:'career',user:'自由开发者阿凯',avatar:'凯',tone:'orange',title:'接私活如何防止需求无限追加？合同里这三句话很重要',text:'不要只写“完成系统”，要把数据范围、验收标准和修改次数写清楚。追加需求要重新评估费用和工期。',tags:['合同','自由职业','避坑'],time:'昨天 19:03',board:'职场与接单',views:'7.7k',likes:507,comments:98},
+{id:'p10',topic:'python',user:'半杯咖啡',avatar:'咖',tone:'pink',title:'Pandas处理千万行数据，什么时候该换Polars？',text:'从内存占用、懒执行、生态兼容和团队学习成本四个角度做了测试，结论不是越新越好。',tags:['Pandas','Polars','性能'],time:'4小时前',board:'Python',views:'3.1k',likes:187,comments:45},
+{id:'p11',topic:'algorithm',user:'图论小组',avatar:'图',tone:'dark',title:'区域价格联动能否用图神经网络建模？',text:'把城市作为节点、物流通道作为边，再融合时间序列。理论上合理，但小数据下可能不如树模型稳定。',tags:['图神经网络','时间序列','研究讨论'],time:'昨天 23:40',board:'算法研究',views:'1.9k',likes:103,comments:28},
+{id:'p12',topic:'career campus',user:'大一新生小唐',avatar:'唐',tone:'orange',title:'收到第一笔编程兼职收入，想请教怎么安排学习和项目',text:'金额不大但很开心。担心接项目影响基础课，也担心错过真实项目经验，希望前辈给点建议。',tags:['成长记录','兼职','大学生活'],time:'5小时前',board:'校园专区',views:'2.2k',likes:144,comments:51}
+];
+const comments={
+p1:[['算法老周','周','图结构特征可以试，但先把区域滞后和节气交互做扎实。','7分钟前'],['阿栀','栀','我现在的基线也是树模型，准备先做区域编码和运输距离特征。','5分钟前'],['田野数据','田','天气数据注意站点缺失，不同县区不能简单前向填充。','刚刚']],
+p2:[['启明数据-李工','启','这套退避策略实际运行很稳，特别是结构变化告警帮了大忙。','昨天'],['后端老蒋','蒋','建议再补一个死信队列和每日采集完整率报表。','昨天'],['码农小北','北','求一个简化版目录结构，新手想照着练习。','20分钟前']],
+p7:[['阿栀','栀','是真的。时间管理没有秘诀，我只是把每天能做的事情切得很小。','12分钟前'],['林间算法','林','大佬本人出现了！求学习计划。','11分钟前'],['高三二班老王','王','能稳定执行计划已经很厉害了。','8分钟前']]
+};
+const chats={
+job:{name:'陈昊',avatar:'陈',tone:'green',type:'project',status:'在线 · 项目顾问',quick:['我先看一下需求文档','五万预算包含部署吗？','可以接，发合同吧'],messages:[
+['day','今天 21:36'],['them','阿栀，在吗？有个数据分析项目，技术栈很适合你。','21:36'],['me','在，什么类型的数据？','21:37'],['them','连锁零售，三年销售流水，约680万条。要做清洗、门店级销量预测和可视化报告。','21:38'],['themcard','项目预算 ¥50,000','周期21天 · 平台担保 · 企业已认证','21:38'],['me','数据字典和样例能先看吗？涉及会员信息的话要先脱敏。','21:40'],['them','可以。原始会员字段不会开放，只提供脱敏后的门店、商品和交易数据。','21:41'],['them','你接不接？报酬五万，客户今天想确认人选。','21:42']
+]},
+crawler:{name:'启明数据·李工',avatar:'启',tone:'green',type:'project',status:'企业客户 · 已认证',quick:['谢谢认可','追加需求请发清单','我今晚整理交付记录'],messages:[
+['day','6月26日'],['them','阿栀，采集服务已经稳定运行一周，失败率比旧系统低很多。','14:22'],['me','监控里还有少量结构解析告警，我会继续观察。','14:29'],['day','今天'],['them','阿栀姐，上次你写的那个爬虫程序客户说太好了。','21:20'],['them','现在稳定跑了一个月，采集准确率一直在99%以上。','21:20'],['them','客户决定追加两万，想让你继续做数据校验和日报模块。','21:21'],['me','可以，把追加需求和验收口径发我，我评估一下工期。','21:23']
+]},
+exam:{name:'码农小北',avatar:'北',tone:'dark',type:'private',status:'刚刚在线 · 校园专区',quick:['没有那么夸张','先把每天计划做小','我发你一份学习表'],messages:[
+['day','昨天'],['them','阿栀，你那篇增量爬虫帖子写得太清楚了。','23:16'],['me','谢谢，都是项目里踩过的坑。','23:25'],['day','今天'],['them','群里有人说你高考720分，真的假的？','21:16'],['them','大佬牛逼……能不能讲讲怎么兼顾刷题和写代码？','21:17'],['me','是真的，但不是每天都学很久。我会把任务拆成30分钟一块，完成就停。','21:18'],['them','我经常计划写得很满，结果一天没完成就全部放弃。','21:19'],['me','那就先只留三个必须完成的任务，剩下都算加分。','21:20']
+]},
+zhou:{name:'项目经理周姐',avatar:'周',tone:'pink',type:'project',status:'在线 · 平台项目经理',quick:['收到，我会按节点交付','验收标准需要再确认','请发保密协议'],messages:[
+['day','今天 18:02'],['them','阿栀，平台看到你最近的项目评分很高，给你开了企业项目优先推荐。','18:02'],['me','谢谢周姐，最近时间比较紧，只接数据方向。','18:10'],['them','明白。五万元那个零售预测项目，我帮你问过了，可以先看脱敏样例。','18:12'],['them','客户比较看重报告能不能给业务人员看懂，不只要模型指标。','18:13']
+]},
+friend:{name:'林间算法',avatar:'林',tone:'orange',type:'private',status:'在线 · 算法竞赛',quick:['这题可以用单调栈','我晚点看代码','发到帖子里一起讨论'],messages:[
+['day','前天'],['them','阿栀，区域价格联动那个问题，你觉得图模型有必要吗？','20:31'],['me','数据量不够时先别上复杂模型，树模型加区域统计特征更稳。','20:35'],['them','懂了，先把简单基线跑扎实。','20:37'],['day','今天'],['them','我把代码重构了一版，晚点能帮我看一下吗？','20:48']
+]},
+system:{name:'栈途社区助手',avatar:'栈',tone:'',type:'notice',status:'系统通知',quick:[],messages:[['day','昨天'],['them','你的帖子《增量爬虫调度思路》被收录为本周精选。','09:30'],['them','帖子新增浏览3,208次，获得89条评论。','09:30'],['day','今天'],['them','你的开发者信用分提升至 96，已解锁企业项目优先推荐。','10:05']]}
+};
+const projects=[
+{id:'main',title:'连锁零售数据分析与销量预测',desc:'清洗多源销售数据，构建门店级预测模型，输出分析脚本、模型与可视化报告。',price:'¥50,000',days:'21天',match:'92%',tags:['Python','Pandas','LightGBM','时间序列'],detail:[['项目预算','¥50,000'],['交付周期','21天'],['数据规模','约680万条记录'],['技术要求','Python / Pandas / LightGBM'],['交付内容','清洗脚本、模型、报告'],['保密级别','双方签署保密协议']]},
+{id:'j2',title:'农贸市场价格数据清洗与指标体系',desc:'对多地市场日报进行字段统一、异常检测和指标口径设计。',price:'¥18,000',days:'12天',match:'88%',tags:['数据清洗','Excel','Python'],detail:[['项目预算','¥18,000'],['交付周期','12天'],['数据规模','约120万条'],['交付内容','清洗脚本、指标字典、说明文档']]},
+{id:'j3',title:'公开信息采集与每日监控报表',desc:'维护现有采集程序，增加结构变化告警、校验规则和日报。',price:'¥20,000',days:'14天',match:'95%',tags:['爬虫','监控','自动化'],detail:[['追加预算','¥20,000'],['交付周期','14天'],['合作客户','启明数据'],['工作内容','校验规则、日报、告警']]},
+{id:'j4',title:'校园学习数据可视化小程序',desc:'将问卷和成绩数据整理成可交互图表，适合毕业设计展示。',price:'¥6,800',days:'10天',match:'74%',tags:['可视化','前端','数据分析'],detail:[['项目预算','¥6,800'],['交付周期','10天'],['交付内容','数据看板、说明文档']]}
+];
+const boardData=[['Python','🐍','12.8万帖','#eef4ff'],['数据分析','📊','8.6万帖','#eaf9f3'],['爬虫自动化','🕸','4.3万帖','#fff5e6'],['算法竞赛','🧠','7.4万帖','#f3eeff'],['校园专区','🎓','6.1万帖','#fff0f5'],['职场接单','💼','3.8万帖','#edf7ff'],['资源分享','📦','9.2万帖','#f2f8eb'],['闲聊灌水','☕','22.5万帖','#f5f3ff']];
+let activeChat=null, activePost=null, activeJob='main';
+function avatarClass(t){return 'avatar '+(t||'')}
+function renderHot(){const hot=posts.slice().sort((a,b)=>b.likes-a.likes).slice(0,5);$('#hotList').innerHTML=hot.map((p,i)=>`<div class="hot-item"><span class="rank ${i<3?'hot':''}">${i+1}</span><b>${p.title}</b><span>${p.likes}热度</span></div>`).join('')}
+function renderBoards(){
+ $('#allBoardGrid').innerHTML=boardData.map(x=>`<button class="board"><span class="bi" style="background:${x[3]}">${x[1]}</span><b>${x[0]}</b><span>${x[2]}</span></button>`).join('');
+ $('#boardActivity').innerHTML=posts.slice(3,10).map((p,i)=>`<div class="hot-item"><span class="rank">${String(i+1).padStart(2,'0')}</span><b>${p.title}</b><span>${p.board}</span></div>`).join('');
+}
+function renderPosts(topic='all',q=''){
+ const list=posts.filter(p=>(topic==='all'||p.topic.includes(topic))&&(!q||(`${p.title}${p.text}${p.user}${p.tags.join('')}`).toLowerCase().includes(q.toLowerCase())));
+ $('#feed').innerHTML=list.length?list.map(p=>`<article class="card post" data-post="${p.id}" data-topic="${p.topic}"><div class="post-head"><div class="${avatarClass(p.tone)}">${p.avatar}</div><div class="userline"><b>${p.user}${p.level?`<span class="badge">${p.level}</span>`:''}</b><div class="meta">${p.time} · ${p.board}</div></div><button class="more">···</button></div><div class="post-title">${p.pin?'<span class="pin">置顶</span>':''}${p.title}</div><p class="post-text">${p.text}</p>${p.img?`<div class="post-img">${p.img.replaceAll('\n','<br>')}</div>`:''}<div class="tags">${p.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div><div class="post-foot"><button class="like-btn ${state.likes[p.id]?'liked':''}" data-like="${p.id}">${state.likes[p.id]?'♥':'♡'} ${p.likes+(state.likes[p.id]?1:0)}</button><button class="comment-btn" data-comment="${p.id}">▱ ${p.comments+(state.comments[p.id]?.length||0)}</button><span>浏览 ${p.views}</span></div></article>`).join(''):'<div class="empty"><b>没有找到相关帖子</b>换个关键词再试试</div>';
+ bindPostActions();
+}
+function bindPostActions(){
+ $$('[data-like]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.like;state.likes[id]=!state.likes[id];save();renderPosts(currentTopic,$('#searchInput').value.trim())});
+ $$('[data-comment]').forEach(b=>b.onclick=e=>{e.stopPropagation();openComments(b.dataset.comment)});
+ $$('.post').forEach(p=>p.onclick=e=>{if(e.target.closest('button'))return;openComments(p.dataset.post)});
+}
+function renderProjects(){
+ $('#projectList').innerHTML=projects.map(j=>`<article class="card job"><div class="job-top"><div><h3>${j.title}</h3><p class="post-text">${j.desc}</p></div><div class="price">${j.price}<small>项目总价</small></div></div><div class="tags">${j.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="job-meta"><div class="mini"><b>${j.days}</b><span>交付周期</span></div><div class="mini"><b>企业认证</b><span>平台担保</span></div><div class="mini"><b>${j.match}</b><span>技能匹配</span></div></div>${j.id==='main'&&state.accepted?'<div class="accepted">✓ 已接单 · 项目金额 ¥50,000</div>':`<div class="btn-row"><button class="secondary" data-job-view="${j.id}">查看详情</button><button class="primary" data-job-chat="${j.id}">${j.id==='main'?'联系顾问':'咨询项目'}</button></div>`}</article>`).join('');
+ $$('[data-job-view]').forEach(b=>b.onclick=()=>openJob(b.dataset.jobView));
+ $$('[data-job-chat]').forEach(b=>b.onclick=()=>openChat(b.dataset.jobChat==='main'?'job':b.dataset.jobChat==='j3'?'crawler':'zhou'));
+}
+function unreadCount(){return Object.keys(chats).filter(k=>!state.readChats.includes(k)).length}
+function renderMessages(filter='all'){
+ const order=['job','crawler','exam','zhou','friend','system'];
+ const lastText=k=>{const m=chats[k].messages.filter(x=>x[0]!=='day').at(-1);return m?.[1]||''};
+ const list=order.filter(k=>filter==='all'||chats[k].type===filter);
+ $('#messageList').innerHTML=list.map(k=>{const c=chats[k],unread=!state.readChats.includes(k);return `<div class="message" data-message="${k}"><div class="${avatarClass(c.tone)}">${c.avatar}</div><div><div class="message-title">${c.name}</div><div class="message-text">${lastText(k)}</div></div><div><div class="time">${k==='system'?'10:05':'刚刚'}</div>${unread?'<div class="unread">1</div>':''}</div></div>`}).join('');
+ $$('.message').forEach(m=>m.onclick=()=>openChat(m.dataset.message)); updateUnread();
+}
+function renderChat(){
+ const c=chats[activeChat];$('#chatName').textContent=c.name;$('#chatAvatar').className=avatarClass(c.tone)+' online';$('#chatAvatar').textContent=c.avatar;$('#chatStatus').textContent=c.status;
+ const all=[...c.messages,...(state.replies[activeChat]||[])];
+ $('#chatBody').innerHTML=all.map(m=>{if(m[0]==='day')return `<div class="day-sep">${m[1]}</div>`;if(m[0]==='themcard')return `<div class="bubble-row"><div class="${avatarClass(c.tone)}">${c.avatar}</div><div class="bubble"><div class="small-card"><b>${m[1]}</b><span>${m[2]}</span></div></div></div><div class="bubble-time">${m[3]}</div>`;const me=m[0]==='me';return `<div class="bubble-row ${me?'me':''}">${me?'':`<div class="${avatarClass(c.tone)}">${c.avatar}</div>`}<div class="bubble">${m[1]}</div>${me?'<div class="avatar">栀</div>':''}</div><div class="bubble-time ${me?'me':''}">${m[2]||''}${me?' · 已读':''}</div>`}).join('');
+ $('#chatQuick').innerHTML=c.quick.map(q=>`<button>${q}</button>`).join('');$$('#chatQuick button').forEach(b=>b.onclick=()=>{$('#chatInput').value=b.textContent;$('#chatInput').focus()});
+ setTimeout(()=>{$('#chatBody').scrollTop=$('#chatBody').scrollHeight},30);
+}
+function openChat(key){activeChat=key;if(!state.readChats.includes(key))state.readChats.push(key);save();renderMessages(currentMsgFilter);renderChat();$('#chatModal').classList.add('open')}
+function sendChat(){const v=$('#chatInput').value.trim();if(!v||!activeChat)return;(state.replies[activeChat]??=[]).push(['me',v,now()]);$('#chatInput').value='';save();renderChat();const c=chats[activeChat];if(c.type!=='notice'){const typing=$('#typing');typing.classList.add('show');setTimeout(()=>{typing.classList.remove('show');const auto=activeChat==='job'?'收到，我把脱敏样例和合同发给你。':activeChat==='crawler'?'好的，追加需求清单我整理后发你。':'收到，谢谢你回复。';(state.replies[activeChat]??=[]).push(['them',auto,now()]);save();renderChat()},900)}}
+function openComments(id){activePost=id;const p=posts.find(x=>x.id===id);$('#commentTitle').textContent=p.title;$('#commentSummary').textContent=`${p.user} · ${p.board} · 浏览 ${p.views}`;renderComments();$('#commentsModal').classList.add('open')}
+function renderComments(){const base=comments[activePost]||[['路过的开发者','路','这个话题很实用，蹲一个后续。','1小时前'],['认真学习中','学','收藏了，等楼主更新。','35分钟前']];const extra=state.comments[activePost]||[];$('#commentList').innerHTML=[...base,...extra].map(x=>`<div class="comment"><div class="avatar">${x[1]}</div><div class="comment-main"><b>${x[0]}</b><p>${x[2]}</p><span>${x[3]} · 回复 · 赞</span></div></div>`).join('')}
+function sendComment(){const v=$('#commentInput').value.trim();if(!v)return;(state.comments[activePost]??=[]).push(['阿栀','栀',v,'刚刚']);$('#commentInput').value='';save();renderComments();renderPosts(currentTopic,$('#searchInput').value.trim());toast('评论已发表',v)}
+function openJob(id){activeJob=id;const j=projects.find(x=>x.id===id);$('#jobTitle').textContent=j.title;$('#jobLead').textContent=j.desc;$('#jobDetail').innerHTML=j.detail.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('');$('#acceptFromModal').textContent=id==='main'?'接受项目':'申请项目';$('#jobModal').classList.add('open')}
+function acceptJob(){if(activeJob==='main'){state.accepted=true;save();renderProjects();$('#projectStatusText').textContent='1个进行中项目';$('#jobModal').classList.remove('open');$('#successModal').classList.add('open')}else{toast('申请已提交','项目方将在24小时内查看你的资料');$('#jobModal').classList.remove('open')}}
+function updateUnread(){const n=unreadCount();$('#navUnread').textContent=n;$('#topUnread').textContent=n;$('#navUnread').style.display=n?'grid':'none';$('#topUnread').style.display=n?'grid':'none'}
+function toast(title,text,delay=0){setTimeout(()=>{const t=document.createElement('div');t.className='toast';t.innerHTML=`<div class="avatar" style="width:34px;height:34px;border-radius:10px">!</div><div><b>${title}</b><p>${text}</p></div>`;$('#toastStack').appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),250)},2800)},delay)}
+function notificationStorm(){toast('陈昊','阿栀，那个数据分析的项目你接不接？报酬五万。',200);toast('启明数据·李工','上次爬虫程序效果很好，客户追加两万。',800);toast('码农小北','听说你高考720分？大佬牛逼。',1400)}
+function go(view){$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));$$('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===view));window.scrollTo({top:0,behavior:'smooth'})}
+let currentTopic='all',currentMsgFilter='all';
+$('#enterBtn').onclick=()=>{state.entered=true;save();$('#login').classList.add('hidden');setTimeout(notificationStorm,350)};
+$$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+$$('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('open'));$$('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove('open')});
+$('#bellBtn').onclick=()=>go('messages');$('#allBoards').onclick=()=>go('boards');
+$('#homeChips').onclick=e=>{const b=e.target.closest('[data-topic]');if(!b)return;currentTopic=b.dataset.topic;$$('#homeChips .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderPosts(currentTopic,$('#searchInput').value.trim())};
+$$('.board[data-topic]').forEach(b=>b.onclick=()=>{currentTopic=b.dataset.topic;$$('#homeChips .chip').forEach(x=>x.classList.toggle('active',x.dataset.topic===currentTopic));renderPosts(currentTopic,'');});
+$('#searchInput').oninput=e=>renderPosts(currentTopic,e.target.value.trim());
+$('#messageTabs').onclick=e=>{const b=e.target.closest('[data-msg-filter]');if(!b)return;currentMsgFilter=b.dataset.msgFilter;$$('#messageTabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMessages(currentMsgFilter)};
+$('#readAll').onclick=()=>{state.readChats=Object.keys(chats);save();renderMessages(currentMsgFilter);toast('消息中心','全部消息已标记为已读')};
+$('#sendChat').onclick=sendChat;$('#chatInput').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}};
+$('#sendComment').onclick=sendComment;$('#commentInput').onkeydown=e=>{if(e.key==='Enter')sendComment()};
+$('#acceptFromModal').onclick=acceptJob;$('#successClose').onclick=()=>{$('#successModal').classList.remove('open');go('messages');openChat('job')};
+$('#openWorkspace').onclick=()=>$('#workspaceModal').classList.add('open');
+$('#resetApp').onclick=()=>{localStorage.removeItem('stackwayRealForum');location.reload()};
+$('#homeTabs').onclick=e=>{const b=e.target.closest('[data-feed]');if(!b)return;$$('#homeTabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(b.dataset.feed==='hot'){renderPosts('all','');$('#feed').innerHTML=posts.slice().sort((a,b)=>b.likes-a.likes).map(p=>$('#feed').querySelector(`[data-post="${p.id}"]`)?.outerHTML||'').join('');bindPostActions()}else if(b.dataset.feed==='following'){renderPosts('all','阿栀')}else renderPosts('all','')};
+function init(){renderHot();renderBoards();renderPosts();renderProjects();renderMessages();updateUnread();if(state.accepted)$('#projectStatusText').textContent='1个进行中项目';if(state.entered)$('#login').classList.add('hidden')}
+init();
+})();
+</script>
+</body>
+</html>
