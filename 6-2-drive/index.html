@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f4f7fb">
+<title>云栈私密空间｜阿栀</title>
+<style>
+:root{
+  --bg:#f3f6fb;--panel:#fff;--ink:#1a2533;--muted:#7a8796;--line:#e8edf4;
+  --blue:#2878ff;--blue2:#5d9cff;--cyan:#20b8b0;--green:#16a66a;--orange:#f09837;
+  --purple:#7a64e8;--red:#e65e66;--shadow:0 14px 45px rgba(35,59,93,.12);
+  --radius:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+button,input{font:inherit}
+button{cursor:pointer}
+body{display:flex;justify-content:center}
+.app{width:min(100%,520px);min-height:100dvh;background:var(--bg);position:relative;overflow:hidden}
+.top{
+  position:sticky;top:0;z-index:25;background:rgba(243,246,251,.94);backdrop-filter:blur(18px);
+  padding:17px 16px 12px;border-bottom:1px solid rgba(232,237,244,.8)
+}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--blue),#6aa6ff);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 9px 22px rgba(40,120,255,.26)}
+.brand h1{font-size:18px;margin:0;line-height:1.15}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:4px;font-weight:500}
+.avatar{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,#d5e5ff,#f0f6ff);display:grid;place-items:center;color:var(--blue);font-weight:800;border:1px solid #dbe7fb}
+.search{margin-top:13px;background:#fff;border:1px solid var(--line);height:44px;border-radius:15px;display:flex;align-items:center;padding:0 13px;gap:9px;box-shadow:0 6px 18px rgba(38,64,94,.05)}
+.search span{color:#93a0af}.search input{border:0;outline:0;background:transparent;flex:1;color:var(--ink);min-width:0}
+.main{padding:14px 14px 92px}
+.view{display:none;animation:fade .2s ease}.view.active{display:block}
+@keyframes fade{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:none}}
+.hero{background:linear-gradient(135deg,#1e6df5,#438cf7 55%,#70aaff);color:#fff;border-radius:26px;padding:20px;position:relative;overflow:hidden;box-shadow:0 18px 42px rgba(40,120,255,.24)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10)}
+.hero:before{width:190px;height:190px;right:-70px;top:-100px}.hero:after{width:120px;height:120px;left:-50px;bottom:-80px}
+.hero-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:relative;z-index:1}
+.hero-kicker{font-size:12px;opacity:.84}.hero h2{font-size:20px;margin:6px 0 4px}.secure{font-size:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);padding:7px 9px;border-radius:999px;white-space:nowrap}
+.progress-row{display:grid;grid-template-columns:1fr 68px;gap:14px;align-items:center;margin-top:18px;position:relative;z-index:1}
+.progress-track{height:9px;background:rgba(255,255,255,.22);border-radius:999px;overflow:hidden}.progress-track i{display:block;height:100%;width:78%;background:#fff;border-radius:999px;box-shadow:0 0 16px rgba(255,255,255,.55)}
+.progress-label{font-size:11px;opacity:.86;margin-top:7px}.progress-number{text-align:right;font-size:31px;font-weight:900;letter-spacing:-1px}.progress-number small{font-size:13px;font-weight:600}
+.hero-foot{display:flex;gap:8px;margin-top:15px;position:relative;z-index:1;flex-wrap:wrap}.hero-foot span{font-size:10px;padding:6px 8px;border-radius:9px;background:rgba(255,255,255,.13)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:18px 3px 10px}
+.section-head h3{margin:0;font-size:16px}.section-head button{border:0;background:transparent;color:var(--blue);font-size:12px;padding:4px}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.quick{border:0;background:#fff;border-radius:18px;padding:13px 7px 11px;box-shadow:0 7px 22px rgba(35,59,93,.06);color:var(--ink)}
+.quick .qico{width:40px;height:40px;border-radius:14px;margin:0 auto 8px;display:grid;place-items:center;font-size:18px;font-weight:900}
+.quick b{display:block;font-size:12px}.quick small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.blue{background:#eaf2ff;color:var(--blue)}.green{background:#e8f8f1;color:var(--green)}.purple{background:#f0edff;color:var(--purple)}.orange{background:#fff2e4;color:var(--orange)}
+.card{background:#fff;border-radius:21px;box-shadow:0 8px 26px rgba(35,59,93,.06);border:1px solid rgba(232,237,244,.9)}
+.project-summary{padding:15px}.project-line{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.project-line b{font-size:14px}.project-line span{font-size:11px;color:var(--green);font-weight:700}
+.tasks{display:grid;gap:8px;margin-top:12px}.task{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:12px}.task:first-child{border-top:0}
+.check{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;font-size:11px;background:#e9f8f1;color:var(--green)}.check.wait{background:#fff1df;color:var(--orange)}.task small{color:var(--muted)}
+.breadcrumb{display:flex;align-items:center;gap:5px;overflow:auto;white-space:nowrap;padding:2px 2px 10px;color:var(--muted);font-size:12px}.breadcrumb button{border:0;background:transparent;padding:0;color:inherit}.breadcrumb button:last-child{color:var(--ink);font-weight:700}
+.folder-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.folder{border:0;text-align:left;background:#fff;border-radius:19px;padding:14px;box-shadow:0 7px 22px rgba(35,59,93,.06);min-height:116px;position:relative}
+.folder-ico{font-size:31px;line-height:1}.folder h4{margin:11px 0 4px;font-size:13px}.folder p{margin:0;color:var(--muted);font-size:10px}.folder em{position:absolute;right:10px;top:10px;font-style:normal;font-size:9px;padding:4px 6px;border-radius:7px;background:#eef4ff;color:var(--blue)}
+.file-list{overflow:hidden}.file-row{display:grid;grid-template-columns:43px 1fr auto;gap:10px;align-items:center;padding:12px 13px;border-bottom:1px solid var(--line);cursor:pointer}.file-row:last-child{border:0}.file-ico{width:41px;height:41px;border-radius:13px;display:grid;place-items:center;font-size:11px;font-weight:900}
+.file-main{min-width:0}.file-main b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-main span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.file-side{text-align:right}.file-side span{display:block;font-size:10px;color:var(--muted)}.file-side button{border:0;background:transparent;color:#9aa6b4;font-size:17px;padding:3px}
+.py{background:#eaf2ff;color:#236fd8}.csv{background:#e8f8f1;color:#14845a}.ipynb{background:#fff0e1;color:#d77c1c}.json{background:#f3edff;color:#7357c9}.md{background:#edf2f5;color:#546476}.model{background:#ffecef;color:#d84f63}.log{background:#f0f2f5;color:#57616d}.zip{background:#fff4dc;color:#bb7a09}.sql{background:#e6f7fb;color:#14859c}.yaml{background:#f4ebff;color:#7d4cb5}
+.filterbar{display:flex;gap:8px;overflow:auto;margin-bottom:11px}.chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:11px;color:var(--muted)}.chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.storage{padding:15px}.storage-top{display:flex;justify-content:space-between;align-items:center}.storage-top b{font-size:14px}.storage-top span{font-size:11px;color:var(--muted)}
+.storage-track{height:8px;background:#eef2f7;border-radius:999px;margin:13px 0 8px;overflow:hidden}.storage-track i{display:block;width:63%;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:999px}
+.storage-legend{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}
+.activity{padding:0 14px}.activity-row{display:grid;grid-template-columns:9px 1fr auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);font-size:11px}.activity-row:last-child{border:0}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px}.activity-row b{font-size:12px}.activity-row p{margin:4px 0 0;color:var(--muted)}.activity-row time{color:var(--muted);font-size:9px}
+.bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,520px);height:72px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.bottom button{border:0;background:transparent;color:#98a3b0;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}.bottom button b{font-size:19px}.bottom button.active{color:var(--blue);font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(16,27,42,.48);z-index:80;display:none;align-items:flex-end;justify-content:center}.modal.open{display:flex}
+.sheet{width:min(100%,520px);max-height:92dvh;background:#fff;border-radius:28px 28px 0 0;overflow:hidden;box-shadow:0 -18px 55px rgba(14,29,51,.24)}
+.sheet-head{display:flex;align-items:center;gap:11px;padding:14px 15px;border-bottom:1px solid var(--line)}.sheet-head button{width:35px;height:35px;border:0;background:#f0f4f8;border-radius:12px;font-size:20px}.sheet-title{min-width:0;flex:1}.sheet-title b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sheet-title span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.sheet-body{max-height:calc(92dvh - 65px);overflow:auto;background:#111a24;color:#dce6ef}
+.code-toolbar{display:flex;gap:7px;padding:10px 12px;background:#172330;border-bottom:1px solid #263444;position:sticky;top:0;z-index:2}.code-toolbar span{font-size:9px;color:#aab8c5;background:#223141;padding:5px 7px;border-radius:7px}.code-toolbar button{margin-left:auto;border:0;background:#2d7cff;color:#fff;border-radius:8px;padding:5px 9px;font-size:10px}
+pre{margin:0;padding:14px 16px 25px;font:11px/1.65 "SFMono-Regular",Consolas,monospace;white-space:pre;overflow:auto;tab-size:2}
+.result-panel{padding:15px;background:#fff;color:var(--ink)}.result-panel h4{margin:0 0 10px}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{background:#f4f7fb;border-radius:13px;padding:10px;text-align:center}.metric b{display:block;font-size:15px}.metric span{font-size:9px;color:var(--muted)}
+.unlock{position:fixed;inset:0;z-index:120;background:linear-gradient(155deg,#eff5ff,#f8fbff 55%,#edf4ff);display:flex;align-items:center;justify-content:center;padding:24px;transition:.35s}
+.unlock.hidden{opacity:0;pointer-events:none;transform:scale(1.025)}
+.unlock-card{width:min(100%,390px);background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);border-radius:30px;padding:28px 24px;text-align:center;box-shadow:0 25px 70px rgba(45,79,125,.18)}
+.lock-logo{width:82px;height:82px;border-radius:27px;background:linear-gradient(135deg,var(--blue),#76acff);margin:0 auto 18px;display:grid;place-items:center;color:#fff;font-size:32px;box-shadow:0 18px 35px rgba(40,120,255,.25)}
+.unlock h1{margin:0;font-size:24px}.unlock p{font-size:12px;color:var(--muted);line-height:1.7;margin:8px 0 19px}
+.account{display:flex;align-items:center;gap:10px;text-align:left;background:#f3f7fd;border-radius:16px;padding:12px;margin-bottom:14px}.account .avatar{flex:0 0 auto}.account b{display:block;font-size:13px}.account span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.primary{width:100%;height:49px;border:0;border-radius:15px;background:var(--blue);color:#fff;font-weight:750;box-shadow:0 12px 25px rgba(40,120,255,.23)}
+.unlock small{display:block;color:#9aa5b3;font-size:9px;margin-top:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(15px);bottom:88px;background:#17212c;color:#fff;border-radius:13px;padding:10px 14px;font-size:11px;z-index:160;opacity:0;pointer-events:none;transition:.22s;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{padding:36px 15px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--ink);margin-bottom:7px}
+@media(min-width:700px){body{padding:18px}.app{min-height:calc(100dvh - 36px);border-radius:30px;box-shadow:var(--shadow)}.bottom{bottom:18px;border-radius:0 0 30px 30px}.modal{align-items:center}.sheet{border-radius:28px;max-height:86dvh}.sheet-body{max-height:calc(86dvh - 65px)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <div class="topline">
+    <div class="brand"><div class="logo">云</div><div><h1>云栈</h1><small>端到端加密 · 私密空间</small></div></div>
+    <div class="avatar">栀</div>
+  </div>
+  <div class="search"><span>⌕</span><input id="searchInput" placeholder="搜索文件、代码、数据集"></div>
+</header>
+
+<main class="main">
+<section class="view active" data-view="home">
+  <div class="hero">
+    <div class="hero-head">
+      <div><div class="hero-kicker">私密项目 · 阿栀</div><h2>大数据农产品价格预测系统</h2></div>
+      <span class="secure">🔒 AES-256</span>
+    </div>
+    <div class="progress-row">
+      <div><div class="progress-track"><i></i></div><div class="progress-label">当前完成度 · 最近同步于今晚 22:46</div></div>
+      <div class="progress-number">78<small>%</small></div>
+    </div>
+    <div class="hero-foot"><span>Python 3.11</span><span>LightGBM</span><span>时序预测</span><span>43.8 GB</span></div>
+  </div>
+
+  <div class="section-head"><h3>快速访问</h3><button data-go="files">全部文件</button></div>
+  <div class="quick-grid">
+    <button class="quick" data-folder="00_核心模型"><span class="qico blue">⌘</span><b>核心模型</b><small>12个文件</small></button>
+    <button class="quick" data-folder="01_数据处理"><span class="qico green">▦</span><b>数据处理</b><small>18个文件</small></button>
+    <button class="quick" data-folder="02_实验记录"><span class="qico purple">◫</span><b>实验记录</b><small>31次实验</small></button>
+    <button class="quick" data-folder="03_数据集"><span class="qico orange">▤</span><b>数据集</b><small>36.2 GB</small></button>
+  </div>
+
+  <div class="section-head"><h3>项目进度</h3><button id="runModelBtn">运行检查</button></div>
+  <div class="card project-summary">
+    <div class="project-line"><b>里程碑 M4 · 价格预测基线</b><span>78% 已完成</span></div>
+    <div class="tasks">
+      <div class="task"><span class="check">✓</span><div>历史价格清洗与缺失值修复<small>全国12个批发市场</small></div><b>100%</b></div>
+      <div class="task"><span class="check">✓</span><div>节气、天气和运输特征工程<small>累计生成126个特征</small></div><b>100%</b></div>
+      <div class="task"><span class="check">✓</span><div>LightGBM基线模型训练<small>离线MAPE 8.7%</small></div><b>100%</b></div>
+      <div class="task"><span class="check wait">…</span><div>区域联动模型与超参搜索<small>本机算力不足，等待集群</small></div><b>42%</b></div>
+      <div class="task"><span class="check wait">…</span><div>部署接口和可视化报告<small>待最终模型确认</small></div><b>18%</b></div>
+    </div>
+  </div>
+
+  <div class="section-head"><h3>最近打开</h3><button data-go="recent">查看更多</button></div>
+  <div class="card file-list" id="homeRecent"></div>
+</section>
+
+<section class="view" data-view="files">
+  <div class="breadcrumb" id="breadcrumb"></div>
+  <div class="filterbar">
+    <button class="chip active" data-filter="all">全部</button><button class="chip" data-filter="folder">文件夹</button><button class="chip" data-filter="code">代码</button><button class="chip" data-filter="data">数据</button><button class="chip" data-filter="model">模型</button>
+  </div>
+  <div id="fileArea"></div>
+</section>
+
+<section class="view" data-view="recent">
+  <div class="section-head" style="margin-top:2px"><h3>最近与活动</h3><button id="clearRecent">清空记录</button></div>
+  <div class="card file-list" id="recentList"></div>
+  <div class="section-head"><h3>同步记录</h3><button>自动同步已开启</button></div>
+  <div class="card activity">
+    <div class="activity-row"><i class="dot"></i><div><b>夜间增量同步完成</b><p>上传 23 个文件，更新 186.4 MB</p></div><time>22:46</time></div>
+    <div class="activity-row"><i class="dot" style="background:var(--blue)"></i><div><b>模型权重已加密备份</b><p>lgbm_agri_v17.pkl → 私密保险箱</p></div><time>21:18</time></div>
+    <div class="activity-row"><i class="dot" style="background:var(--orange)"></i><div><b>算力任务暂停</b><p>本机可用内存不足，等待高性能集群</p></div><time>20:57</time></div>
+    <div class="activity-row"><i class="dot" style="background:var(--purple)"></i><div><b>新建实验记录</b><p>exp_031_region_graph.ipynb</p></div><time>19:32</time></div>
+  </div>
+</section>
+
+<section class="view" data-view="profile">
+  <div class="card storage">
+    <div class="storage-top"><b>私密空间容量</b><span>63.4 GB / 100 GB</span></div>
+    <div class="storage-track"><i></i></div>
+    <div class="storage-legend"><span>代码 1.8 GB</span><span>数据集 36.2 GB</span><span>模型与备份 25.4 GB</span></div>
+  </div>
+  <div class="section-head"><h3>账号与安全</h3><button>安全状态良好</button></div>
+  <div class="card file-list">
+    <div class="file-row"><div class="file-ico blue">栀</div><div class="file-main"><b>阿栀的私密空间</b><span>青岩村 · 开发者账号</span></div><div class="file-side"><span>已认证</span></div></div>
+    <div class="file-row"><div class="file-ico green">锁</div><div class="file-main"><b>端到端加密</b><span>AES-256 · 本地密钥</span></div><div class="file-side"><span>已开启</span></div></div>
+    <div class="file-row"><div class="file-ico purple">备</div><div class="file-main"><b>自动备份</b><span>Wi-Fi环境下每30分钟同步</span></div><div class="file-side"><span>正常</span></div></div>
+    <div class="file-row" id="lockBtn"><div class="file-ico orange">退</div><div class="file-main"><b>锁定私密空间</b><span>返回身份验证界面</span></div><div class="file-side"><button>›</button></div></div>
+  </div>
+  <div class="section-head"><h3>项目备注</h3></div>
+  <div class="card project-summary">
+    <p style="margin:0;font-size:13px;line-height:1.8">等去了清北，用学校的算力把区域联动模型完整跑一遍。模型如果能成，就把它真正用到农产品采购和运输里，也许能帮傅叔把债还上。</p>
+    <div style="margin-top:12px;color:var(--muted);font-size:10px">最后编辑：今晚 22:48 · 私密备注</div>
+  </div>
+</section>
+</main>
+
+<nav class="bottom">
+  <button class="active" data-nav="home"><b>⌂</b>首页</button>
+  <button data-nav="files"><b>▦</b>文件</button>
+  <button data-nav="recent"><b>◷</b>最近</button>
+  <button data-nav="profile"><b>◎</b>我的</button>
+</nav>
+</div>
+
+<div class="unlock" id="unlock">
+  <div class="unlock-card">
+    <div class="lock-logo">🔐</div>
+    <h1>云栈私密空间</h1>
+    <p>检测到加密项目文件。完成身份验证后，才能查看代码、数据集和模型文件。</p>
+    <div class="account"><div class="avatar">栀</div><div><b>阿栀</b><span>私密空间 · 上次解锁：今晚 22:31</span></div></div>
+    <button class="primary" id="unlockBtn">验证身份并打开</button>
+    <small>本页面内容使用端到端加密保护</small>
+  </div>
+</div>
+
+<div class="modal" id="previewModal">
+  <div class="sheet">
+    <div class="sheet-head"><button data-close>‹</button><div class="sheet-title"><b id="previewName">文件预览</b><span id="previewMeta">Python · 12.4 KB</span></div></div>
+    <div class="sheet-body">
+      <div class="code-toolbar"><span id="langBadge">PYTHON</span><span>UTF-8</span><span>只读预览</span><button id="copyCode">复制代码</button></div>
+      <pre id="codePreview"></pre>
+      <div class="result-panel" id="resultPanel" style="display:none">
+        <h4>最近一次训练结果</h4>
+        <div class="metric-grid"><div class="metric"><b>8.7%</b><span>MAPE</span></div><div class="metric"><b>0.931</b><span>R²</span></div><div class="metric"><b>12</b><span>市场数量</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const fileTree = {
+root:[
+ {type:'folder',name:'00_核心模型',count:'12个文件',time:'今晚 22:41'},
+ {type:'folder',name:'01_数据处理',count:'18个文件',time:'今晚 21:52'},
+ {type:'folder',name:'02_实验记录',count:'31次实验',time:'今晚 19:32'},
+ {type:'folder',name:'03_数据集',count:'36.2 GB',time:'昨天'},
+ {type:'folder',name:'04_可视化与报告',count:'9个文件',time:'7月16日'},
+ {type:'folder',name:'05_接口与部署',count:'14个文件',time:'7月15日'},
+ {type:'folder',name:'99_加密备份',count:'6个归档',time:'今晚 21:18'},
+ {type:'md',name:'README_项目说明.md',size:'8.6 KB',time:'今晚 22:48',preview:'readme'}
+],
+'00_核心模型':[
+ {type:'py',name:'train_lightgbm.py',size:'18.7 KB',time:'今晚 22:41',preview:'train'},
+ {type:'py',name:'feature_pipeline.py',size:'24.3 KB',time:'今晚 22:38',preview:'feature'},
+ {type:'py',name:'region_graph_model.py',size:'31.8 KB',time:'今晚 20:56',preview:'graph'},
+ {type:'py',name:'evaluate_model.py',size:'12.4 KB',time:'今晚 20:33',preview:'eval'},
+ {type:'model',name:'lgbm_agri_v17.pkl',size:'286 MB',time:'今晚 21:18',preview:'model'},
+ {type:'json',name:'best_params_v17.json',size:'3.2 KB',time:'今晚 21:17',preview:'params'},
+ {type:'yaml',name:'model_config.yaml',size:'2.8 KB',time:'今晚 20:21',preview:'config'},
+ {type:'log',name:'train_2026-07-17.log',size:'92 KB',time:'今晚 21:19',preview:'log'}
+],
+'01_数据处理':[
+ {type:'py',name:'clean_market_prices.py',size:'21.5 KB',time:'今晚 21:52',preview:'clean'},
+ {type:'py',name:'merge_weather_data.py',size:'15.9 KB',time:'今晚 21:10',preview:'weather'},
+ {type:'py',name:'holiday_solar_terms.py',size:'9.6 KB',time:'今晚 20:44',preview:'solar'},
+ {type:'sql',name:'market_schema.sql',size:'7.3 KB',time:'昨天 23:04',preview:'sql'},
+ {type:'json',name:'city_market_mapping.json',size:'46 KB',time:'昨天 22:19',preview:'mapping'},
+ {type:'log',name:'missing_value_report.log',size:'64 KB',time:'昨天 21:08',preview:'missing'}
+],
+'02_实验记录':[
+ {type:'ipynb',name:'exp_031_region_graph.ipynb',size:'2.1 MB',time:'今晚 19:32',preview:'exp31'},
+ {type:'ipynb',name:'exp_030_lgbm_seasonal.ipynb',size:'1.8 MB',time:'昨天 23:16',preview:'exp30'},
+ {type:'ipynb',name:'exp_029_prophet_baseline.ipynb',size:'1.3 MB',time:'昨天 20:48',preview:'exp29'},
+ {type:'csv',name:'experiment_scores.csv',size:'36 KB',time:'今晚 20:02',preview:'scores'},
+ {type:'md',name:'实验结论_阶段四.md',size:'12 KB',time:'今晚 20:08',preview:'conclusion'}
+],
+'03_数据集':[
+ {type:'csv',name:'market_prices_2018_2024.csv',size:'12.8 GB',time:'昨天 18:40',preview:'dataset'},
+ {type:'csv',name:'weather_daily_12cities.csv',size:'4.6 GB',time:'昨天 18:32',preview:'dataset'},
+ {type:'csv',name:'transport_index_weekly.csv',size:'2.9 GB',time:'7月15日',preview:'dataset'},
+ {type:'csv',name:'solar_terms_features.csv',size:'386 MB',time:'7月15日',preview:'dataset'},
+ {type:'zip',name:'raw_market_backup_2024.zip',size:'15.5 GB',time:'7月14日',preview:'archive'}
+],
+'04_可视化与报告':[
+ {type:'py',name:'dashboard_app.py',size:'22 KB',time:'7月16日',preview:'dashboard'},
+ {type:'py',name:'plot_price_trends.py',size:'14 KB',time:'7月16日',preview:'plot'},
+ {type:'md',name:'模型分析报告_v5.md',size:'43 KB',time:'7月16日',preview:'report'},
+ {type:'json',name:'dashboard_config.json',size:'5 KB',time:'7月16日',preview:'config'}
+],
+'05_接口与部署':[
+ {type:'py',name:'api_server.py',size:'19 KB',time:'7月15日',preview:'api'},
+ {type:'py',name:'prediction_service.py',size:'17 KB',time:'7月15日',preview:'service'},
+ {type:'yaml',name:'docker-compose.yaml',size:'4 KB',time:'7月15日',preview:'docker'},
+ {type:'yaml',name:'environment.yaml',size:'3 KB',time:'7月15日',preview:'env'},
+ {type:'md',name:'DEPLOY_NOTES.md',size:'8 KB',time:'7月15日',preview:'deploy'}
+],
+'99_加密备份':[
+ {type:'zip',name:'project_snapshot_78pct.enc.zip',size:'5.8 GB',time:'今晚 21:18',preview:'archive'},
+ {type:'zip',name:'model_weights_v17.enc.zip',size:'612 MB',time:'今晚 21:18',preview:'archive'},
+ {type:'zip',name:'source_code_20260717.enc.zip',size:'84 MB',time:'今晚 21:17',preview:'archive'},
+ {type:'md',name:'恢复说明_仅本人可见.md',size:'2 KB',time:'今晚 21:16',preview:'restore'}
+]};
+
+const previews = {
+readme:`# 大数据农产品价格预测系统
+
+项目负责人：沈栀（阿栀）
+当前完成度：78%
+核心目标：预测主要农产品未来 7—30 天的区域价格波动。
+
+## 已完成
+- 2018—2024 年批发市场价格清洗
+- 天气、节气、运输指数融合
+- LightGBM 基线模型
+- 12 城市离线评估
+
+## 待完成
+- 区域联动模型完整训练
+- 集群超参数搜索
+- 部署接口与最终报告
+
+> 本机算力不够。等去了清北，用学校的算力完整跑一遍。`,
+train:`from pathlib import Path
+import lightgbm as lgb
+import pandas as pd
+from sklearn.metrics import mean_absolute_percentage_error
+
+from feature_pipeline import build_features
+
+DATA_DIR = Path("data/processed")
+MODEL_DIR = Path("artifacts/models")
+
+def train_market_model(city: str):
+    df = pd.read_parquet(DATA_DIR / f"{city}_daily.parquet")
+    X, y = build_features(df)
+
+    train_mask = df["date"] < "2024-01-01"
+    X_train, X_valid = X[train_mask], X[~train_mask]
+    y_train, y_valid = y[train_mask], y[~train_mask]
+
+    model = lgb.LGBMRegressor(
+        n_estimators=1800,
+        learning_rate=0.025,
+        num_leaves=48,
+        subsample=0.86,
+        colsample_bytree=0.82,
+        random_state=720
+    )
+    model.fit(
+        X_train, y_train,
+        eval_set=[(X_valid, y_valid)],
+        callbacks=[lgb.early_stopping(120)]
+    )
+
+    pred = model.predict(X_valid)
+    score = mean_absolute_percentage_error(y_valid, pred)
+    return model, score
+
+if __name__ == "__main__":
+    cities = ["哈尔滨", "长春", "沈阳", "北京", "济南", "郑州"]
+    for city in cities:
+        model, mape = train_market_model(city)
+        print(f"{city}: MAPE={mape:.4f}")`,
+feature:`import numpy as np
+import pandas as pd
+
+SOLAR_TERMS = {
+    "立春": 1, "雨水": 2, "惊蛰": 3, "春分": 4,
+    "清明": 5, "谷雨": 6, "立夏": 7, "小满": 8
+}
+
+def build_features(df: pd.DataFrame):
+    out = df.copy()
+    out["dow"] = out["date"].dt.dayofweek
+    out["month"] = out["date"].dt.month
+    out["weekofyear"] = out["date"].dt.isocalendar().week.astype(int)
+
+    for lag in [1, 3, 7, 14, 28]:
+        out[f"price_lag_{lag}"] = out["price"].shift(lag)
+
+    for window in [7, 14, 30]:
+        out[f"price_mean_{window}"] = out["price"].rolling(window).mean()
+        out[f"price_std_{window}"] = out["price"].rolling(window).std()
+
+    out["rain_temp_interaction"] = out["rainfall"] * out["temperature"]
+    out["transport_pressure"] = out["transport_index"] / (out["supply"] + 1)
+
+    out = out.dropna().reset_index(drop=True)
+    target = out.pop("price")
+    return out, target`,
+graph:`# 区域联动实验模型（进行中）
+# 需要高性能集群完成完整训练
+
+import torch
+from torch import nn
+
+class RegionGraphEncoder(nn.Module):
+    def __init__(self, node_dim=64, hidden_dim=128):
+        super().__init__()
+        self.node_proj = nn.Linear(node_dim, hidden_dim)
+        self.edge_gate = nn.Sequential(
+            nn.Linear(hidden_dim * 2 + 4, hidden_dim),
+            nn.Sigmoid()
+        )
+        self.output = nn.Linear(hidden_dim, 1)
+
+    def forward(self, node_x, edge_index, edge_attr):
+        h = self.node_proj(node_x)
+        src, dst = edge_index
+        gate = self.edge_gate(
+            torch.cat([h[src], h[dst], edge_attr], dim=-1)
+        )
+        msg = gate * h[src]
+        agg = torch.zeros_like(h).index_add_(0, dst, msg)
+        return self.output(h + agg)
+
+# TODO:
+# 1. 加入时间注意力
+# 2. 完成12城市全量图训练
+# 3. 在清北集群运行超参搜索`,
+eval:`import json
+import pandas as pd
+from sklearn.metrics import r2_score, mean_absolute_error
+
+def evaluate(y_true, y_pred):
+    result = {
+        "mae": float(mean_absolute_error(y_true, y_pred)),
+        "mape": float((abs(y_true - y_pred) / y_true).mean()),
+        "r2": float(r2_score(y_true, y_pred)),
+    }
+    return result
+
+scores = pd.read_csv("artifacts/predictions/valid_scores.csv")
+metrics = evaluate(scores["actual"], scores["predicted"])
+
+with open("artifacts/metrics/latest.json", "w", encoding="utf-8") as f:
+    json.dump(metrics, f, ensure_ascii=False, indent=2)
+
+print(metrics)
+# {'mae': 0.284, 'mape': 0.087, 'r2': 0.931}`,
+model:`[加密二进制模型文件]
+
+文件：lgbm_agri_v17.pkl
+算法：LightGBM Ensemble
+训练数据：2018—2024 年
+城市数量：12
+最近评估：MAPE 8.7% / R² 0.931
+校验值：9f31c2...e718
+
+该文件只能通过项目运行环境加载。`,
+params:`{
+  "boosting_type": "gbdt",
+  "n_estimators": 1800,
+  "learning_rate": 0.025,
+  "num_leaves": 48,
+  "max_depth": -1,
+  "subsample": 0.86,
+  "colsample_bytree": 0.82,
+  "reg_alpha": 0.15,
+  "reg_lambda": 0.35,
+  "random_state": 720
+}`,
+config:`project:
+  name: agri_price_predictor
+  owner: azhi
+  progress: 78
+
+training:
+  target: price
+  horizon_days: [7, 14, 30]
+  cities: 12
+  gpu_enabled: false
+  cluster_required: true
+
+security:
+  encrypted: true
+  backup_interval_minutes: 30`,
+log:`[20:54:08] loading processed market datasets...
+[20:54:23] 12 city datasets loaded
+[20:55:06] building 126 features
+[20:56:41] training region graph model
+[20:57:10] WARNING available memory: 1.82 GB
+[20:57:11] ERROR insufficient memory for full graph batch
+[20:57:11] task paused safely
+[20:57:12] checkpoint saved: graph_epoch_08.ckpt
+[20:57:12] suggestion: run on high-memory compute cluster`,
+clean:`import pandas as pd
+
+def clean_market_prices(path):
+    df = pd.read_csv(path, parse_dates=["date"])
+    df = df.drop_duplicates(["market_id", "product_id", "date"])
+    df["price"] = pd.to_numeric(df["price"], errors="coerce")
+    df = df[df["price"].between(0.1, 500)]
+    df["price"] = df.groupby(
+        ["market_id", "product_id"]
+    )["price"].transform(
+        lambda s: s.interpolate(limit=3).ffill().bfill()
+    )
+    return df`,
+weather:`import pandas as pd
+
+prices = pd.read_parquet("market_daily.parquet")
+weather = pd.read_parquet("weather_daily.parquet")
+
+merged = prices.merge(
+    weather,
+    on=["city_code", "date"],
+    how="left",
+    validate="many_to_one"
+)
+
+merged["temperature"] = merged.groupby("city_code")["temperature"].interpolate()
+merged.to_parquet("market_weather_merged.parquet", index=False)`,
+solar:`# 二十四节气特征生成
+def solar_term_features(date, solar_calendar):
+    term = solar_calendar.lookup(date)
+    return {
+        "solar_term_id": term.id,
+        "days_from_term": term.days_from,
+        "days_to_next_term": term.days_to_next,
+        "is_planting_period": int(term.name in PLANTING_TERMS),
+        "is_harvest_period": int(term.name in HARVEST_TERMS),
+    }`,
+sql:`CREATE TABLE market_price_daily (
+  date DATE NOT NULL,
+  market_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
+  city_code TEXT NOT NULL,
+  price REAL,
+  supply REAL,
+  transport_index REAL,
+  PRIMARY KEY (date, market_id, product_id)
+);
+
+CREATE INDEX idx_market_city_date
+ON market_price_daily(city_code, date);`,
+mapping:`{
+  "HRB_001": {"city": "哈尔滨", "market": "哈达批发市场"},
+  "CC_001": {"city": "长春", "market": "海吉星市场"},
+  "SY_001": {"city": "沈阳", "market": "盛发市场"},
+  "BJ_001": {"city": "北京", "market": "新发地市场"}
+}`,
+missing:`缺失值检查报告
+================
+原始记录：68,312,441
+重复记录：124,682
+异常价格：31,507
+天气缺失：0.62%
+运输指数缺失：1.18%
+插值后可用记录：68,151,229
+数据质量评分：96.4/100`,
+exp31:`{
+ "cells": [
+  {"cell_type": "markdown", "source": ["# 实验31：区域价格图模型"]},
+  {"cell_type": "code", "source": [
+    "graph = build_market_graph(cities=12)\\n",
+    "model = RegionGraphEncoder(node_dim=64)\\n",
+    "trainer.fit(model, graph)\\n"
+  ]},
+  {"cell_type": "markdown", "source": [
+    "当前问题：本机内存不足，完整图训练中断。\\n",
+    "下一步：迁移到学校高性能计算集群。"
+  ]}
+ ]
+}`,
+exp30:`# 实验30：LightGBM + 强季节特征
+best_mape = 0.087
+r2 = 0.931
+feature_count = 126
+
+结论：
+1. 节气字段提升最明显
+2. 运输压力指数对叶菜类影响较大
+3. 7日和14日滞后特征稳定
+4. 区域联动仍有进一步提升空间`,
+exp29:`# Prophet 基线实验
+模型在春节、国庆前后的价格尖峰上存在明显低估。
+单模型 MAPE：14.6%
+不作为最终方案，仅保留用于对照。`,
+scores:`experiment,model,mape,r2,status
+27,Prophet,0.146,0.812,done
+28,XGBoost,0.103,0.897,done
+29,LightGBM,0.091,0.923,done
+30,LightGBM+Seasonal,0.087,0.931,best
+31,RegionGraph,NA,NA,paused`,
+conclusion:`# 阶段四实验结论
+
+当前最稳方案为 LightGBM + 季节性特征，离线 MAPE 8.7%。
+
+区域图模型理论上可以捕捉城市间物流和价格传导，但完整训练需要更大内存与更稳定的算力环境。
+
+项目当前完成度：78%。`,
+dataset:`[大型数据文件，仅显示元数据]
+
+记录范围：2018-01-01 至 2024-12-31
+记录数量：68,151,229
+字段：date, market_id, product_id, city_code, price, supply
+加密状态：已加密
+数据来源：公开批发市场信息整理`,
+archive:`[加密归档文件]
+
+该文件已使用本地密钥加密。
+不能在线预览。
+最近校验：通过
+备份位置：私密保险箱`,
+dashboard:`import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="农产品价格预测", layout="wide")
+st.title("农产品价格趋势与预测")
+
+city = st.selectbox("选择城市", CITY_LIST)
+product = st.selectbox("选择农产品", PRODUCT_LIST)
+horizon = st.select_slider("预测周期", [7, 14, 30])
+
+result = predict(city, product, horizon)
+st.line_chart(result[["actual", "predicted"]])`,
+plot:`import matplotlib.pyplot as plt
+
+def plot_price_trends(df, city, product):
+    part = df[(df.city == city) & (df.product == product)]
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.plot(part.date, part.actual, label="实际价格")
+    ax.plot(part.date, part.predicted, label="预测价格")
+    ax.legend()
+    return fig`,
+report:`# 模型分析报告 v5
+
+## 摘要
+当前模型在12个城市、42类主要农产品上完成离线测试。
+
+## 结果
+- 总体 MAPE：8.7%
+- R²：0.931
+- 7日预测优于30日预测
+- 极端天气期间误差增大
+
+## 下一步
+完成区域联动模型，提升跨城市价格传导预测。`,
+api:`from fastapi import FastAPI
+from prediction_service import PredictionService
+
+app = FastAPI(title="Agri Price Predictor")
+service = PredictionService()
+
+@app.get("/predict")
+def predict(city: str, product: str, horizon: int = 7):
+    return service.predict(city, product, horizon)`,
+service:`class PredictionService:
+    def __init__(self):
+        self.model = load_model("lgbm_agri_v17.pkl")
+
+    def predict(self, city, product, horizon):
+        features = build_online_features(city, product, horizon)
+        values = self.model.predict(features)
+        return {"city": city, "product": product, "forecast": values.tolist()}`,
+docker:`services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PATH: /models/lgbm_agri_v17.pkl
+    volumes:
+      - ./models:/models:ro`,
+env:`name: agri-price
+dependencies:
+  - python=3.11
+  - pandas
+  - scikit-learn
+  - lightgbm
+  - pytorch
+  - fastapi
+  - streamlit`,
+deploy:`# 部署记录
+
+当前仅完成本地接口验证。
+最终模型尚未确认，因此暂不部署公网服务。
+
+部署前必须完成：
+- 区域图模型评估
+- 输入数据校验
+- 访问权限控制
+- 模型版本回滚方案`,
+restore:`# 恢复说明
+
+1. 使用本人本地密钥解密归档。
+2. 校验 SHA-256。
+3. 恢复项目目录结构。
+4. 禁止在公共电脑解密。
+
+项目快照完成度：78%。`
+};
+
+let currentFolder='root';
+let currentFilter='all';
+let recent = JSON.parse(localStorage.getItem('azhiDriveRecent') || '[]');
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const icons={folder:'📁',py:'PY',csv:'CSV',ipynb:'NB',json:'{}',md:'MD',model:'AI',log:'LOG',zip:'ZIP',sql:'SQL',yaml:'YML'};
+const typeClass=t=>t==='folder'?'blue':t;
+const codeTypes=['py','ipynb','json','md','log','sql','yaml'];
+const dataTypes=['csv'];
+const modelTypes=['model','zip'];
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function saveRecent(){localStorage.setItem('azhiDriveRecent',JSON.stringify(recent.slice(0,12)))}
+function addRecent(item,folder){
+  recent=recent.filter(x=>!(x.name===item.name&&x.folder===folder));
+  recent.unshift({...item,folder});
+  saveRecent();renderRecent();
+}
+function go(view){
+  $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));
+  $$('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===view));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function itemMatchFilter(item){
+  if(currentFilter==='all')return true;
+  if(currentFilter==='folder')return item.type==='folder';
+  if(currentFilter==='code')return codeTypes.includes(item.type);
+  if(currentFilter==='data')return dataTypes.includes(item.type);
+  if(currentFilter==='model')return modelTypes.includes(item.type);
+  return true;
+}
+function rowHTML(item){
+  const info=item.type==='folder'?(item.count||'文件夹'):(item.size||'');
+  return `<div class="file-row" data-name="${item.name}">
+    <div class="file-ico ${typeClass(item.type)}">${icons[item.type]||'FILE'}</div>
+    <div class="file-main"><b>${item.name}</b><span>${info} · ${item.type==='folder'?'加密文件夹':'端到端加密'}</span></div>
+    <div class="file-side"><span>${item.time||''}</span><button>⋮</button></div>
+  </div>`;
+}
+function renderBreadcrumb(){
+  const bc=$('#breadcrumb');
+  if(currentFolder==='root') bc.innerHTML='<button>私密空间</button><span>›</span><button>大数据农产品价格预测系统</button>';
+  else bc.innerHTML=`<button data-root>私密空间</button><span>›</span><button data-root>农产品价格预测系统</button><span>›</span><button>${currentFolder}</button>`;
+  bc.querySelectorAll('[data-root]').forEach(b=>b.onclick=()=>{currentFolder='root';renderFiles()});
+}
+function renderFiles(){
+  renderBreadcrumb();
+  const list=(fileTree[currentFolder]||[]).filter(itemMatchFilter);
+  const folders=list.filter(x=>x.type==='folder'), files=list.filter(x=>x.type!=='folder');
+  let html='';
+  if(folders.length) html+=`<div class="folder-grid">${folders.map(f=>`<button class="folder" data-folder="${f.name}"><div class="folder-ico">📁</div><h4>${f.name}</h4><p>${f.count} · ${f.time}</p><em>已加密</em></button>`).join('')}</div>`;
+  if(files.length) html+=`<div class="section-head"><h3>${currentFolder==='root'?'项目文件':'文件列表'}</h3><button>${files.length} 项</button></div><div class="card file-list">${files.map(rowHTML).join('')}</div>`;
+  if(!html)html='<div class="empty"><b>没有匹配的文件</b>更换筛选条件或搜索关键词</div>';
+  $('#fileArea').innerHTML=html;
+  bindItems($('#fileArea'));
+}
+function bindItems(root){
+  root.querySelectorAll('[data-folder]').forEach(el=>el.onclick=()=>{currentFolder=el.dataset.folder;currentFilter='all';$$('.chip').forEach(c=>c.classList.toggle('active',c.dataset.filter==='all'));renderFiles();go('files')});
+  root.querySelectorAll('.file-row').forEach(el=>el.onclick=e=>{
+    if(e.target.tagName==='BUTTON'){toast('更多操作：重命名、移动、分享、删除');return}
+    const item=(fileTree[currentFolder]||[]).find(x=>x.name===el.dataset.name) || recent.find(x=>x.name===el.dataset.name);
+    if(item)openPreview(item,currentFolder);
+  });
+}
+function openPreview(item,folder){
+  addRecent(item,folder);
+  $('#previewName').textContent=item.name;
+  $('#previewMeta').textContent=`${item.type.toUpperCase()} · ${item.size||'文件夹'} · ${item.time||''}`;
+  $('#langBadge').textContent=item.type.toUpperCase();
+  $('#codePreview').textContent=previews[item.preview]||'该文件暂不支持在线预览。';
+  $('#resultPanel').style.display=item.preview==='train'||item.preview==='eval'?'block':'none';
+  $('#previewModal').classList.add('open');
+}
+function renderRecent(){
+  const defaults=[
+    {...fileTree['00_核心模型'][0],folder:'00_核心模型'},
+    {...fileTree['02_实验记录'][0],folder:'02_实验记录'},
+    {...fileTree.root[7],folder:'root'}
+  ];
+  const data=recent.length?recent:defaults;
+  $('#homeRecent').innerHTML=data.slice(0,4).map(rowHTML).join('');
+  $('#recentList').innerHTML=data.map(rowHTML).join('');
+  bindItems($('#homeRecent'));bindItems($('#recentList'));
+}
+function search(q){
+  q=q.trim().toLowerCase();
+  if(!q){renderFiles();return}
+  let result=[];
+  Object.entries(fileTree).forEach(([folder,items])=>items.forEach(i=>{
+    if(i.name.toLowerCase().includes(q))result.push({...i,folder});
+  }));
+  go('files');
+  $('#breadcrumb').innerHTML='<button>搜索结果</button>';
+  $('#fileArea').innerHTML=result.length?`<div class="card file-list">${result.map(rowHTML).join('')}</div>`:'<div class="empty"><b>没有找到相关文件</b>试试“模型”“价格”“实验”或“数据”</div>';
+  bindItems($('#fileArea'));
+}
+$('#unlockBtn').onclick=()=>{localStorage.setItem('azhiDriveUnlocked','1');$('#unlock').classList.add('hidden');toast('私密空间已解锁')};
+if(localStorage.getItem('azhiDriveUnlocked')==='1')$('#unlock').classList.add('hidden');
+$('#lockBtn').onclick=()=>{localStorage.removeItem('azhiDriveUnlocked');$('#unlock').classList.remove('hidden');go('home')};
+$$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
+$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+$$('[data-folder]').forEach(b=>b.onclick=()=>{currentFolder=b.dataset.folder;renderFiles();go('files')});
+$$('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('open'));
+$$('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove('open')});
+$$('.chip').forEach(c=>c.onclick=()=>{currentFilter=c.dataset.filter;$$('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderFiles()});
+$('#searchInput').addEventListener('input',e=>search(e.target.value));
+$('#clearRecent').onclick=()=>{recent=[];saveRecent();renderRecent();toast('最近打开记录已清空')};
+$('#copyCode').onclick=async()=>{try{await navigator.clipboard.writeText($('#codePreview').textContent);toast('代码已复制')}catch{toast('当前浏览器不支持复制')}};
+$('#runModelBtn').onclick=()=>{toast('正在检查运行环境…');setTimeout(()=>toast('本机算力不足，任务已安全暂停'),1200)};
+renderFiles();renderRecent();
+})();
+</script>
+</body>
+</html>
