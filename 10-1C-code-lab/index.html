@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#181818">
+<title>沈栀 · 开发工作台</title>
+<style>
+:root{
+  --title:#181818;--activity:#181818;--side:#181818;--side2:#1f1f1f;--editor:#1e1e1e;
+  --panel:#181818;--tab:#2d2d2d;--line:#2b2b2b;--line2:#343434;--ink:#d4d4d4;
+  --muted:#8d8d8d;--blue:#007acc;--blue2:#3794ff;--green:#89d185;--yellow:#cca700;
+  --red:#f14c4c;--orange:#ce9178;--purple:#c586c0;--cyan:#4ec9b0;--comment:#6a9955;
+  --keyword:#569cd6;--string:#ce9178;--number:#b5cea8;--func:#dcdcaa;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--editor);color:var(--ink);font-family:"Segoe UI","Microsoft YaHei",sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:focus,input:focus,textarea:focus{outline:none}
+.ide{height:100dvh;min-width:980px;display:grid;grid-template-rows:35px minmax(0,1fr) 22px;background:var(--editor)}
+.titlebar{position:relative;display:flex;align-items:center;background:var(--title);border-bottom:1px solid #252525;padding:0 9px;user-select:none}
+.appmark{width:24px;height:24px;display:grid;place-items:center;color:#3c9cff;font-size:18px;font-weight:900;margin-right:4px}
+.menu{display:flex;height:100%}.menu button{height:100%;border:0;background:transparent;color:#c5c5c5;padding:0 7px;font-size:12px}.menu button:hover{background:#2b2b2b}
+.window-title{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;color:#bcbcbc;white-space:nowrap}
+.window-actions{margin-left:auto;height:100%;display:flex}.window-actions button{width:45px;border:0;background:transparent;color:#bdbdbd}.window-actions button:hover{background:#2c2c2c}.window-actions .close:hover{background:#c42b1c;color:#fff}
+.work{min-height:0;display:grid;grid-template-columns:48px 238px minmax(480px,1fr)}
+.activitybar{background:var(--activity);border-right:1px solid #2a2a2a;display:flex;flex-direction:column;align-items:center;padding:2px 0}
+.activitybar button{position:relative;width:48px;height:48px;border:0;background:transparent;color:#858585;font-size:21px}
+.activitybar button:hover{color:#ddd}.activitybar button.active{color:#fff}.activitybar button.active:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;background:#fff}
+.activitybar .bottom{margin-top:auto}
+.sidebar{min-width:0;background:var(--side);border-right:1px solid #2b2b2b;display:grid;grid-template-rows:35px minmax(0,1fr) 145px}
+.side-title{display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:#bbb;font-size:11px;letter-spacing:.4px}
+.side-title button{border:0;background:transparent;color:#aaa;padding:4px}
+.explorer{overflow:auto;padding-bottom:10px;font-size:12px}
+.explorer::-webkit-scrollbar,.terminal-output::-webkit-scrollbar,.editor-text::-webkit-scrollbar,.side-bottom-body::-webkit-scrollbar{width:10px;height:10px}
+.explorer::-webkit-scrollbar-thumb,.terminal-output::-webkit-scrollbar-thumb,.editor-text::-webkit-scrollbar-thumb,.side-bottom-body::-webkit-scrollbar-thumb{background:#424242}
+.tree-row{height:24px;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ccc;cursor:pointer;padding-right:8px}
+.tree-row:hover{background:#2a2d2e}.tree-row.active{background:#37373d;color:#fff}
+.level0{padding-left:7px;font-weight:600}.level1{padding-left:18px}.level2{padding-left:34px}
+.chev{width:9px;color:#aaa}.ico{width:15px;text-align:center;font-size:10px;font-weight:800}
+.ico.py{color:#4f98ff}.ico.json{color:#e7ca56}.ico.csv{color:#55c58a}.ico.md{color:#a8b2bd}.ico.git{color:#f05033}
+.badge{margin-left:auto;font-size:9px;color:#aaa}
+.side-bottom{border-top:1px solid #2d2d2d;min-height:0;display:grid;grid-template-rows:28px 1fr}
+.side-bottom-head{display:flex;align-items:center;padding:0 9px;font-size:10px;color:#bbb;gap:8px}
+.side-bottom-body{overflow:auto;padding:7px 10px;color:#a9a9a9;font-size:10px;line-height:1.55}
+.git-line{display:flex;align-items:center;gap:6px;margin-bottom:7px}.git-dot{width:7px;height:7px;border-radius:50%;background:#e2c08d}
+.main{min-width:0;min-height:0;display:grid;grid-template-rows:35px minmax(260px,1fr) 220px;background:var(--editor)}
+.tabs{display:flex;background:#181818;border-bottom:1px solid #252525;overflow:hidden}
+.tab{height:35px;min-width:140px;max-width:210px;display:flex;align-items:center;gap:7px;padding:0 10px;background:#181818;border-right:1px solid #252525;color:#aaa;font-size:12px;cursor:pointer;white-space:nowrap}
+.tab.active{background:var(--editor);color:#fff;border-top:1px solid var(--blue)}.tab .close{margin-left:auto;color:#858585}.tab .dot{width:7px;height:7px;border-radius:50%;background:#ddd;display:none}.tab.dirty .dot{display:block}.tab.dirty .close{display:none}
+.editor-wrap{position:relative;min-height:0;background:var(--editor);display:grid;grid-template-rows:26px 1fr}
+.breadcrumb{display:flex;align-items:center;gap:5px;padding:0 14px;color:#909090;font-size:11px;border-bottom:1px solid #242424}
+.breadcrumb span:last-child{color:#c5c5c5}
+.editor-area{position:relative;min-height:0;display:grid;grid-template-columns:56px 1fr 82px}
+.gutter{overflow:hidden;padding-top:8px;background:var(--editor);border-right:1px solid #232323;color:#858585;font:13px/21px Consolas,"Courier New",monospace;text-align:right;user-select:none}
+.gutter div{padding-right:12px;height:21px}
+.editor-text{width:100%;height:100%;resize:none;border:0;background:var(--editor);color:#d4d4d4;padding:8px 14px 30px;tab-size:4;white-space:pre;overflow:auto;font:13px/21px Consolas,"Courier New",monospace;caret-color:#fff;letter-spacing:0}
+.minimap{border-left:1px solid #252525;background:#1e1e1e;padding:8px 5px;overflow:hidden;opacity:.78}
+.minimap i{display:block;height:2px;margin-bottom:2px;border-radius:2px;background:#747474;opacity:.45}
+.minimap i.kw{background:#569cd6}.minimap i.str{background:#ce9178}.minimap i.com{background:#6a9955}
+.cursor-guide{position:absolute;top:8px;left:56px;right:82px;height:21px;background:rgba(255,255,255,.025);pointer-events:none;display:none}
+.bottom-panel{min-height:0;border-top:1px solid #2c2c2c;background:var(--panel);display:grid;grid-template-rows:35px 1fr}
+.panel-tabs{display:flex;align-items:center;gap:15px;padding:0 13px;border-bottom:1px solid #272727;color:#aaa;font-size:11px}
+.panel-tabs button{height:35px;border:0;background:transparent;color:#aaa;padding:0 2px;border-bottom:1px solid transparent}.panel-tabs button.active{color:#fff;border-bottom-color:#fff}
+.panel-spacer{margin-left:auto}.panel-actions{display:flex;gap:8px}.panel-actions button{border:0;background:transparent;color:#aaa;font-size:13px}
+.terminal{min-height:0;display:grid;grid-template-rows:1fr 27px}
+.terminal-output{overflow:auto;padding:8px 13px;color:#ccc;font:12px/18px Consolas,"Courier New",monospace;white-space:pre-wrap}
+.terminal-input-row{display:flex;align-items:center;padding:0 13px;border-top:1px solid #242424;font:12px Consolas,"Courier New",monospace}
+.prompt{color:#6a9955;margin-right:7px}.terminal-input{flex:1;border:0;background:transparent;color:#ddd;font:12px Consolas,"Courier New",monospace}
+.statusbar{display:flex;align-items:center;background:#007acc;color:#fff;font-size:10px;padding:0 7px;user-select:none}
+.statusbar span{margin-right:13px;white-space:nowrap}.statusbar .right{margin-left:auto;display:flex;align-items:center}.statusbar .right span{margin:0 0 0 13px}
+.run-float{position:absolute;right:93px;top:38px;z-index:6;display:flex;gap:6px}
+.run-float button{height:25px;border:0;background:transparent;color:#c9c9c9;border-radius:4px;padding:0 7px}.run-float button:hover{background:#323232}.run-float .run{color:#79d58f;font-size:15px}
+.command{position:fixed;z-index:50;left:50%;top:46px;transform:translateX(-50%);width:min(620px,70vw);display:none;background:#252526;border:1px solid #4b4b4b;box-shadow:0 12px 35px rgba(0,0,0,.55)}
+.command.open{display:block}.command input{width:100%;height:36px;border:0;background:#3c3c3c;color:#fff;padding:0 10px;font-size:12px}.command-list{max-height:220px;overflow:auto}.command-item{padding:8px 11px;font-size:11px;color:#ddd}.command-item:hover{background:#094771}
+.toast{position:fixed;left:50%;bottom:42px;transform:translateX(-50%) translateY(12px);background:#252526;border:1px solid #555;color:#fff;padding:9px 13px;font-size:11px;opacity:0;pointer-events:none;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.welcome{display:none;position:absolute;inset:26px 0 0;background:var(--editor);align-items:center;justify-content:center;text-align:center;color:#aaa}.welcome.active{display:flex}.welcome h2{color:#ddd;font-size:23px;font-weight:400;margin:0 0 10px}.welcome p{font-size:12px;line-height:1.7}.key{display:inline-block;border:1px solid #555;border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:#2d2d2d;color:#ddd;font-size:10px}
+.auto-write-status{display:none;align-items:center;gap:5px;color:#fff;background:#9b4dca;padding:1px 7px;border-radius:3px;font-weight:600}.auto-write-status.active{display:inline-flex}.auto-write-status i{width:6px;height:6px;border-radius:50%;background:#fff;animation:autoPulse .8s infinite alternate}@keyframes autoPulse{to{opacity:.25}}.editor-text.auto-writing{caret-color:#70d7ff;box-shadow:none}
+.mobile-warning{display:none}
+@media(max-width:979px){
+  .ide{display:none}.mobile-warning{display:flex;height:100dvh;align-items:center;justify-content:center;text-align:center;padding:30px;background:#1e1e1e;color:#ddd}.mobile-warning p{color:#999;line-height:1.8}
+}
+
+/* 全按钮交互增强 */
+.menu-pop{position:fixed;z-index:210;min-width:218px;background:#252526;border:1px solid #454545;box-shadow:0 12px 34px rgba(0,0,0,.55);padding:5px 0;display:none;color:#ddd;font-size:12px}
+.menu-pop.open{display:block}.menu-pop button{width:100%;height:27px;border:0;background:transparent;color:#ddd;display:flex;align-items:center;text-align:left;padding:0 12px;gap:14px}
+.menu-pop button:hover{background:#094771}.menu-pop button span:first-child{flex:1}.menu-pop kbd{color:#aaa;font:10px Consolas}.menu-sep{height:1px;background:#3a3a3a;margin:5px 0}
+.side-tool{height:100%;overflow:auto;padding:8px 10px;font-size:12px}.side-tool input,.side-tool textarea{width:100%;border:1px solid #3c3c3c;background:#2a2a2a;color:#ddd;border-radius:2px;padding:7px 8px;font-size:11px}.side-tool textarea{resize:vertical;min-height:54px}.side-tool h4{font-size:11px;font-weight:600;color:#c8c8c8;margin:9px 0}.tool-btn{border:1px solid #4a4a4a;background:#2d2d2d;color:#ddd;border-radius:2px;padding:6px 9px;font-size:11px;margin:3px 4px 3px 0}.tool-btn:hover{background:#3b3b3b}.tool-btn.primary{background:#0e639c;border-color:#0e639c}.tool-btn.primary:hover{background:#1177bb}
+.search-result{display:flex;align-items:center;gap:7px;padding:7px 5px;border-bottom:1px solid #292929;cursor:pointer}.search-result:hover{background:#2a2d2e}.search-result b{font-size:11px}.search-result small{display:block;color:#858585;margin-top:2px}
+.ext-card{border-bottom:1px solid #2c2c2c;padding:9px 2px;display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center}.ext-logo{width:32px;height:32px;background:#313131;display:grid;place-items:center;font-weight:800;color:#5aa9ff}.ext-card b{display:block;font-size:11px}.ext-card span{display:block;color:#888;font-size:9px;margin-top:3px}
+.panel-body{display:none;min-height:0}.panel-body.active{display:grid}.simple-panel{overflow:auto;padding:12px 14px;font:11px/1.65 Consolas,"Microsoft YaHei",monospace;color:#bcbcbc}.problem-row{display:grid;grid-template-columns:18px 1fr auto;gap:8px;padding:7px;border-bottom:1px solid #292929}.problem-row.error{color:#f48771}.problem-row.warn{color:#cca700}
+.editor-area{grid-template-columns:56px minmax(0,1fr) 0 0 82px}.editor-area.split{grid-template-columns:56px minmax(0,1fr) 1px minmax(0,1fr) 82px}.split-divider{background:#3b3b3b;overflow:hidden}.split-editor{width:100%;height:100%;resize:none;border:0;background:#1e1e1e;color:#d4d4d4;padding:8px 14px 30px;tab-size:4;white-space:pre;overflow:auto;font:13px/21px Consolas,"Courier New",monospace;display:none}.editor-area.split .split-editor{display:block}
+.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:230;display:none;align-items:center;justify-content:center}.dialog-backdrop.open{display:flex}.dialog{width:min(420px,90vw);background:#252526;border:1px solid #4b4b4b;box-shadow:0 18px 55px rgba(0,0,0,.6);padding:18px}.dialog h3{margin:0 0 10px;font-size:14px}.dialog p{font-size:11px;line-height:1.65;color:#aaa}.dialog input{width:100%;height:34px;background:#3c3c3c;border:1px solid #5a5a5a;color:#fff;padding:0 9px}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.dialog-actions button{border:0;background:#3a3a3a;color:#fff;padding:7px 13px}.dialog-actions .primary{background:#0e639c}
+.closed-screen{position:fixed;inset:0;background:#111;z-index:260;display:none;align-items:center;justify-content:center;color:#ccc}.closed-screen.open{display:flex}.closed-screen button{border:0;background:#0e639c;color:#fff;padding:10px 18px;border-radius:3px}.minimized .work,.minimized .statusbar{display:none}.minimized{grid-template-rows:35px}.minimized .window-title:after{content:" · 已最小化（点击还原）";color:#888}
+.activity-notice{position:absolute;right:5px;top:6px;background:#007acc;color:#fff;border-radius:8px;min-width:15px;height:15px;font:9px/15px Segoe UI;text-align:center}
+.tree-row.folder-row .chev{transition:.15s}.tree-row.folder-row.collapsed .chev{transform:rotate(-90deg)}
+.statusbar [data-status]{cursor:pointer;padding:0 2px}.statusbar [data-status]:hover{background:rgba(255,255,255,.15)}
+.editor-find{position:absolute;right:92px;top:27px;z-index:20;background:#252526;border:1px solid #454545;padding:5px;display:none;gap:4px}.editor-find.open{display:flex}.editor-find input{width:180px;background:#3c3c3c;border:1px solid #555;color:#fff;padding:4px 6px;font-size:11px}.editor-find button{border:0;background:#333;color:#ddd}
+
+</style>
+</head>
+<body>
+<div class="mobile-warning"><div><h2>请使用电脑横屏打开</h2><p>这是为10-1C电脑屏幕设计的开发工作台。<br>建议浏览器宽度大于980px。</p></div></div>
+
+<div class="ide" id="ide">
+  <header class="titlebar">
+    <div class="appmark">⌁</div>
+    <div class="menu">
+      <button data-cmd="new">文件</button><button data-cmd="save">编辑</button><button data-cmd="command">选择</button>
+      <button data-cmd="run">运行</button><button data-cmd="terminal">终端</button><button data-cmd="help">帮助</button>
+    </div>
+    <div class="window-title">agri-price-predictor — Visual Studio Code</div>
+    <div class="window-actions"><button id="winMin" title="最小化">—</button><button id="winMax" title="最大化">□</button><button class="close" id="winClose" title="关闭">×</button></div>
+  </header>
+
+  <section class="work">
+    <aside class="activitybar">
+      <button class="active" data-side="explorer" title="资源管理器">▱</button>
+      <button data-side="search" title="搜索">⌕</button>
+      <button data-side="scm" title="源代码管理">⑂<span class="activity-notice" id="scmBadge">2</span></button>
+      <button data-side="debug" title="运行和调试">▷</button>
+      <button data-side="extensions" title="扩展">▦</button>
+      <button class="bottom" data-side="account" title="账户">◎</button>
+      <button data-side="settings" title="管理">⚙</button>
+    </aside>
+
+    <aside class="sidebar">
+      <div class="side-title"><span id="sideTitleText">资源管理器</span><button id="sideMore" title="更多操作">···</button></div>
+      <div class="explorer" id="explorer">
+        <div class="tree-row level0 folder-row" data-folder-toggle="root"><span class="chev">⌄</span><span>AGRI-PRICE-PREDICTOR</span></div>
+        <div class="tree-row level1 folder-row" data-folder-toggle="src" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>src</span></div>
+        <div class="tree-row level2 active" data-file="price_predictor.py" data-parent="src"><span class="ico py">PY</span><span>price_predictor.py</span><span class="badge" data-dirty-badge></span></div>
+        <div class="tree-row level2" data-file="feature_engineering.py" data-parent="src"><span class="ico py">PY</span><span>feature_engineering.py</span></div>
+        <div class="tree-row level2" data-file="data_cleaner.py" data-parent="src"><span class="ico py">PY</span><span>data_cleaner.py</span></div>
+        <div class="tree-row level2" data-file="crawler.py" data-parent="src"><span class="ico py">PY</span><span>crawler.py</span></div>
+        <div class="tree-row level1 folder-row" data-folder-toggle="data" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>data</span></div>
+        <div class="tree-row level2" data-file="market_sample.csv" data-parent="data"><span class="ico csv">CSV</span><span>market_sample.csv</span></div>
+        <div class="tree-row level2" data-file="city_mapping.json" data-parent="data"><span class="ico json">{ }</span><span>city_mapping.json</span></div>
+        <div class="tree-row level1 folder-row" data-folder-toggle="docs" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>docs</span></div>
+        <div class="tree-row level2" data-file="project_notes.md" data-parent="docs"><span class="ico md">M↓</span><span>project_notes.md</span></div>
+        <div class="tree-row level1" data-file=".gitignore" data-parent="root"><span class="ico git">G</span><span>.gitignore</span></div>
+        <div class="tree-row level1" data-file="requirements.txt" data-parent="root"><span class="ico md">≡</span><span>requirements.txt</span></div>
+        <div class="tree-row level1" data-file="README.md" data-parent="root"><span class="ico md">M↓</span><span>README.md</span></div>
+      </div>
+      <div class="side-bottom">
+        <div class="side-bottom-head"><span>源代码管理</span><span style="margin-left:auto">main*</span></div>
+        <div class="side-bottom-body">
+          <div class="git-line"><i class="git-dot"></i><span>M&nbsp; src/price_predictor.py</span></div>
+          <div class="git-line"><i class="git-dot" style="background:#73c991"></i><span>A&nbsp; data/market_sample.csv</span></div>
+          <div style="color:#777;margin-top:9px">1个修改 · 1个新增<br>尚未提交</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="tabs" id="tabs"></div>
+      <div class="editor-wrap">
+        <div class="breadcrumb"><span>agri-price-predictor</span><span>›</span><span id="crumbFolder">src</span><span>›</span><span id="crumbFile">price_predictor.py</span></div>
+        <div class="run-float"><button class="run" id="runTop" title="运行 Python 文件（Ctrl+Enter）">▷</button><button id="splitBtn" title="拆分编辑器">▥</button><button id="editorMore" title="更多操作">···</button></div>
+        <div class="editor-area" id="editorArea">
+          <div class="gutter" id="gutter"></div>
+          <textarea class="editor-text" id="editor" spellcheck="false" aria-label="代码编辑器"></textarea>
+          <div class="split-divider"></div>
+          <textarea class="split-editor" id="splitEditor" spellcheck="false" aria-label="拆分代码编辑器"></textarea>
+          <div class="minimap" id="minimap"></div>
+          <div class="cursor-guide" id="cursorGuide"></div>
+        </div>
+        <div class="editor-find" id="editorFind"><input id="findInput" placeholder="查找"><button id="findPrev">↑</button><button id="findNext">↓</button><button id="findClose">×</button></div>
+        <div class="welcome" id="welcome">
+          <div><h2>Visual Studio Code</h2><p><span class="key">Ctrl+P</span> 快速打开文件<br><span class="key">Ctrl+Shift+P</span> 显示所有命令<br><span class="key">Ctrl+Enter</span> 运行当前Python文件</p></div>
+        </div>
+      </div>
+
+      <section class="bottom-panel">
+        <div class="panel-tabs">
+          <button data-panel-tab="problems">问题 <span id="problemCount">0</span></button>
+          <button data-panel-tab="output">输出</button>
+          <button data-panel-tab="debugconsole">调试控制台</button>
+          <button class="active" data-panel-tab="terminal">终端</button>
+          <div class="panel-spacer"></div>
+          <div class="panel-actions"><button id="newTerminal" title="新建终端">＋</button><button id="clearTerminal" title="清空当前面板">⌫</button><button id="togglePanel" title="折叠面板">⌄</button></div>
+        </div>
+        <div class="simple-panel panel-body" data-panel-body="problems" id="problemsPanel"><div style="color:#888">当前工作区没有检测到问题。</div></div>
+        <div class="simple-panel panel-body" data-panel-body="output" id="outputPanel">[Python] 扩展已激活
+[Git] 仓库 main 分支已加载
+[工作区] 已恢复上次编辑状态</div>
+        <div class="simple-panel panel-body" data-panel-body="debugconsole" id="debugPanel">调试控制台已就绪。点击左侧“运行和调试”启动调试会话。</div>
+        <div class="terminal panel-body active" data-panel-body="terminal">
+          <div class="terminal-output" id="terminalOutput">Windows PowerShell
+版权所有（C）Microsoft Corporation。保留所有权利。
+
+PS C:\Users\ShenZhi\Documents\agri-price-predictor&gt; <span style="color:#6a9955">.venv\Scripts\activate</span>
+(.venv) PS C:\Users\ShenZhi\Documents\agri-price-predictor&gt; </div>
+          <div class="terminal-input-row"><span class="prompt">(.venv) PS&gt;</span><input class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false" placeholder=""></div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <footer class="statusbar">
+    <span data-status="branch">⑂ main*</span><span data-status="sync">↻</span><span data-status="errors">ⓧ 0</span><span data-status="warnings">⚠ 0</span>
+    <div class="right"><span class="auto-write-status" id="autoWriteStatus" style="display:none"><i></i><span id="autoWriteLabel"></span></span><span id="cursorStatus" data-status="cursor">Ln 1, Col 1</span><span data-status="spaces">空格: 4</span><span data-status="encoding">UTF-8</span><span data-status="eol">LF</span><span data-status="language">{ } Python</span><span id="pyStatus" data-status="python">Python 正在初始化</span><span data-status="notifications">铃</span></div>
+  </footer>
+</div>
+
+<div class="command" id="commandPalette">
+  <input id="commandInput" placeholder="&gt; 输入命令，例如：保存、运行、打开文件">
+  <div class="command-list">
+    <div class="command-item" data-palette="run">Python: 在终端中运行当前文件</div>
+    <div class="command-item" data-palette="save">文件: 保存</div>
+    <div class="command-item" data-palette="format">格式化文档</div>
+    <div class="command-item" data-palette="reset">开发人员: 恢复默认项目</div>
+  </div>
+</div>
+<div class="menu-pop" id="menuPop"></div>
+<div class="dialog-backdrop" id="dialogBackdrop"><div class="dialog"><h3 id="dialogTitle">操作</h3><p id="dialogText"></p><input id="dialogInput"><div class="dialog-actions"><button id="dialogCancel">取消</button><button class="primary" id="dialogConfirm">确定</button></div></div></div>
+<div class="closed-screen" id="closedScreen"><div style="text-align:center"><h2 style="font-weight:400">Visual Studio Code 已关闭</h2><p style="font-size:12px;color:#888">工作区内容已自动保存在当前浏览器。</p><button id="reopenBtn">重新打开工作区</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<script>
+(() => {
+const defaults = {
+"price_predictor.py": `"""农产品价格预测系统：轻量级离线原型
+负责人：沈栀（阿栀）
+场景：通宵完成基线模型后，在电脑前睡着
+"""
+
+from dataclasses import dataclass
+from statistics import mean
+from typing import List
+import math
+import random
+
+
+@dataclass
+class MarketRecord:
+    city: str
+    product: str
+    day: int
+    price: float
+    rainfall: float
+    transport_index: float
+
+
+class PricePredictor:
+    """无需第三方库的演示模型，便于本地快速验证。"""
+
+    def __init__(self, window: int = 5):
+        self.window = window
+        self.history: List[float] = []
+
+    def fit(self, prices: List[float]) -> None:
+        if len(prices) < self.window:
+            raise ValueError("训练数据不能少于滑动窗口")
+        self.history = prices[:]
+
+    def predict(self, days: int = 7) -> List[float]:
+        if not self.history:
+            raise RuntimeError("请先调用 fit()")
+
+        values = self.history[:]
+        result = []
+
+        for step in range(days):
+            recent = values[-self.window:]
+            trend = (recent[-1] - recent[0]) / max(1, self.window - 1)
+            seasonal = math.sin((len(values) + step) / 7 * math.pi) * 0.08
+            forecast = mean(recent) + trend * 0.65 + seasonal
+            forecast = round(max(0.1, forecast), 2)
+            values.append(forecast)
+            result.append(forecast)
+
+        return result
+
+
+def build_demo_prices(seed: int = 720) -> List[float]:
+    random.seed(seed)
+    base = 3.65
+    prices = []
+
+    for day in range(30):
+        seasonal = math.sin(day / 6) * 0.22
+        noise = random.uniform(-0.10, 0.10)
+        prices.append(round(base + seasonal + noise, 2))
+
+    return prices
+
+
+if __name__ == "__main__":
+    prices = build_demo_prices()
+    model = PricePredictor(window=7)
+    model.fit(prices)
+
+    forecast = model.predict(days=7)
+
+    print("=" * 56)
+    print(" 大数据农产品价格预测系统 · 本地基线")
+    print("=" * 56)
+    print(f"训练样本：{len(prices)} 天")
+    print(f"最近价格：{prices[-1]:.2f} 元/斤")
+    print("未来七日预测：")
+
+    for index, value in enumerate(forecast, start=1):
+        print(f"  第 {index} 天：{value:.2f} 元/斤")
+
+    print("-" * 56)
+    print("运行完成：基线模型验证通过")
+`,
+"feature_engineering.py": `from datetime import date
+from typing import Dict
+
+
+def build_calendar_features(day: date) -> Dict[str, int]:
+    """构建日期、星期与节气近似特征。"""
+    return {
+        "month": day.month,
+        "day": day.day,
+        "weekday": day.weekday(),
+        "is_weekend": int(day.weekday() >= 5),
+        "quarter": (day.month - 1) // 3 + 1,
+    }
+
+
+def transport_pressure(supply: float, transport_index: float) -> float:
+    if supply <= 0:
+        return 0.0
+    return round(transport_index / supply, 6)
+`,
+"data_cleaner.py": `from typing import Iterable, List
+
+
+def clean_prices(values: Iterable[object]) -> List[float]:
+    result = []
+
+    for value in values:
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+
+        if 0.1 <= number <= 500:
+            result.append(round(number, 2))
+
+    return result
+
+
+if __name__ == "__main__":
+    raw = [3.2, "3.5", None, -1, 9999, 3.8]
+    print(clean_prices(raw))
+`,
+"crawler.py": `"""公开市场价格页面采集器草稿。
+
+拍摄用项目只保留接口结构，不执行真实网络请求。
+"""
+
+from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
+class MarketPrice:
+    market: str
+    product: str
+    price: float
+    date: str
+
+
+def parse_price_rows(rows: List[dict]) -> List[MarketPrice]:
+    result = []
+
+    for row in rows:
+        result.append(
+            MarketPrice(
+                market=row["market"].strip(),
+                product=row["product"].strip(),
+                price=float(row["price"]),
+                date=row["date"],
+            )
+        )
+
+    return result
+`,
+"market_sample.csv": `date,city,market,product,price,rainfall,transport_index
+2026-07-10,哈尔滨,哈达市场,土豆,2.40,0.0,1.04
+2026-07-11,哈尔滨,哈达市场,土豆,2.46,1.2,1.08
+2026-07-12,哈尔滨,哈达市场,土豆,2.43,8.6,1.11
+2026-07-13,长春,海吉星市场,白菜,1.86,0.0,0.98
+2026-07-14,长春,海吉星市场,白菜,1.92,3.1,1.02
+`,
+"city_mapping.json": `{
+  "HRB": {"name": "哈尔滨", "market": "哈达市场"},
+  "CC": {"name": "长春", "market": "海吉星市场"},
+  "SY": {"name": "沈阳", "market": "盛发市场"},
+  "BJ": {"name": "北京", "market": "新发地市场"}
+}
+`,
+"project_notes.md": `# 项目笔记
+
+- 先完成不依赖第三方库的基线，保证任何电脑都能运行。
+- 后续接入 pandas、LightGBM 和区域联动特征。
+- 当前问题：家里电脑内存有限，不能跑全量数据。
+- 计划：进入清北后申请机房与计算集群。
+
+昨晚进度：
+1. 清洗价格样本
+2. 完成滑动窗口预测器
+3. 增加七日预测输出
+4. 修复短序列异常
+`,
+".gitignore": `.venv/
+__pycache__/
+*.pyc
+data/raw/
+models/
+.env
+`,
+"requirements.txt": `# 浏览器演示版本不依赖第三方包
+# 正式训练环境：
+pandas>=2.2
+numpy>=2.0
+scikit-learn>=1.5
+lightgbm>=4.5
+`,
+"README.md": `# agri-price-predictor
+
+沈栀的农产品价格预测项目。
+
+## 快速运行
+
+\`\`\`powershell
+python src/price_predictor.py
+\`\`\`
+
+## 项目状态
+
+- 本地基线：已完成
+- 数据清洗：已完成
+- 区域模型：进行中
+- 当前进度：78%
+`
+};
+
+const AUTO_WRITE_SOURCE = '"""自动生成的农产品价格训练管线。\n\n启动方式：\n    在集成终端输入 start\n\n负责人：沈栀（阿栀）\n"""\n\nfrom dataclasses import dataclass\nfrom pathlib import Path\nfrom statistics import mean\nfrom typing import Dict, Iterable, List, Sequence\nimport csv\nimport json\nimport math\nimport random\n\n\nPROJECT_ROOT = Path(__file__).resolve().parent.parent\nDATA_DIR = PROJECT_ROOT / "data"\nARTIFACT_DIR = PROJECT_ROOT / "artifacts"\n\n\n@dataclass(frozen=True)\nclass MarketSample:\n    date: str\n    city: str\n    market: str\n    product: str\n    price: float\n    rainfall: float\n    transport_index: float\n\n\n@dataclass\nclass TrainingMetrics:\n    mae: float\n    mape: float\n    r2: float\n\n    def as_dict(self) -> Dict[str, float]:\n        return {\n            "mae": round(self.mae, 4),\n            "mape": round(self.mape, 4),\n            "r2": round(self.r2, 4),\n        }\n\n\ndef load_market_samples(path: Path) -> List[MarketSample]:\n    rows: List[MarketSample] = []\n\n    with path.open("r", encoding="utf-8", newline="") as file:\n        reader = csv.DictReader(file)\n\n        for row in reader:\n            rows.append(\n                MarketSample(\n                    date=row["date"],\n                    city=row["city"],\n                    market=row["market"],\n                    product=row["product"],\n                    price=float(row["price"]),\n                    rainfall=float(row["rainfall"]),\n                    transport_index=float(row["transport_index"]),\n                )\n            )\n\n    if not rows:\n        raise ValueError("市场样本为空，无法训练模型")\n\n    return rows\n\n\ndef build_demo_series(seed: int = 720, days: int = 120) -> List[float]:\n    random.seed(seed)\n    values: List[float] = []\n    base_price = 3.65\n\n    for day in range(days):\n        weekly = math.sin(day / 7 * math.pi) * 0.14\n        seasonal = math.sin(day / 30 * math.pi) * 0.22\n        transport = math.cos(day / 11) * 0.08\n        noise = random.uniform(-0.07, 0.07)\n\n        price = base_price + weekly + seasonal + transport + noise\n        values.append(round(max(price, 0.1), 2))\n\n    return values\n\n\ndef make_features(values: Sequence[float], window: int = 14) -> List[List[float]]:\n    features: List[List[float]] = []\n\n    for index in range(window, len(values)):\n        recent = list(values[index - window:index])\n        trend = (recent[-1] - recent[0]) / max(window - 1, 1)\n\n        features.append(\n            [\n                mean(recent),\n                min(recent),\n                max(recent),\n                trend,\n                mean(recent[-7:]),\n                recent[-1],\n            ]\n        )\n\n    return features\n\n\nclass WeightedWindowRegressor:\n    """适合拍摄展示的轻量级时间序列回归器。"""\n\n    def __init__(self, window: int = 14):\n        self.window = window\n        self.history: List[float] = []\n        self.weights = [0.12, 0.08, 0.08, 0.20, 0.24, 0.28]\n\n    def fit(self, prices: Iterable[float]) -> None:\n        self.history = [float(value) for value in prices]\n\n        if len(self.history) <= self.window:\n            raise ValueError("训练数据不足，无法构建滑动窗口")\n\n    def _predict_one(self, recent: Sequence[float]) -> float:\n        feature = [\n            mean(recent),\n            min(recent),\n            max(recent),\n            (recent[-1] - recent[0]) / max(len(recent) - 1, 1),\n            mean(recent[-7:]),\n            recent[-1],\n        ]\n\n        weighted = sum(value * weight for value, weight in zip(feature, self.weights))\n        correction = math.sin(len(self.history) / 7 * math.pi) * 0.04\n        return round(max(weighted + correction, 0.1), 2)\n\n    def forecast(self, horizon: int = 7) -> List[float]:\n        values = self.history[:]\n        predictions: List[float] = []\n\n        for _ in range(horizon):\n            prediction = self._predict_one(values[-self.window:])\n            predictions.append(prediction)\n            values.append(prediction)\n\n        return predictions\n\n\ndef evaluate(y_true: Sequence[float], y_pred: Sequence[float]) -> TrainingMetrics:\n    if len(y_true) != len(y_pred):\n        raise ValueError("真实值与预测值长度不一致")\n\n    errors = [abs(a - b) for a, b in zip(y_true, y_pred)]\n    mae = mean(errors)\n    mape = mean(error / max(abs(actual), 0.001) for error, actual in zip(errors, y_true))\n\n    true_mean = mean(y_true)\n    residual = sum((actual - predicted) ** 2 for actual, predicted in zip(y_true, y_pred))\n    total = sum((actual - true_mean) ** 2 for actual in y_true)\n    r2 = 1 - residual / total if total else 0.0\n\n    return TrainingMetrics(mae=mae, mape=mape, r2=r2)\n\n\ndef save_artifacts(predictions: Sequence[float], metrics: TrainingMetrics) -> None:\n    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)\n\n    payload = {\n        "project": "agri-price-predictor",\n        "owner": "沈栀",\n        "progress": 78,\n        "forecast": list(predictions),\n        "metrics": metrics.as_dict(),\n    }\n\n    target = ARTIFACT_DIR / "latest_training_result.json"\n    target.write_text(\n        json.dumps(payload, ensure_ascii=False, indent=2),\n        encoding="utf-8",\n    )\n\n\ndef run_pipeline() -> None:\n    print("=" * 68)\n    print(" 农产品价格预测系统 · 自动训练管线")\n    print("=" * 68)\n\n    prices = build_demo_series()\n    split = 21\n    train_values = prices[:-split]\n    valid_values = prices[-split:]\n\n    model = WeightedWindowRegressor(window=14)\n    model.fit(train_values)\n\n    rolling_history = train_values[:]\n    predictions: List[float] = []\n\n    for actual in valid_values:\n        model.history = rolling_history\n        predicted = model.forecast(horizon=1)[0]\n        predictions.append(predicted)\n        rolling_history.append(actual)\n\n    metrics = evaluate(valid_values, predictions)\n\n    model.fit(prices)\n    future = model.forecast(horizon=7)\n    save_artifacts(future, metrics)\n\n    print(f"训练样本：{len(train_values)} 条")\n    print(f"验证样本：{len(valid_values)} 条")\n    print(f"MAE：{metrics.mae:.4f}")\n    print(f"MAPE：{metrics.mape:.2%}")\n    print(f"R²：{metrics.r2:.4f}")\n    print("-" * 68)\n    print("未来七日预测：")\n\n    for day, value in enumerate(future, start=1):\n        print(f"  第 {day} 天：{value:.2f} 元/斤")\n\n    print("-" * 68)\n    print("训练完成：结果已写入 artifacts/latest_training_result.json")\n\n\nif __name__ == "__main__":\n    run_pipeline()\n';
+let autoWriteTimer = null;
+let autoWritePaused = false;
+let autoWriteRunning = false;
+let autoWriteIndex = 0;
+let autoWriteTarget = "training_pipeline.py";
+let autoWriteSource = AUTO_WRITE_SOURCE;
+
+let files = JSON.parse(localStorage.getItem("shenzhiIDEFiles") || "null") || structuredClone(defaults);
+let current = localStorage.getItem("shenzhiIDECurrent") || "price_predictor.py";
+let openTabs = JSON.parse(localStorage.getItem("shenzhiIDETabs") || '["price_predictor.py","project_notes.md"]');
+if(!openTabs.includes(current)) openTabs.unshift(current);
+let savedSnapshot = {...files};
+let dirty = new Set();
+let pyodide = null;
+let pyReadyPromise = null;
+let panelVisible = true;
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const editor = $("#editor");
+const output = $("#terminalOutput");
+
+function esc(v){return String(v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600)}
+function iconFor(name){
+  if(name.endsWith(".py")) return '<span class="ico py">PY</span>';
+  if(name.endsWith(".json")) return '<span class="ico json">{ }</span>';
+  if(name.endsWith(".csv")) return '<span class="ico csv">CSV</span>';
+  if(name.endsWith(".md")) return '<span class="ico md">M↓</span>';
+  return '<span class="ico md">≡</span>';
+}
+function folderFor(name){
+  if(name.endsWith(".py")) return "src";
+  if(["market_sample.csv","city_mapping.json"].includes(name)) return "data";
+  if(name==="project_notes.md") return "docs";
+  return "";
+}
+function renderTabs(){
+  $("#tabs").innerHTML = openTabs.map(name=>`
+    <div class="tab ${name===current?"active":""} ${dirty.has(name)?"dirty":""}" data-tab="${name}">
+      ${iconFor(name)}<span style="overflow:hidden;text-overflow:ellipsis">${name}</span>
+      <span class="dot"></span><span class="close" data-close-tab="${name}">×</span>
+    </div>`).join("");
+  $$("[data-tab]").forEach(t=>t.onclick=e=>{
+    if(e.target.dataset.closeTab){closeTab(e.target.dataset.closeTab);e.stopPropagation();return}
+    openFile(t.dataset.tab);
+  });
+}
+function closeTab(name){
+  const idx=openTabs.indexOf(name);
+  if(idx>=0)openTabs.splice(idx,1);
+  if(current===name){
+    current=openTabs[Math.max(0,idx-1)] || "";
+    if(current) loadCurrent(); else {editor.value="";$("#welcome").classList.add("active")}
+  }
+  renderTabs();persist();
+}
+function openFile(name){
+  saveCurrentBuffer(false);
+  current=name;
+  if(!openTabs.includes(name))openTabs.push(name);
+  $("#welcome").classList.remove("active");
+  loadCurrent();
+  renderTabs();
+  $$(".tree-row[data-file]").forEach(r=>r.classList.toggle("active",r.dataset.file===name));
+  persist();
+}
+function loadCurrent(){
+  editor.value=files[current]??"";
+  if(document.querySelector("#splitEditor")) document.querySelector("#splitEditor").value=editor.value;
+  savedSnapshot[current] ??= files[current]??"";
+  $("#crumbFolder").textContent=folderFor(current)||"";
+  $("#crumbFile").textContent=current;
+  updateEditorChrome();
+}
+function saveCurrentBuffer(mark=true){
+  if(!current)return;
+  files[current]=editor.value;
+  if(mark){
+    if(files[current]!==savedSnapshot[current])dirty.add(current); else dirty.delete(current);
+  }
+}
+function saveFile(){
+  if(!current)return;
+  saveCurrentBuffer(false);
+  savedSnapshot[current]=files[current];
+  dirty.delete(current);
+  localStorage.setItem("shenzhiIDEFiles",JSON.stringify(files));
+  renderTabs();updateDirtyBadge();
+  appendTerminal(`\n[${new Date().toLocaleTimeString("zh-CN",{hour12:false})}] 已保存 ${folderFor(current)?folderFor(current)+"/":""}${current}\n`);
+  toast("文件已保存");
+}
+function persist(){
+  localStorage.setItem("shenzhiIDEFiles",JSON.stringify(files));
+  localStorage.setItem("shenzhiIDECurrent",current);
+  localStorage.setItem("shenzhiIDETabs",JSON.stringify(openTabs));
+}
+function updateDirtyBadge(){
+  const b=$("[data-dirty-badge]");
+  if(b)b.textContent=dirty.has("price_predictor.py")?"M":"";
+}
+function updateEditorChrome(){
+  const lines=editor.value.split("\n");
+  $("#gutter").innerHTML=lines.map((_,i)=>`<div>${i+1}</div>`).join("");
+  $("#minimap").innerHTML=lines.slice(0,90).map(line=>{
+    let cls=line.trim().startsWith("#")?"com":/["']/.test(line)?"str":/\b(class|def|if|for|from|import|return)\b/.test(line)?"kw":"";
+    const width=Math.max(10,Math.min(68,line.trim().length*.72));
+    return `<i class="${cls}" style="width:${width}px"></i>`;
+  }).join("");
+  updateCursor();
+  updateDirtyBadge();
+}
+function updateCursor(){
+  const pos=editor.selectionStart;
+  const before=editor.value.slice(0,pos);
+  const line=before.split("\n").length;
+  const col=before.length-before.lastIndexOf("\n");
+  $("#cursorStatus").textContent=`Ln ${line}, Col ${col}`;
+}
+function syncScroll(){
+  $("#gutter").scrollTop=editor.scrollTop;
+  $("#minimap").scrollTop=editor.scrollTop*.12;
+}
+function appendTerminal(text){
+  output.innerHTML += esc(text).replace(/\n/g,"<br>");
+  output.scrollTop=output.scrollHeight;
+}
+async function initPython(){
+  if(pyodide)return pyodide;
+  if(pyReadyPromise)return pyReadyPromise;
+  $("#pyStatus").textContent="正在加载 Python 3";
+  pyReadyPromise=(async()=>{
+    try{
+      if(typeof loadPyodide!=="function")throw new Error("Python运行组件加载失败，请检查网络");
+      pyodide=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"});
+      pyodide.setStdout({batched:s=>appendTerminal(s+"\n")});
+      pyodide.setStderr({batched:s=>appendTerminal("ERROR: "+s+"\n")});
+      $("#pyStatus").textContent="Python 3.12.7";
+      toast("Python运行环境已就绪");
+      return pyodide;
+    }catch(err){
+      $("#pyStatus").textContent="Python 加载失败";
+      throw err;
+    }
+  })();
+  return pyReadyPromise;
+}
+async function runCurrent(){
+  saveCurrentBuffer(true);renderTabs();
+  if(!current.endsWith(".py")){
+    appendTerminal(`\n无法运行：${current} 不是Python文件\n`);
+    toast("当前文件不是Python文件");return;
+  }
+  const path=`${folderFor(current)}/${current}`;
+  appendTerminal(`\n(.venv) PS C:\\Users\\ShenZhi\\Documents\\agri-price-predictor> python ${path}\n`);
+  $("#runTop").textContent="■";
+  $("#runTop").disabled=true;
+  try{
+    const py=await initPython();
+    await py.runPythonAsync(editor.value);
+    appendTerminal(`\n进程已结束，退出代码 0\n`);
+  }catch(err){
+    appendTerminal(`\n${err.message||err}\n进程已结束，退出代码 1\n`);
+    $("#problemCount").textContent="1";
+  }finally{
+    $("#runTop").textContent="▷";$("#runTop").disabled=false;
+  }
+}
+
+function setAutoWriteStatus(mode, detail=""){
+  const status=$("#autoWriteStatus");
+  const label=$("#autoWriteLabel");
+  if(mode==="idle"){
+    status.classList.remove("active");
+    label.textContent="AUTO WRITE";
+    editor.classList.remove("auto-writing");
+    return;
+  }
+  status.classList.remove("active");
+  editor.classList.add("auto-writing");
+  label.textContent=mode==="paused"?"AUTO PAUSED":detail||"AUTO WRITE";
+}
+function autoWriteDelay(char){
+  if(char==="\n") return 58 + Math.random()*55;
+  if(/[,:()=\[\]{}]/.test(char)) return 24 + Math.random()*28;
+  if(char===" ") return 8 + Math.random()*13;
+  return 11 + Math.random()*18;
+}
+function autoWriteTick(){
+  if(!autoWriteRunning || autoWritePaused) return;
+  if(current!==autoWriteTarget) openFile(autoWriteTarget);
+
+  if(autoWriteIndex>=autoWriteSource.length){
+    autoWriteRunning=false;
+    autoWritePaused=false;
+    clearTimeout(autoWriteTimer);
+    autoWriteTimer=null;
+    saveCurrentBuffer(true);
+    renderTabs();
+    renderExplorer();
+    persist();
+    setAutoWriteStatus("idle");
+    appendTerminal("\n文件处理完成：src/training_pipeline.py\n");
+    appendTerminal("可运行当前文件进行检查\n");
+    toast("文件已完成");
+    editor.focus();
+    return;
+  }
+
+  let burst=1;
+  const remaining=autoWriteSource.length-autoWriteIndex;
+  const next=autoWriteSource.slice(autoWriteIndex,autoWriteIndex+8);
+  if(!next.includes("\n") && remaining>20){
+    const roll=Math.random();
+    burst=roll>.82?4:roll>.48?2:1;
+  }
+  const chunk=autoWriteSource.slice(autoWriteIndex,autoWriteIndex+burst);
+  editor.value+=chunk;
+  autoWriteIndex+=chunk.length;
+  files[autoWriteTarget]=editor.value;
+  dirty.add(autoWriteTarget);
+  editor.selectionStart=editor.selectionEnd=editor.value.length;
+  editor.scrollTop=editor.scrollHeight;
+  updateEditorChrome();
+  renderTabs();
+  if(currentSideMode==="explorer" && autoWriteIndex%140<burst) renderExplorer();
+  const pct=Math.floor(autoWriteIndex/autoWriteSource.length*100);
+  setAutoWriteStatus("running",`AUTO ${pct}%`);
+  autoWriteTimer=setTimeout(autoWriteTick,autoWriteDelay(chunk.slice(-1)));
+}
+function startAutoWriting(){
+  if(autoWriteRunning){
+    if(autoWritePaused){
+      autoWritePaused=false;
+      setAutoWriteStatus("running",`AUTO ${Math.floor(autoWriteIndex/autoWriteSource.length*100)}%`);
+      appendTerminal("任务已继续\n");
+      autoWriteTick();
+    }else{
+      appendTerminal("当前任务正在运行\n");
+      toast("任务正在运行");
+    }
+    return;
+  }
+
+  autoWriteRunning=true;
+  autoWritePaused=false;
+  autoWriteIndex=0;
+  files[autoWriteTarget]="";
+  savedSnapshot[autoWriteTarget]="";
+  dirty.add(autoWriteTarget);
+  if(!openTabs.includes(autoWriteTarget)) openTabs.push(autoWriteTarget);
+  openFile(autoWriteTarget);
+  editor.value="";
+  files[autoWriteTarget]="";
+  updateEditorChrome();
+  renderTabs();
+  renderExplorer();
+  showPanel("terminal");
+  appendTerminal("\n任务已启动\n");
+  appendTerminal("正在准备项目文件…\n");
+  appendTerminal("正在处理 src/training_pipeline.py\n");
+  setAutoWriteStatus("running","AUTO 0%");
+  toast("任务已启动");
+  setTimeout(autoWriteTick,520);
+}
+function pauseAutoWriting(){
+  if(!autoWriteRunning){toast("当前没有自动写码任务");return}
+  autoWritePaused=true;
+  clearTimeout(autoWriteTimer);
+  setAutoWriteStatus("paused");
+  appendTerminal("任务已暂停\n");
+  toast("任务已暂停");
+}
+function stopAutoWriting(){
+  if(!autoWriteRunning){toast("当前没有自动写码任务");return}
+  autoWriteRunning=false;
+  autoWritePaused=false;
+  clearTimeout(autoWriteTimer);
+  autoWriteTimer=null;
+  saveCurrentBuffer(true);
+  setAutoWriteStatus("idle");
+  appendTerminal("任务已停止，当前内容已保留\n");
+  toast("任务已停止");
+}
+
+function executeTerminal(cmd){
+  appendTerminal(`${cmd}\n`);
+  const c=cmd.trim();
+  if(!c)return;
+  if(c==="clear"||c==="cls"){output.innerHTML="";return}
+  if(c.toLowerCase()==="start"){startAutoWriting();return}
+  if(c.toLowerCase()==="pause"){pauseAutoWriting();return}
+  if(c.toLowerCase()==="resume"){startAutoWriting();return}
+  if(c.toLowerCase()==="stop"){stopAutoWriting();return}
+  if(c==="python src/training_pipeline.py"||c==="python training_pipeline.py"){openFile("training_pipeline.py");runCurrent();return}
+  if(c==="python src/price_predictor.py"||c==="python price_predictor.py"){openFile("price_predictor.py");runCurrent();return}
+  if(c==="git status"){appendTerminal("On branch main\nChanges not staged for commit:\n  modified: src/price_predictor.py\n\nUntracked files:\n  data/market_sample.csv\n");return}
+  if(c==="dir"||c==="ls"){appendTerminal("src  data  docs  README.md  requirements.txt\n");return}
+  if(c.startsWith("echo ")){appendTerminal(c.slice(5)+"\n");return}
+  appendTerminal(`'${c.split(" ")[0]}' 不是内部或外部命令，也不是可运行的程序。\n`);
+}
+function resetProject(){
+  if(!confirm("恢复默认项目会清除当前浏览器里保存的代码，确定继续吗？"))return;
+  files=structuredClone(defaults);savedSnapshot={...files};dirty.clear();current="price_predictor.py";openTabs=["price_predictor.py","project_notes.md"];persist();loadCurrent();renderTabs();toast("项目已恢复默认状态");
+}
+editor.addEventListener("input",()=>{saveCurrentBuffer(true);if(document.querySelector("#splitEditor")&&document.querySelector("#editorArea")?.classList.contains("split"))document.querySelector("#splitEditor").value=editor.value;updateEditorChrome();renderTabs();if(typeof currentSideMode!=="undefined"&&currentSideMode==="explorer")renderExplorer();const sb=document.querySelector("#scmBadge");if(sb)sb.textContent=String(dirty.size)});
+editor.addEventListener("click",updateCursor);
+editor.addEventListener("keyup",updateCursor);
+editor.addEventListener("scroll",syncScroll);
+editor.addEventListener("keydown",e=>{
+  if(e.key==="Tab"){
+    e.preventDefault();
+    const start=editor.selectionStart,end=editor.selectionEnd;
+    editor.setRangeText("    ",start,end,"end");
+    editor.dispatchEvent(new Event("input"));
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveFile()}
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();runCurrent()}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="p"){e.preventDefault();openCommand()}
+});
+$$(".tree-row[data-file]").forEach(r=>r.onclick=()=>openFile(r.dataset.file));
+$("#runTop").onclick=runCurrent;
+
+$("#clearTerminal").onclick=()=>output.innerHTML="";
+$("#newTerminal").onclick=()=>appendTerminal("\nPowerShell 7.4.2\n(.venv) PS C:\\Users\\ShenZhi\\Documents\\agri-price-predictor> ");
+$("#togglePanel").onclick=()=>{
+  panelVisible=!panelVisible;
+  $(".main").style.gridTemplateRows=panelVisible?"35px minmax(260px,1fr) 220px":"35px minmax(260px,1fr) 35px";
+  $(".terminal").style.display=panelVisible?"grid":"none";
+  $("#togglePanel").textContent=panelVisible?"⌄":"⌃";
+};
+$("#terminalInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){const v=e.target.value;e.target.value="";executeTerminal(v)}
+});
+function openCommand(){$("#commandPalette").classList.add("open");$("#commandInput").focus()}
+function closeCommand(){$("#commandPalette").classList.remove("open")}
+$$("[data-palette]").forEach(i=>i.onclick=()=>{
+  const c=i.dataset.palette;closeCommand();
+  if(c==="autowrite"){showPanel("terminal");$("#terminalInput").focus();toast("请输入命令")}
+  if(c==="run")runCurrent();
+  if(c==="save")saveFile();
+  if(c==="format"){editor.value=editor.value.replace(/\t/g,"    ");editor.dispatchEvent(new Event("input"));toast("文档已格式化")}
+  if(c==="reset")resetProject();
+});
+$("#commandInput").addEventListener("keydown",e=>{if(e.key==="Escape")closeCommand()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCommand()});
+document.addEventListener("click",e=>{if($("#commandPalette").classList.contains("open")&&!$("#commandPalette").contains(e.target)&&!e.target.closest("[data-cmd='command']"))closeCommand()});
+
+window.addEventListener("beforeunload",()=>{if(autoWriteTimer)clearTimeout(autoWriteTimer);saveCurrentBuffer(true);persist()});
+
+// ===== 完整IDE交互 =====
+const explorerInitial = $("#explorer").innerHTML;
+let currentSideMode = "explorer";
+let activePanel = "terminal";
+let splitEnabled = false;
+let currentMenuButton = null;
+let dialogResolver = null;
+
+function askDialog(title,text,defaultValue="",showInput=true){
+  $("#dialogTitle").textContent=title;$("#dialogText").textContent=text;
+  $("#dialogInput").style.display=showInput?"block":"none";$("#dialogInput").value=defaultValue;
+  $("#dialogBackdrop").classList.add("open");
+  if(showInput)setTimeout(()=>$("#dialogInput").select(),20);
+  return new Promise(resolve=>dialogResolver=resolve);
+}
+function closeDialog(value=null){$("#dialogBackdrop").classList.remove("open");if(dialogResolver){dialogResolver(value);dialogResolver=null}}
+$("#dialogCancel").onclick=()=>closeDialog(null);
+$("#dialogConfirm").onclick=()=>closeDialog($("#dialogInput").style.display==="none"?true:$("#dialogInput").value);
+$("#dialogInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("#dialogConfirm").click();if(e.key==="Escape")closeDialog(null)});
+
+function fileGroups(){
+  const groups={src:[],data:[],docs:[],root:[]};
+  Object.keys(files).forEach(name=>(groups[folderFor(name)||"root"]||groups.root).push(name));
+  return groups;
+}
+function renderExplorer(){
+  const g=fileGroups();
+  const row=(name,level,parent)=>`<div class="tree-row level${level}" data-file="${esc(name)}" data-parent="${parent}">${iconFor(name)}<span>${esc(name)}</span>${dirty.has(name)?'<span class="badge">M</span>':''}</div>`;
+  $("#explorer").innerHTML=`
+    <div class="tree-row level0 folder-row" data-folder-toggle="root"><span class="chev">⌄</span><span>AGRI-PRICE-PREDICTOR</span></div>
+    <div class="tree-row level1 folder-row" data-folder-toggle="src" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>src</span></div>${g.src.map(n=>row(n,2,"src")).join("")}
+    <div class="tree-row level1 folder-row" data-folder-toggle="data" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>data</span></div>${g.data.map(n=>row(n,2,"data")).join("")}
+    <div class="tree-row level1 folder-row" data-folder-toggle="docs" data-parent="root"><span class="chev">⌄</span><span class="ico">▾</span><span>docs</span></div>${g.docs.map(n=>row(n,2,"docs")).join("")}
+    ${g.root.map(n=>row(n,1,"root")).join("")}`;
+  bindExplorer();
+}
+function bindExplorer(){
+  $$("#explorer .tree-row[data-file]").forEach(r=>{r.classList.toggle("active",r.dataset.file===current);r.onclick=()=>openFile(r.dataset.file)});
+  $$("#explorer [data-folder-toggle]").forEach(row=>row.onclick=()=>{
+    const folder=row.dataset.folderToggle;const collapsed=row.classList.toggle("collapsed");
+    $$("#explorer [data-parent]").forEach(child=>{
+      if(folder==="root")child.style.display=collapsed?"none":"flex";
+      else if(child.dataset.parent===folder)child.style.display=collapsed?"none":"flex";
+    });
+    toast(collapsed?`已折叠 ${folder}`:`已展开 ${folder}`);
+  });
+}
+
+function showSide(mode){
+  currentSideMode=mode;
+  $$('[data-side]').forEach(b=>b.classList.toggle('active',b.dataset.side===mode));
+  const titles={explorer:'资源管理器',search:'搜索',scm:'源代码管理',debug:'运行和调试',extensions:'扩展',account:'账户',settings:'设置'};
+  $("#sideTitleText").textContent=titles[mode];
+  const ex=$("#explorer");
+  if(mode==='explorer'){renderExplorer();$(".side-bottom").style.display='grid';return}
+  $(".side-bottom").style.display='none';
+  if(mode==='search'){
+    ex.innerHTML=`<div class="side-tool"><input id="sideSearchInput" placeholder="在文件中搜索"><div id="sideSearchResults" style="margin-top:8px;color:#888">输入关键词搜索项目文件</div></div>`;
+    $("#sideSearchInput").oninput=e=>{
+      const q=e.target.value.toLowerCase();const found=Object.entries(files).filter(([n,c])=>n.toLowerCase().includes(q)||c.toLowerCase().includes(q)).slice(0,30);
+      $("#sideSearchResults").innerHTML=q?(found.length?found.map(([n,c])=>`<div class="search-result" data-search-file="${esc(n)}">${iconFor(n)}<div><b>${esc(n)}</b><small>${esc((c.match(new RegExp(q,'i'))||[''])[0]||'文件名匹配')}</small></div></div>`).join(''):'<div style="padding:10px">没有结果</div>'):'输入关键词搜索项目文件';
+      $$('[data-search-file]').forEach(r=>r.onclick=()=>openFile(r.dataset.searchFile));
+    };setTimeout(()=>$("#sideSearchInput").focus(),10);
+  }
+  if(mode==='scm'){
+    const changes=[...dirty];
+    ex.innerHTML=`<div class="side-tool"><textarea id="commitMessage" placeholder="消息（按 Ctrl+Enter 提交）"></textarea><div><button class="tool-btn primary" id="commitBtn">✓ 提交</button><button class="tool-btn" id="syncBtn">↻ 同步更改</button></div><h4>更改 ${changes.length}</h4><div id="changeList">${changes.length?changes.map(n=>`<div class="search-result" data-search-file="${esc(n)}"><span style="color:#e2c08d">M</span><div><b>${esc(n)}</b><small>${folderFor(n)||'根目录'}</small></div></div>`).join(''):'<div style="color:#777">没有未提交的更改</div>'}</div></div>`;
+    $$('[data-search-file]').forEach(r=>r.onclick=()=>openFile(r.dataset.searchFile));
+    $("#commitBtn").onclick=()=>commitChanges();$("#syncBtn").onclick=()=>{toast('正在与 origin/main 同步…');setTimeout(()=>toast('同步完成，没有冲突'),700)};
+    $("#commitMessage").onkeydown=e=>{if(e.ctrlKey&&e.key==='Enter')commitChanges()};
+  }
+  if(mode==='debug'){
+    ex.innerHTML=`<div class="side-tool"><button class="tool-btn primary" id="startDebug">▷ 启动调试</button><button class="tool-btn" id="breakBtn">● 切换断点</button><h4>变量</h4><div id="debugVars" style="color:#858585">尚未启动调试会话</div><h4>监视</h4><div>prices&nbsp; <span style="color:#b5cea8">List[30]</span></div><div>forecast&nbsp; <span style="color:#b5cea8">List[7]</span></div><h4>调用堆栈</h4><div id="callStack" style="color:#858585">空</div></div>`;
+    $("#startDebug").onclick=async()=>{showPanel('debugconsole');$("#debugPanel").textContent='调试器已附加到 Python 进程…\n断点：price_predictor.py:52\n局部变量已载入';$("#debugVars").innerHTML='day = <span style="color:#b5cea8">0</span><br>base = <span style="color:#b5cea8">3.65</span><br>prices = <span style="color:#ce9178">[3.72, 3.81, …]</span>';$("#callStack").textContent='build_demo_prices  price_predictor.py:52';await runCurrent();};
+    $("#breakBtn").onclick=()=>toast('已在当前行切换断点');
+  }
+  if(mode==='extensions'){
+    ex.innerHTML=`<div class="side-tool"><input id="extSearch" placeholder="在市场中搜索扩展"><div class="ext-card"><div class="ext-logo">PY</div><div><b>Python</b><span>Microsoft · 已启用</span></div><button class="tool-btn" data-ext-toggle>禁用</button></div><div class="ext-card"><div class="ext-logo">J</div><div><b>Jupyter</b><span>Microsoft · 已安装</span></div><button class="tool-btn" data-ext-toggle>禁用</button></div><div class="ext-card"><div class="ext-logo">G</div><div><b>GitLens</b><span>GitKraken · 已安装</span></div><button class="tool-btn" data-ext-toggle>禁用</button></div><div class="ext-card"><div class="ext-logo">AI</div><div><b>Data Science Tools</b><span>工作区推荐</span></div><button class="tool-btn primary" data-ext-install>安装</button></div></div>`;
+    $$('[data-ext-toggle]').forEach(b=>b.onclick=()=>{b.textContent=b.textContent==='禁用'?'启用':'禁用';toast('扩展状态已更新')});
+    $$('[data-ext-install]').forEach(b=>b.onclick=()=>{b.textContent='已安装';b.classList.remove('primary');toast('扩展安装完成')});
+  }
+  if(mode==='account'){
+    ex.innerHTML=`<div class="side-tool"><div style="display:flex;gap:10px;align-items:center;padding:10px 0"><div style="width:42px;height:42px;border-radius:50%;background:#0e639c;display:grid;place-items:center;font-size:18px">栀</div><div><b>沈栀</b><div style="color:#888;font-size:10px;margin-top:4px">本地开发配置</div></div></div><button class="tool-btn" id="profileBtn">管理个人资料</button><button class="tool-btn" id="settingsSyncBtn">设置同步：已开启</button><h4>已登录的服务</h4><div>GitHub&nbsp; <span style="color:#73c991">已连接</span></div><div style="margin-top:7px">Microsoft&nbsp; <span style="color:#73c991">已连接</span></div></div>`;
+    $("#profileBtn").onclick=()=>askDialog('个人资料','开发者：沈栀（阿栀）\n工作区：农产品价格预测系统','',false);
+    $("#settingsSyncBtn").onclick=e=>{e.target.textContent=e.target.textContent.includes('已开启')?'设置同步：已关闭':'设置同步：已开启';toast('设置同步状态已更改')};
+  }
+  if(mode==='settings'){
+    ex.innerHTML=`<div class="side-tool"><h4>常用设置</h4><label>编辑器字号 <span id="fontSizeValue">13</span>px</label><input type="range" id="fontSizeRange" min="11" max="20" value="13"><div style="margin-top:9px"><button class="tool-btn" id="minimapToggle">切换小地图</button><button class="tool-btn" id="wrapToggle">切换自动换行</button></div><h4>工作区</h4><button class="tool-btn" id="formatBtn">格式化当前文档</button><button class="tool-btn" id="resetWorkspaceBtn">恢复默认项目</button></div>`;
+    $("#fontSizeRange").oninput=e=>{$("#fontSizeValue").textContent=e.target.value;editor.style.fontSize=e.target.value+'px';$("#splitEditor").style.fontSize=e.target.value+'px'};
+    $("#minimapToggle").onclick=()=>{$("#minimap").style.display=$("#minimap").style.display==='none'?'block':'none';toast('小地图显示状态已切换')};
+    $("#wrapToggle").onclick=()=>{const wrap=editor.style.whiteSpace==='pre-wrap';editor.style.whiteSpace=wrap?'pre':'pre-wrap';$("#splitEditor").style.whiteSpace=wrap?'pre':'pre-wrap';toast(wrap?'已关闭自动换行':'已开启自动换行')};
+    $("#formatBtn").onclick=()=>formatDocument();$("#resetWorkspaceBtn").onclick=resetProject;
+  }
+}
+function commitChanges(){
+  const msg=$("#commitMessage")?.value.trim()||'Update model experiment';
+  saveCurrentBuffer(false);Object.keys(files).forEach(n=>savedSnapshot[n]=files[n]);dirty.clear();persist();renderTabs();renderExplorer();
+  appendTerminal(`\n[main 7a2f1c8] ${msg}\n ${Object.keys(files).length} files changed, working tree clean\n`);
+  $("#scmBadge").textContent='0';toast('更改已提交到 main');showSide('scm');
+}
+function showPanel(name){
+  activePanel=name;$$('[data-panel-tab]').forEach(b=>b.classList.toggle('active',b.dataset.panelTab===name));$$('[data-panel-body]').forEach(p=>p.classList.toggle('active',p.dataset.panelBody===name));
+  if(!panelVisible){$("#togglePanel").click()}
+}
+$$('[data-panel-tab]').forEach(b=>b.onclick=()=>showPanel(b.dataset.panelTab));
+
+function formatDocument(){
+  editor.value=editor.value.replace(/\t/g,'    ').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n');editor.dispatchEvent(new Event('input'));toast('当前文档已格式化');
+}
+function selectCurrentLine(){
+  const s=editor.selectionStart;const start=editor.value.lastIndexOf('\n',s-1)+1;let end=editor.value.indexOf('\n',s);if(end<0)end=editor.value.length;editor.setSelectionRange(start,end);editor.focus();
+}
+function menuItems(type){
+  const menus={
+    new:[['新建文件','Ctrl+N','newFile'],['打开文件…','Ctrl+O','quickOpen'],['保存','Ctrl+S','save'],['全部保存','Ctrl+K S','saveAll'],['','sep',''],['关闭编辑器','Ctrl+W','closeTab'],['恢复默认项目','','reset']],
+    save:[['撤销','Ctrl+Z','undo'],['重做','Ctrl+Y','redo'],['','sep',''],['剪切','Ctrl+X','cut'],['复制','Ctrl+C','copy'],['粘贴','Ctrl+V','paste'],['','sep',''],['查找','Ctrl+F','find'],['全选','Ctrl+A','selectAll'],['格式化文档','Shift+Alt+F','format']],
+    command:[['命令面板…','Ctrl+Shift+P','palette'],['快速打开…','Ctrl+P','quickOpen'],['选择当前行','Ctrl+L','selectLine'],['转到行…','Ctrl+G','gotoLine']],
+    run:[['运行当前文件','Ctrl+Enter','run'],['','sep',''],['启动调试','F5','debug'],['停止运行','Shift+F5','stop'],['切换断点','F9','breakpoint']],
+    terminal:[['新建终端','Ctrl+Shift+`','newTerminal'],['聚焦终端','Ctrl+`','focusTerminal'],['清空终端','','clearTerminal'],['运行当前Python文件','','runTerminal'],['切换面板','Ctrl+J','togglePanel']],
+    help:[['快捷键参考','Ctrl+K Ctrl+S','shortcuts'],['查看文档','','docs'],['检查更新','','updates'],['关于','','about']]
+  };return menus[type]||[];
+}
+function openMenu(button,type){
+  const m=$("#menuPop");currentMenuButton=button;m.innerHTML=menuItems(type).map(([label,key,action])=>key==='sep'?'<div class="menu-sep"></div>':`<button data-menu-action="${action}"><span>${label}</span><kbd>${key}</kbd></button>`).join('');
+  const r=button.getBoundingClientRect();m.style.left=r.left+'px';m.style.top=r.bottom+'px';m.classList.add('open');
+  $$('[data-menu-action]').forEach(b=>b.onclick=()=>{const a=b.dataset.menuAction;closeMenu();handleMenuAction(a)});
+}
+function closeMenu(){$("#menuPop").classList.remove('open');currentMenuButton=null}
+async function handleMenuAction(a){
+  if(a==='newFile'){const name=await askDialog('新建文件','请输入文件名，例如 analysis.py','untitled.py');if(name){files[name]='';savedSnapshot[name]='';openFile(name);renderExplorer();toast('已创建 '+name)}}
+  if(a==='quickOpen'){openCommand()}
+  if(a==='save')saveFile();if(a==='saveAll'){saveCurrentBuffer(false);Object.keys(files).forEach(n=>savedSnapshot[n]=files[n]);dirty.clear();persist();renderTabs();renderExplorer();toast('所有文件已保存')}
+  if(a==='closeTab')closeTab(current);if(a==='reset')resetProject();if(a==='undo')document.execCommand('undo');if(a==='redo')document.execCommand('redo');
+  if(a==='cut')document.execCommand('cut');if(a==='copy')document.execCommand('copy');
+  if(a==='paste'){try{const t=await navigator.clipboard.readText();editor.setRangeText(t,editor.selectionStart,editor.selectionEnd,'end');editor.dispatchEvent(new Event('input'))}catch{toast('浏览器未授予剪贴板读取权限')}}
+  if(a==='find'){$("#editorFind").classList.add('open');$("#findInput").focus()};if(a==='selectAll'){editor.select();editor.focus()};if(a==='format')formatDocument();
+  if(a==='palette')openCommand();if(a==='selectLine')selectCurrentLine();if(a==='gotoLine'){const n=Number(await askDialog('转到行','请输入目标行号','1'));if(n>0){const lines=editor.value.split('\n');let pos=0;for(let i=0;i<n-1&&i<lines.length;i++)pos+=lines[i].length+1;editor.setSelectionRange(pos,pos);editor.focus();updateCursor()}}
+  if(a==='autowrite'){showPanel('terminal');$('#terminalInput').focus();toast('请输入命令')};if(a==='pauseAuto')pauseAutoWriting();if(a==='resumeAuto')startAutoWriting();if(a==='stopAuto')stopAutoWriting();
+  if(a==='run')runCurrent();if(a==='debug'){showSide('debug');setTimeout(()=>$("#startDebug")?.click(),50)}if(a==='stop'){toast('当前运行已请求停止');$("#runTop").disabled=false;$("#runTop").textContent='▷'}if(a==='breakpoint')toast('已在当前行切换断点');
+  if(a==='newTerminal')$("#newTerminal").click();if(a==='focusTerminal'){showPanel('terminal');$("#terminalInput").focus()}if(a==='clearTerminal')$("#clearTerminal").click();if(a==='runTerminal'){showPanel('terminal');runCurrent()}if(a==='togglePanel')$("#togglePanel").click();
+  if(a==='shortcuts')askDialog('键盘快捷键','Ctrl+S 保存\nCtrl+Enter 运行\nCtrl+P 命令面板\nCtrl+F 查找\nCtrl+J 切换底部面板','',false);
+  if(a==='docs')askDialog('项目文档','农产品价格预测项目包含数据清洗、特征工程、爬虫和预测模型。','',false);
+  if(a==='updates'){toast('正在检查更新…');setTimeout(()=>toast('当前已是最新版本'),650)}
+  if(a==='about')askDialog('关于 Visual Studio Code','版本 1.108.0（网页拍摄交互版）\n工作区：agri-price-predictor\n用户：沈栀','',false);
+}
+$$('[data-cmd]').forEach(b=>b.onclick=e=>{e.stopPropagation();openMenu(b,b.dataset.cmd)});
+
+$$('[data-side]').forEach(b=>b.onclick=()=>showSide(b.dataset.side));
+$("#sideMore").onclick=e=>{e.stopPropagation();const b=e.currentTarget;const m=$("#menuPop");m.innerHTML='<button data-side-action="new"><span>新建文件</span><kbd>＋</kbd></button><button data-side-action="refresh"><span>刷新资源管理器</span><kbd>↻</kbd></button><button data-side-action="collapse"><span>折叠所有文件夹</span><kbd></kbd></button>';const r=b.getBoundingClientRect();m.style.left=(r.right-210)+'px';m.style.top=r.bottom+'px';m.classList.add('open');$$('[data-side-action]').forEach(x=>x.onclick=()=>{const a=x.dataset.sideAction;closeMenu();if(a==='new')handleMenuAction('newFile');if(a==='refresh'){showSide(currentSideMode);toast('侧栏已刷新')}if(a==='collapse'){$$('#explorer .folder-row').forEach(f=>{if(!f.classList.contains('collapsed'))f.click()})}})};
+
+$("#splitBtn").onclick=()=>{splitEnabled=!splitEnabled;$("#editorArea").classList.toggle('split',splitEnabled);$("#splitEditor").value=editor.value;$("#splitBtn").style.background=splitEnabled?'#094771':'transparent';toast(splitEnabled?'已拆分编辑器':'已关闭拆分编辑器')};
+$("#splitEditor").addEventListener('input',()=>{editor.value=$("#splitEditor").value;editor.dispatchEvent(new Event('input'))});
+$("#editorMore").onclick=e=>{e.stopPropagation();const b=e.currentTarget;const m=$("#menuPop");m.innerHTML='<button data-editor-action="find"><span>查找</span><kbd>Ctrl+F</kbd></button><button data-editor-action="format"><span>格式化文档</span><kbd>Shift+Alt+F</kbd></button><button data-editor-action="split"><span>拆分编辑器</span><kbd></kbd></button><button data-editor-action="close"><span>关闭当前标签</span><kbd>Ctrl+W</kbd></button>';const r=b.getBoundingClientRect();m.style.left=(r.right-218)+'px';m.style.top=r.bottom+'px';m.classList.add('open');$$('[data-editor-action]').forEach(x=>x.onclick=()=>{const a=x.dataset.editorAction;closeMenu();if(a==='find')handleMenuAction('find');if(a==='format')formatDocument();if(a==='split')$("#splitBtn").click();if(a==='close')closeTab(current)})};
+
+function findText(direction=1){const q=$("#findInput").value;if(!q)return;const value=editor.value.toLowerCase();const start=direction>0?editor.selectionEnd:Math.max(0,editor.selectionStart-1);let idx=direction>0?value.indexOf(q.toLowerCase(),start):value.lastIndexOf(q.toLowerCase(),start);if(idx<0)idx=direction>0?value.indexOf(q.toLowerCase()):value.lastIndexOf(q.toLowerCase());if(idx>=0){editor.setSelectionRange(idx,idx+q.length);editor.focus();updateCursor()}else toast('未找到匹配内容')}
+$("#findNext").onclick=()=>findText(1);$("#findPrev").onclick=()=>findText(-1);$("#findClose").onclick=()=>$("#editorFind").classList.remove('open');$("#findInput").onkeydown=e=>{if(e.key==='Enter')findText(e.shiftKey?-1:1);if(e.key==='Escape')$("#findClose").click()};
+
+$("#winMin").onclick=()=>{const ide=$("#ide");ide.classList.toggle('minimized');toast(ide.classList.contains('minimized')?'窗口已最小化，点击标题栏还原':'窗口已还原')};
+$(".window-title").onclick=()=>{if($("#ide").classList.contains('minimized'))$("#winMin").click()};
+$("#winMax").onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch{toast('浏览器不允许全屏')}};
+$("#winClose").onclick=()=>{$("#closedScreen").classList.add('open');saveCurrentBuffer(true);persist()};$("#reopenBtn").onclick=()=>$("#closedScreen").classList.remove('open');
+
+$$('[data-status]').forEach(s=>s.onclick=()=>{
+  const a=s.dataset.status;if(a==='branch')showSide('scm');if(a==='sync'){toast('正在同步 Git 更改…');setTimeout(()=>toast('已与 origin/main 同步'),650)}if(a==='errors'||a==='warnings')showPanel('problems');if(a==='cursor')handleMenuAction('gotoLine');if(a==='spaces')toast('缩进设置：空格 4');if(a==='encoding')toast('文件编码：UTF-8');if(a==='eol')toast('行尾序列：LF');if(a==='language')toast('语言模式：Python');if(a==='python')toast($("#pyStatus").textContent);if(a==='notifications')toast('暂无新通知');
+});
+
+document.addEventListener('click',e=>{if(!$("#menuPop").contains(e.target)&&!e.target.closest('[data-cmd]')&&!e.target.closest('#sideMore')&&!e.target.closest('#editorMore'))closeMenu()});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();handleMenuAction('find')}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();handleMenuAction('newFile')}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='w'){e.preventDefault();closeTab(current)}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();$("#togglePanel").click()}
+  if(e.key==='F5'){e.preventDefault();handleMenuAction('debug')}
+});
+
+// 覆盖旧的菜单点击绑定后，初始化完整界面
+renderExplorer();showPanel('terminal');
+loadCurrent();renderTabs();updateDirtyBadge();
+setTimeout(()=>initPython().catch(()=>{}),600);
+})();
+</script>
+</body>
+</html>
