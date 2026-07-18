@@ -18,10 +18,8 @@ const conversationList = document.querySelector("#conversation-list");
 const titleUnread = document.querySelector("#title-unread");
 const tabUnread = document.querySelector("#tab-unread");
 const chatScreen = document.querySelector("#chat-screen");
-const articleScreen = document.querySelector("#article-screen");
 const notice = document.querySelector("#push-notice");
 const closeNotice = document.querySelector("#close-notice");
-const backButton = document.querySelector("#back-to-wechat");
 let noticeTimer;
 
 titleUnread.textContent = `(${totalUnread})`;
@@ -65,14 +63,7 @@ function scheduleNotice(delay = 1100) {
 
 function openArticle() {
   hideNotice();
-  chatScreen.hidden = true;
-  articleScreen.hidden = false;
-}
-
-function openWechat() {
-  articleScreen.hidden = true;
-  chatScreen.hidden = false;
-  scheduleNotice();
+  window.location.assign("./forum.html");
 }
 
 notice.addEventListener("click", openArticle);
@@ -86,18 +77,14 @@ closeNotice.addEventListener("click", (event) => {
   event.stopPropagation();
   hideNotice();
 });
-backButton.addEventListener("click", openWechat);
 
 function bootNotice() {
-  if (!articleScreen.hidden) return;
   scheduleNotice(1100);
 }
 
 window.addEventListener("pageshow", bootNotice);
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && !articleScreen.hidden && notice.hidden) {
-    scheduleNotice(650);
-  }
+  if (!document.hidden && notice.hidden) scheduleNotice(650);
 });
 document.addEventListener("keydown", (event) => {
   if ((event.key === "p" || event.key === "P") && !chatScreen.hidden) {
