@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>19-2 农产品价格预测系统测试台</title>
+<style>
+:root{
+  --bg:#0a0e13;--panel:#11161d;--panel2:#151c25;--panel3:#0d1218;
+  --line:#26303c;--line2:#1a222c;--ink:#d8dee9;--muted:#738091;
+  --blue:#58a6ff;--cyan:#56d4dd;--green:#3fb950;--green2:#7ee787;
+  --yellow:#d29922;--orange:#f0883e;--red:#f85149;--purple:#bc8cff;
+  --shadow:0 22px 70px rgba(0,0,0,.42);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05080c;color:var(--ink);
+  font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{width:100vw;height:100vh;display:grid;grid-template-rows:34px minmax(0,1fr) 25px;background:var(--bg)}
+.titlebar{display:flex;align-items:center;gap:9px;padding:0 10px;background:#0d1218;border-bottom:1px solid var(--line);
+  font-size:11px;color:#9ca7b5}
+.logo{width:20px;height:20px;border-radius:5px;background:#1f6feb;color:#fff;display:grid;place-items:center;font-weight:900;font-size:10px}
+.titlebar b{color:#d7dde6}.branch{color:#58a6ff}.title-spacer{flex:1}
+.window-btn{width:34px;height:26px;border:0;background:transparent;color:#8b949e}.window-btn:hover{background:#202833}.window-btn.close:hover{background:#c42b1c;color:white}
+.workspace{min-height:0;display:grid;grid-template-columns:220px minmax(460px,1.55fr) minmax(310px,.85fr);background:var(--bg)}
+.sidebar{min-height:0;background:#0d1218;border-right:1px solid var(--line);display:grid;grid-template-rows:35px minmax(0,1fr) 172px}
+.side-title{display:flex;align-items:center;padding:0 11px;border-bottom:1px solid var(--line);font-size:10px;font-weight:700;letter-spacing:.8px}
+.filetree{overflow:auto;padding:5px 0;font:10px/1.6 Consolas,monospace}
+.tree-row{height:27px;display:flex;align-items:center;gap:7px;padding:0 9px;color:#9da8b6;white-space:nowrap}
+.tree-row:hover,.tree-row.active{background:#19212b;color:#e6edf3}
+.tree-row.indent1{padding-left:22px}.tree-row.indent2{padding-left:38px}
+.tree-row .folder{color:#d29922}.tree-row .py{color:#58a6ff}.tree-row .json{color:#bc8cff}.tree-row .csv{color:#3fb950}
+.system-card{border-top:1px solid var(--line);padding:10px;background:#0b1016}
+.system-card h3{font-size:10px;margin:0 0 8px;color:#b8c2cf}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px;font:9px/1.55 Consolas,monospace;color:#768395}
+.kv b{color:#c9d1d9}
+.editor-zone{min-height:0;display:grid;grid-template-rows:31px minmax(0,1fr) 205px;background:var(--bg)}
+.tabs{display:flex;overflow:hidden;background:#0d1218;border-bottom:1px solid var(--line)}
+.tab{min-width:150px;height:31px;border:0;border-right:1px solid var(--line);background:#0d1218;color:#7f8a98;
+  font:10px Consolas,monospace;display:flex;align-items:center;gap:7px;padding:0 10px}
+.tab.active{background:var(--bg);color:#e6edf3;border-top:1px solid #f78166}
+.tab .py{color:#58a6ff}.tab .dot{margin-left:auto;color:#596473}
+.editor-wrap{min-height:0;overflow:auto;background:var(--bg);position:relative;scrollbar-color:#2a3542 transparent;scrollbar-width:thin}
+.code-grid{display:grid;grid-template-columns:46px max-content;min-width:100%;font:11px/1.55 Consolas,"Courier New",monospace}
+.line-no{padding:0 9px 0 0;text-align:right;color:#3b4552;user-select:none;border-right:1px solid #171e27;min-height:17px}
+.code-line{padding:0 13px;white-space:pre;min-height:17px;min-width:calc(100vw - 850px)}
+.code-line.active,.line-no.active{background:rgba(56,139,253,.11)}.line-no.active{color:#58a6ff}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.num{color:#79c0ff}.com{color:#7d8590}.cls{color:#ffa657}.self{color:#ffa657}.dec{color:#d2a8ff}
+.terminal{min-height:0;border-top:1px solid var(--line);background:#05090e;display:grid;grid-template-rows:29px minmax(0,1fr) 31px}
+.term-tabs{display:flex;align-items:center;padding:0 9px;border-bottom:1px solid var(--line);font-size:9px;color:#788595}
+.term-tabs b{height:29px;display:flex;align-items:center;border-bottom:1px solid #fff;color:#dbe2ea;padding:0 8px}
+.term-tools{margin-left:auto;display:flex;gap:3px}.term-tools button{width:28px;height:25px;border:0;background:transparent;color:#697584}
+.term-output{overflow:auto;padding:7px 10px;font:10px/1.48 Consolas,monospace;color:#aeb8c5;white-space:pre-wrap}
+.term-input-row{display:flex;align-items:center;gap:6px;border-top:1px solid #171e27;padding:0 10px;font:10px Consolas,monospace}
+.prompt{color:#56d4dd}.term-input{flex:1;background:transparent;border:0;outline:none;font:10px Consolas,monospace}
+.run-btn{height:24px;border:1px solid #2f6f45;background:#173c26;color:#7ee787;border-radius:5px;padding:0 10px;font-size:9px}
+.run-btn:hover{background:#215631}
+.analysis{min-height:0;border-left:1px solid var(--line);background:#0d1218;display:grid;grid-template-rows:38px 145px 142px minmax(0,1fr)}
+.analysis-head{display:flex;align-items:center;padding:0 11px;border-bottom:1px solid var(--line);font-size:10px;font-weight:700}
+.analysis-head span{margin-left:auto;color:#596473;font:9px Consolas,monospace}
+.progress-panel{padding:12px;border-bottom:1px solid var(--line)}
+.progress-top{display:flex;justify-content:space-between;align-items:end}.progress-top b{font-size:12px}.progress-top strong{font:28px Consolas,monospace;color:#58a6ff}
+.progress-track{height:8px;margin-top:9px;background:#202833;border-radius:999px;overflow:hidden}.progress-bar{display:block;width:0%;height:100%;background:linear-gradient(90deg,#1f6feb,#56d4dd);transition:width .25s}
+.stage-name{font-size:9px;color:#778494;margin-top:8px}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:11px;border-bottom:1px solid var(--line)}
+.metric{background:#111822;border:1px solid var(--line);border-radius:7px;padding:8px}
+.metric span{display:block;font-size:8px;color:#6f7b89}.metric b{display:block;margin-top:4px;font:17px Consolas,monospace;color:#c9d1d9}
+.chart-panel{min-height:0;padding:10px;display:grid;grid-template-rows:24px minmax(0,1fr) 120px;gap:5px}
+.chart-title{font-size:9px;color:#7e8997;display:flex;align-items:center}.chart-title span{margin-left:auto;color:#3fb950}
+.chart{width:100%;height:100%;border:1px solid var(--line);border-radius:7px;background:#0a0f15}
+.test-list{overflow:auto;border:1px solid var(--line);border-radius:7px;background:#0a0f15}
+.test-row{height:25px;display:grid;grid-template-columns:19px 1fr auto;align-items:center;padding:0 7px;border-bottom:1px solid #171f28;font:8px Consolas,monospace;color:#788493}
+.test-row .icon{color:#596473}.test-row.pass .icon{color:#3fb950}.test-row.fail .icon{color:#f85149}.test-row.run .icon{color:#d29922}
+.test-row b{font-weight:400;color:#b9c3d0}.test-row small{color:#596473}
+.statusbar{display:flex;align-items:center;gap:13px;padding:0 8px;background:#0c1117;border-top:1px solid var(--line);font:9px Consolas,monospace;color:#667280}
+.statusbar .ready{color:#3fb950}.statusbar span:last-child{margin-left:auto}
+.result-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:25px;backdrop-filter:blur(6px)}
+.result-overlay.show{display:flex;animation:fade .28s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.result-card{width:min(900px,90vw);background:linear-gradient(145deg,#101922,#0b1016);border:1px solid #2e8b57;border-radius:18px;
+  box-shadow:0 0 0 1px rgba(63,185,80,.16),0 30px 120px rgba(0,0,0,.7),0 0 90px rgba(63,185,80,.14);
+  overflow:hidden;animation:pop .42s cubic-bezier(.2,.9,.2,1.2)}
+@keyframes pop{from{transform:scale(.78);opacity:.2}to{transform:scale(1);opacity:1}}
+.result-head{height:50px;display:flex;align-items:center;padding:0 18px;background:#11241a;border-bottom:1px solid #275d3b;color:#9ce7b5;font-weight:700}
+.result-head span{margin-left:auto;font:11px Consolas,monospace;color:#70bd8a}
+.result-body{text-align:center;padding:32px 30px 25px}
+.success-mark{width:78px;height:78px;border-radius:50%;margin:auto;display:grid;place-items:center;border:3px solid #3fb950;color:#7ee787;
+  background:rgba(63,185,80,.09);font-size:40px;box-shadow:0 0 35px rgba(63,185,80,.2)}
+.result-title{font-size:25px;margin-top:17px;font-weight:700}.accuracy-label{font-size:14px;color:#8996a6;margin-top:11px;letter-spacing:3px}
+.accuracy{font:clamp(88px,14vw,160px)/.95 Consolas,monospace;color:#7ee787;font-weight:900;margin:3px 0;text-shadow:0 0 38px rgba(126,231,135,.27)}
+.result-sub{font-size:15px;color:#aab5c1}
+.result-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:24px}
+.result-metric{border:1px solid #263442;background:#0c1218;border-radius:9px;padding:11px}.result-metric span{display:block;font-size:9px;color:#718090}.result-metric b{font:20px Consolas,monospace;color:#dbe4ec;display:block;margin-top:5px}
+.result-actions{display:flex;justify-content:center;gap:10px;margin-top:22px}.result-actions button{height:38px;border-radius:7px;padding:0 18px;font-size:11px}
+.primary{border:0;background:#238636;color:#fff}.secondary{border:1px solid #36414e;background:#111820;color:#c7d0da}
+.toast{position:fixed;left:50%;bottom:38px;z-index:150;transform:translateX(-50%) translateY(10px);opacity:0;background:#27313c;border:1px solid #3d4855;
+  border-radius:7px;padding:8px 11px;font-size:9px;transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:1000px){
+  .workspace{grid-template-columns:165px minmax(430px,1fr) 285px}.sidebar{grid-template-rows:35px minmax(0,1fr) 140px}
+  .system-card{padding:7px}.code-line{min-width:650px}.analysis{grid-template-rows:38px 125px 132px minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="titlebar">
+    <div class="logo">AP</div>
+    <b>农产品价格预测系统 · 测试工作台</b>
+    <span>—</span>
+    <span>19-2 / 机房终端</span>
+    <span class="branch">feature/production-eval</span>
+    <div class="title-spacer"></div>
+    <span id="clock">23:48:17</span>
+    <button class="window-btn">—</button>
+    <button class="window-btn" id="fullBtn">□</button>
+    <button class="window-btn close">×</button>
+  </header>
+
+  <section class="workspace">
+    <aside class="sidebar">
+      <div class="side-title">资源管理器 · AGRI-PRICE-SYSTEM</div>
+      <div class="filetree">
+        <div class="tree-row"><span class="folder">▾</span><b>agri-price-system</b></div>
+        <div class="tree-row indent1"><span class="folder">▾</span><b>src</b></div>
+        <div class="tree-row indent2 active" data-file="src/evaluate_system.py"><span class="py">PY</span>evaluate_system.py</div>
+        <div class="tree-row indent2" data-file="src/train_model.py"><span class="py">PY</span>train_model.py</div>
+        <div class="tree-row indent2" data-file="src/feature_pipeline.py"><span class="py">PY</span>feature_pipeline.py</div>
+        <div class="tree-row indent2" data-file="src/region_graph.py"><span class="py">PY</span>region_graph.py</div>
+        <div class="tree-row indent1"><span class="folder">▾</span><b>config</b></div>
+        <div class="tree-row indent2" data-file="config/production.yaml"><span class="json">YML</span>production.yaml</div>
+        <div class="tree-row indent2" data-file="config/cities.json"><span class="json">{ }</span>cities.json</div>
+        <div class="tree-row indent1"><span class="folder">▾</span><b>data</b></div>
+        <div class="tree-row indent2"><span class="csv">CSV</span>market_prices_2022_2026.csv</div>
+        <div class="tree-row indent2"><span class="csv">CSV</span>weather_features.csv</div>
+        <div class="tree-row indent2"><span class="csv">CSV</span>transport_index.csv</div>
+        <div class="tree-row indent1"><span class="folder">▾</span><b>tests</b></div>
+        <div class="tree-row indent2"><span class="py">PY</span>test_prediction.py</div>
+        <div class="tree-row indent2"><span class="py">PY</span>test_features.py</div>
+        <div class="tree-row indent2"><span class="py">PY</span>test_leakage.py</div>
+        <div class="tree-row indent1"><span class="folder">▸</span><b>artifacts</b></div>
+        <div class="tree-row indent1"><span class="json">TXT</span>requirements.txt</div>
+        <div class="tree-row indent1"><span class="json">MD</span>README.md</div>
+      </div>
+      <div class="system-card">
+        <h3>机房计算节点</h3>
+        <div class="kv">
+          <span>节点</span><b>LAB-GPU-07</b>
+          <span>CPU</span><b>32 Cores</b>
+          <span>GPU</span><b>RTX A5000</b>
+          <span>内存</span><b>63.8 GB</b>
+          <span>Python</span><b>3.11.8</b>
+          <span>环境</span><b class="ready">READY</b>
+        </div>
+      </div>
+    </aside>
+
+    <section class="editor-zone">
+      <div class="tabs">
+        <button class="tab active" id="mainTab"><span class="py">PY</span><span id="tabName">evaluate_system.py</span><span class="dot">●</span></button>
+        <button class="tab"><span class="py">PY</span><span>feature_pipeline.py</span></button>
+        <button class="tab"><span class="json">YML</span><span>production.yaml</span></button>
+      </div>
+      <div class="editor-wrap" id="editorWrap"><div class="code-grid" id="codeGrid"></div></div>
+      <div class="terminal">
+        <div class="term-tabs"><b>终端</b><span style="padding-left:10px">输出</span><span style="padding-left:10px">问题</span>
+          <div class="term-tools"><button id="clearBtn">⌫</button><button id="newTermBtn">＋</button><button>⋮</button></div>
+        </div>
+        <div class="term-output" id="termOutput">Microsoft PowerShell 7.4.2
+Copyright (C) Microsoft Corporation.
+
+(.venv) PS D:\agri-price-system&gt; <span style="color:#667280">等待命令。输入 start 后按 Enter 启动完整测试。</span>
+</div>
+        <div class="term-input-row"><span class="prompt">(.venv) PS D:\agri-price-system&gt;</span><input id="termInput" class="term-input" autocomplete="off" spellcheck="false"><button id="runBtn" class="run-btn">▶ 启动测试</button></div>
+      </div>
+    </section>
+
+    <aside class="analysis">
+      <div class="analysis-head">模型测试监控 <span id="runState">IDLE</span></div>
+      <div class="progress-panel">
+        <div class="progress-top"><b>完整测试进度</b><strong id="progressText">0%</strong></div>
+        <div class="progress-track"><i class="progress-bar" id="progressBar"></i></div>
+        <div class="stage-name" id="stageName">等待启动命令</div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><span>当前准确率</span><b id="metricAccuracy">--</b></div>
+        <div class="metric"><span>验证样本</span><b id="metricSamples">0</b></div>
+        <div class="metric"><span>MAPE</span><b id="metricMape">--</b></div>
+        <div class="metric"><span>R²</span><b id="metricR2">--</b></div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">准确率 / 测试轮次 <span id="chartState">等待数据</span></div>
+        <canvas class="chart" id="chart"></canvas>
+        <div class="test-list" id="testList"></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer class="statusbar">
+    <span class="ready">● 机房节点已连接</span>
+    <span>main*</span>
+    <span>Python 3.11.8</span>
+    <span>UTF-8</span>
+    <span>Ln <b id="lineStatus">1</b>, Col 1</span>
+    <span id="statusRight">系统就绪</span>
+  </footer>
+</div>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card">
+    <div class="result-head">✓ SYSTEM EVALUATION COMPLETED <span>LAB-GPU-07 · 19-2</span></div>
+    <div class="result-body">
+      <div class="success-mark">✓</div>
+      <div class="result-title">农产品价格预测系统测试完成</div>
+      <div class="accuracy-label">综合预测准确率</div>
+      <div class="accuracy" id="bigAccuracy">87%</div>
+      <div class="result-sub">模型已达到部署标准 · 全部关键测试通过</div>
+      <div class="result-metrics">
+        <div class="result-metric"><span>测试样本</span><b>18,640</b></div>
+        <div class="result-metric"><span>MAPE</span><b>8.7%</b></div>
+        <div class="result-metric"><span>R²</span><b>0.913</b></div>
+        <div class="result-metric"><span>通过测试</span><b>42 / 42</b></div>
+      </div>
+      <div class="result-actions">
+        <button class="primary" id="closeResult">确认结果</button>
+        <button class="secondary" id="rerunResult">重新测试</button>
+        <button class="secondary" id="fullResult">全屏显示</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const FILES = {
+"src/evaluate_system.py": `"""农产品价格预测系统 · 生产环境综合测试。
+
+执行步骤：
+1. 数据完整性与时间泄漏检查
+2. 特征工程和区域联动图生成
+3. 五折时间序列验证
+4. 未来7/14/30日预测稳定性测试
+5. 汇总准确率、MAPE、R²和部署建议
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from statistics import mean
+from typing import Dict, Iterable, List, Sequence
+import json
+import math
+import random
+import time
+
+from feature_pipeline import FeaturePipeline
+from region_graph import RegionGraph
+from train_model import PricePredictionModel
+
+
+ARTIFACT_DIR = Path("artifacts")
+REPORT_FILE = ARTIFACT_DIR / "production_evaluation.json"
+
+TARGET_ACCURACY = 0.87
+MAX_MAPE = 0.10
+MIN_R2 = 0.90
+RANDOM_SEED = 720
+
+
+@dataclass
+class FoldResult:
+    fold: int
+    samples: int
+    accuracy: float
+    mape: float
+    r2: float
+    elapsed_seconds: float
+
+
+@dataclass
+class EvaluationReport:
+    project: str
+    version: str
+    node: str
+    started_at: str
+    completed_at: str
+    sample_count: int
+    feature_count: int
+    city_count: int
+    test_count: int
+    passed_tests: int
+    accuracy: float
+    mape: float
+    r2: float
+    folds: List[FoldResult]
+    deployment_ready: bool
+
+
+def calculate_accuracy(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    if len(actual) != len(predicted):
+        raise ValueError(
+            "actual and predicted lengths differ"
+        )
+
+    relative_errors = [
+        abs(a - p) / max(abs(a), 1e-8)
+        for a, p in zip(actual, predicted)
+    ]
+    score = 1.0 - mean(relative_errors)
+    return max(0.0, min(score, 1.0))
+
+
+def calculate_mape(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    return mean([
+        abs(a - p) / max(abs(a), 1e-8)
+        for a, p in zip(actual, predicted)
+    ])
+
+
+def calculate_r2(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    center = mean(actual)
+    residual = sum(
+        (a - p) ** 2
+        for a, p in zip(actual, predicted)
+    )
+    total = sum(
+        (a - center) ** 2
+        for a in actual
+    )
+    return 1.0 - residual / max(total, 1e-8)
+
+
+def run_fold(
+    fold_index: int,
+    model: PricePredictionModel,
+    features: Sequence[Sequence[float]],
+    targets: Sequence[float],
+) -> FoldResult:
+    started = time.perf_counter()
+    split = int(len(targets) * (0.72 + fold_index * 0.035))
+
+    train_x = features[:split]
+    train_y = targets[:split]
+    valid_x = features[split:]
+    valid_y = targets[split:]
+
+    model.fit(
+        train_features=train_x,
+        train_targets=train_y,
+    )
+    predicted = model.predict(valid_x)
+
+    elapsed = time.perf_counter() - started
+
+    return FoldResult(
+        fold=fold_index,
+        samples=len(valid_y),
+        accuracy=round(
+            calculate_accuracy(
+                valid_y,
+                predicted,
+            ),
+            4,
+        ),
+        mape=round(
+            calculate_mape(
+                valid_y,
+                predicted,
+            ),
+            4,
+        ),
+        r2=round(
+            calculate_r2(
+                valid_y,
+                predicted,
+            ),
+            4,
+        ),
+        elapsed_seconds=round(elapsed, 3),
+    )
+
+
+def run_system_evaluation() -> EvaluationReport:
+    random.seed(RANDOM_SEED)
+    started_at = datetime.now()
+
+    pipeline = FeaturePipeline(
+        include_weather=True,
+        include_transport=True,
+        include_solar_terms=True,
+        include_region_graph=True,
+    )
+    graph = RegionGraph(
+        max_neighbors=4,
+        max_distance_km=1200.0,
+        min_correlation=0.40,
+    )
+    model = PricePredictionModel(
+        random_seed=RANDOM_SEED,
+        num_leaves=31,
+        learning_rate=0.035,
+        estimators=620,
+    )
+
+    dataset = pipeline.load_and_validate(
+        price_file="data/market_prices_2022_2026.csv",
+        weather_file="data/weather_features.csv",
+        transport_file="data/transport_index.csv",
+    )
+    graph.fit(dataset.market_metadata)
+    features, targets = pipeline.transform(
+        dataset=dataset,
+        region_graph=graph,
+    )
+
+    fold_results: List[FoldResult] = []
+    for fold_index in range(1, 6):
+        fold_results.append(
+            run_fold(
+                fold_index=fold_index,
+                model=model,
+                features=features,
+                targets=targets,
+            )
+        )
+
+    accuracy = round(
+        mean(
+            fold.accuracy
+            for fold in fold_results
+        ),
+        2,
+    )
+    mape = round(
+        mean(
+            fold.mape
+            for fold in fold_results
+        ),
+        3,
+    )
+    score_r2 = round(
+        mean(
+            fold.r2
+            for fold in fold_results
+        ),
+        3,
+    )
+
+    passed_tests = 42
+    test_count = 42
+
+    deployment_ready = (
+        accuracy >= TARGET_ACCURACY
+        and mape <= MAX_MAPE
+        and score_r2 >= MIN_R2
+        and passed_tests == test_count
+    )
+
+    report = EvaluationReport(
+        project="agri-price-system",
+        version="2.7.4",
+        node="LAB-GPU-07",
+        started_at=started_at.isoformat(),
+        completed_at=datetime.now().isoformat(),
+        sample_count=18_640,
+        feature_count=126,
+        city_count=12,
+        test_count=test_count,
+        passed_tests=passed_tests,
+        accuracy=accuracy,
+        mape=mape,
+        r2=score_r2,
+        folds=fold_results,
+        deployment_ready=deployment_ready,
+    )
+
+    ARTIFACT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    REPORT_FILE.write_text(
+        json.dumps(
+            asdict(report),
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return report
+
+
+if __name__ == "__main__":
+    evaluation = run_system_evaluation()
+    print(
+        json.dumps(
+            asdict(evaluation),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+`,
+"src/train_model.py": `from __future__ import annotations
+
+from dataclasses import dataclass
+from statistics import mean
+from typing import List, Sequence
+import math
+import random
+
+
+@dataclass
+class ModelConfig:
+    random_seed: int = 720
+    num_leaves: int = 31
+    learning_rate: float = 0.035
+    estimators: int = 620
+    min_child_samples: int = 24
+    feature_fraction: float = 0.82
+    bagging_fraction: float = 0.86
+
+
+class PricePredictionModel:
+    def __init__(
+        self,
+        random_seed: int,
+        num_leaves: int,
+        learning_rate: float,
+        estimators: int,
+    ) -> None:
+        self.config = ModelConfig(
+            random_seed=random_seed,
+            num_leaves=num_leaves,
+            learning_rate=learning_rate,
+            estimators=estimators,
+        )
+        self.weights: List[float] = []
+        self.bias = 0.0
+        self.fitted = False
+
+    def fit(
+        self,
+        train_features: Sequence[Sequence[float]],
+        train_targets: Sequence[float],
+    ) -> None:
+        if not train_features:
+            raise ValueError("empty training features")
+        if len(train_features) != len(train_targets):
+            raise ValueError("feature and target lengths differ")
+
+        random.seed(self.config.random_seed)
+        feature_count = len(train_features[0])
+
+        self.weights = [
+            random.uniform(-0.08, 0.08)
+            for _ in range(feature_count)
+        ]
+        self.bias = mean(train_targets)
+
+        for _ in range(self.config.estimators):
+            gradient_sum = [0.0] * feature_count
+            bias_gradient = 0.0
+
+            for row, target in zip(
+                train_features,
+                train_targets,
+            ):
+                predicted = self._raw_predict(row)
+                error = predicted - target
+                bias_gradient += error
+
+                for index, value in enumerate(row):
+                    gradient_sum[index] += error * value
+
+            scale = self.config.learning_rate / len(train_targets)
+            self.bias -= scale * bias_gradient
+
+            for index in range(feature_count):
+                self.weights[index] -= scale * gradient_sum[index]
+
+        self.fitted = True
+
+    def _raw_predict(
+        self,
+        row: Sequence[float],
+    ) -> float:
+        return self.bias + sum(
+            weight * value
+            for weight, value in zip(
+                self.weights,
+                row,
+            )
+        )
+
+    def predict(
+        self,
+        features: Sequence[Sequence[float]],
+    ) -> List[float]:
+        if not self.weights:
+            raise RuntimeError("model must be fitted")
+
+        return [
+            max(0.1, self._raw_predict(row))
+            for row in features
+        ]
+`,
+"src/feature_pipeline.py": `from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+from pathlib import Path
+from typing import Dict, List, Sequence, Tuple
+import csv
+import math
+
+
+@dataclass
+class Dataset:
+    dates: List[date]
+    prices: List[float]
+    city_codes: List[str]
+    product_ids: List[str]
+    weather: List[Dict[str, float]]
+    transport: List[float]
+    market_metadata: List[Dict[str, object]]
+
+
+class FeaturePipeline:
+    def __init__(
+        self,
+        include_weather: bool,
+        include_transport: bool,
+        include_solar_terms: bool,
+        include_region_graph: bool,
+    ) -> None:
+        self.include_weather = include_weather
+        self.include_transport = include_transport
+        self.include_solar_terms = include_solar_terms
+        self.include_region_graph = include_region_graph
+
+    def load_and_validate(
+        self,
+        price_file: str,
+        weather_file: str,
+        transport_file: str,
+    ) -> Dataset:
+        price_path = Path(price_file)
+        weather_path = Path(weather_file)
+        transport_path = Path(transport_file)
+
+        for path in (
+            price_path,
+            weather_path,
+            transport_path,
+        ):
+            if not path.name:
+                raise FileNotFoundError(path)
+
+        return self._build_demo_dataset()
+
+    def _build_demo_dataset(self) -> Dataset:
+        dates: List[date] = []
+        prices: List[float] = []
+        city_codes: List[str] = []
+        product_ids: List[str] = []
+        weather: List[Dict[str, float]] = []
+        transport: List[float] = []
+
+        cities = [
+            "HRB", "CC", "SY", "BJ",
+            "JN", "ZZ", "SJZ", "TY",
+            "XA", "WH", "CS", "CD",
+        ]
+        products = [
+            "potato", "cabbage", "tomato",
+            "onion", "cucumber", "pepper",
+        ]
+
+        for index in range(18_640):
+            city = cities[index % len(cities)]
+            product = products[index % len(products)]
+
+            city_codes.append(city)
+            product_ids.append(product)
+            prices.append(
+                3.6
+                + math.sin(index / 17.0) * 0.31
+                + math.cos(index / 53.0) * 0.17
+            )
+            weather.append({
+                "temperature": 18.0 + math.sin(index / 31.0) * 12.0,
+                "rainfall": max(0.0, math.sin(index / 19.0) * 18.0),
+                "humidity": 0.62 + math.cos(index / 43.0) * 0.18,
+            })
+            transport.append(
+                1.0 + math.sin(index / 71.0) * 0.16
+            )
+
+        metadata = [
+            {
+                "city_code": code,
+                "latitude": 30.0 + pos * 1.1,
+                "longitude": 104.0 + pos * 1.8,
+            }
+            for pos, code in enumerate(cities)
+        ]
+
+        return Dataset(
+            dates=dates,
+            prices=prices,
+            city_codes=city_codes,
+            product_ids=product_ids,
+            weather=weather,
+            transport=transport,
+            market_metadata=metadata,
+        )
+
+    def transform(
+        self,
+        dataset: Dataset,
+        region_graph,
+    ) -> Tuple[List[List[float]], List[float]]:
+        features: List[List[float]] = []
+        targets: List[float] = []
+
+        for index in range(60, len(dataset.prices)):
+            history = dataset.prices[
+                index - 60:
+                index
+            ]
+            row = [
+                history[-1],
+                sum(history[-7:]) / 7.0,
+                sum(history[-14:]) / 14.0,
+                min(history[-30:]),
+                max(history[-30:]),
+                dataset.transport[index],
+                dataset.weather[index]["temperature"],
+                dataset.weather[index]["rainfall"],
+                dataset.weather[index]["humidity"],
+            ]
+
+            row.extend(
+                region_graph.features_for(
+                    dataset.city_codes[index],
+                    dataset.prices[index],
+                )
+            )
+            features.append(row)
+            targets.append(dataset.prices[index])
+
+        return features, targets
+`,
+"config/production.yaml": `project:
+  name: agri-price-system
+  version: "2.7.4"
+  owner: azhi
+  environment: production-evaluation
+
+compute:
+  node: LAB-GPU-07
+  cpu_cores: 32
+  gpu: RTX-A5000
+  memory_gb: 63.8
+  python: "3.11.8"
+
+dataset:
+  date_range: "2022-01-01/2026-06-30"
+  cities: 12
+  products: 6
+  samples: 18640
+  features: 126
+
+evaluation:
+  folds: 5
+  target_accuracy: 0.87
+  max_mape: 0.10
+  min_r2: 0.90
+  tests: 42
+
+model:
+  type: gradient_boosting
+  estimators: 620
+  learning_rate: 0.035
+  num_leaves: 31
+  random_seed: 720
+`
+};
+
+const TESTS = [
+  "test_data_schema","test_missing_values","test_duplicate_rows","test_time_order",
+  "test_target_leakage","test_city_encoding","test_product_encoding","test_weather_merge",
+  "test_transport_merge","test_solar_terms","test_lag_features","test_rolling_features",
+  "test_region_graph","test_graph_sparsity","test_distance_filter","test_correlation_filter",
+  "test_train_split","test_validation_split","test_fold_1","test_fold_2","test_fold_3",
+  "test_fold_4","test_fold_5","test_forecast_7d","test_forecast_14d","test_forecast_30d",
+  "test_prediction_bounds","test_negative_prices","test_outlier_guard","test_memory_limit",
+  "test_cpu_fallback","test_gpu_node","test_model_serialization","test_report_export",
+  "test_mape_threshold","test_r2_threshold","test_accuracy_threshold","test_reproducibility",
+  "test_api_payload","test_dashboard_payload","test_artifact_hash","test_deployment_flag"
+];
+
+const STAGES = [
+  {p:4,name:"初始化机房计算环境",log:[
+    "[SYSTEM] connecting to LAB-GPU-07 ... OK",
+    "[SYSTEM] Python 3.11.8 | CUDA 12.2 | memory 63.8 GB",
+    "[SYSTEM] loading production.yaml"
+  ],line:37},
+  {p:12,name:"读取并校验三年半原始数据",log:[
+    "[DATA] market_prices_2022_2026.csv  18,640 rows",
+    "[DATA] weather_features.csv         18,640 rows",
+    "[DATA] transport_index.csv          18,640 rows",
+    "[CHECK] schema / missing / duplicates ... PASS"
+  ],line:119},
+  {p:23,name:"构建126项预测特征",log:[
+    "[FEATURE] lag windows: 1,3,7,14,28,56",
+    "[FEATURE] weather + solar terms + transport",
+    "[FEATURE] generated feature matrix: (18580, 126)"
+  ],line:132},
+  {p:34,name:"生成12城市区域联动图",log:[
+    "[GRAPH] cities=12 max_neighbors=4",
+    "[GRAPH] candidate edges=132 retained edges=48",
+    "[GRAPH] leakage check ... PASS"
+  ],line:139},
+  {p:48,name:"执行五折时间序列验证",log:[
+    "[FOLD 1/5] accuracy=84.2%  MAPE=10.8%  R2=0.884",
+    "[FOLD 2/5] accuracy=85.6%  MAPE=9.9%   R2=0.897"
+  ],line:150,accuracy:85,samples:7350,mape:"9.9%",r2:"0.897"},
+  {p:62,name:"继续模型训练与验证",log:[
+    "[FOLD 3/5] accuracy=86.4%  MAPE=9.3%   R2=0.904",
+    "[FOLD 4/5] accuracy=87.1%  MAPE=8.9%   R2=0.912"
+  ],line:161,accuracy:86,samples:12620,mape:"9.1%",r2:"0.908"},
+  {p:76,name:"执行最终验证折",log:[
+    "[FOLD 5/5] accuracy=87.9%  MAPE=8.6%   R2=0.918",
+    "[MODEL] mean accuracy=87.0%"
+  ],line:174,accuracy:87,samples:18640,mape:"8.7%",r2:"0.913"},
+  {p:88,name:"运行42项系统测试",log:[
+    "[TEST] running 42 production checks ...",
+    "[TEST] data / features / model / artifacts"
+  ],line:182},
+  {p:96,name:"生成生产评估报告",log:[
+    "[REPORT] writing artifacts/production_evaluation.json",
+    "[REPORT] accuracy threshold 0.87 ... PASS",
+    "[REPORT] deployment readiness ... PASS"
+  ],line:203},
+  {p:100,name:"测试完成",log:[
+    "",
+    "============================================================",
+    " AGRI PRICE PREDICTION SYSTEM · FINAL RESULT",
+    " Accuracy : 87.0%",
+    " MAPE     : 8.7%",
+    " R²       : 0.913",
+    " Tests    : 42 / 42 PASSED",
+    " Status   : DEPLOYMENT READY",
+    "============================================================"
+  ],line:224,accuracy:87,samples:18640,mape:"8.7%",r2:"0.913"}
+];
+
+let currentFile = "src/evaluate_system.py";
+let running = false;
+let stageTimer = null;
+let chartPoints = [];
+let passedTests = 0;
+let stageIndex = 0;
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function highlight(line,lang){
+  let x=esc(line);
+  if(lang==="py"){
+    x=x.replace(/(#.*)$/g,'<span class="com">$1</span>');
+    x=x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+    x=x.replace(/\b(class)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="cls">$2</span>');
+    x=x.replace(/\b(def)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="fn">$2</span>');
+    x=x.replace(/\b(from|import|as|return|if|else|elif|for|while|in|not|and|or|True|False|None|raise|with|yield|continue|break|try|except|finally|pass)\b/g,'<span class="kw">$1</span>');
+    x=x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+    x=x.replace(/\b(self)\b/g,'<span class="self">$1</span>');
+    x=x.replace(/^(\s*@\w+)/,'<span class="dec">$1</span>');
+  }else{
+    x=x.replace(/(^|\s)([A-Za-z_][\w-]*)(:)/g,'$1<span class="fn">$2</span>$3');
+    x=x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+    x=x.replace(/\b(true|false|null)\b/g,'<span class="kw">$1</span>');
+    x=x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+  }
+  return x || " ";
+}
+function openFile(path){
+  if(!FILES[path])return;
+  currentFile=path;
+  const lang=path.endsWith(".py")?"py":"yaml";
+  const lines=FILES[path].split("\n");
+  $("#tabName").textContent=path.split("/").pop();
+  $("#codeGrid").innerHTML=lines.map((line,i)=>`<div class="line-no" data-line="${i+1}">${i+1}</div><div class="code-line" data-line="${i+1}">${highlight(line,lang)}</div>`).join("");
+  $$(".tree-row[data-file]").forEach(x=>x.classList.toggle("active",x.dataset.file===path));
+  $$(".line-no,.code-line").forEach(x=>x.onclick=()=>focusLine(Number(x.dataset.line)));
+  focusLine(1);
+  $("#editorWrap").scrollTop=0;
+}
+function focusLine(n){
+  $$(".line-no,.code-line").forEach(x=>x.classList.toggle("active",Number(x.dataset.line)===n));
+  $("#lineStatus").textContent=n;
+  const el=document.querySelector(`.code-line[data-line="${n}"]`);
+  if(el)el.scrollIntoView({block:"center",behavior:"smooth"});
+}
+function appendLog(text,color){
+  const out=$("#termOutput");
+  const div=document.createElement("div");
+  div.textContent=text;
+  if(color)div.style.color=color;
+  out.appendChild(div);
+  out.scrollTop=out.scrollHeight;
+}
+function toast(msg){
+  const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1400);
+}
+function renderTests(){
+  $("#testList").innerHTML=TESTS.map((name,i)=>{
+    const cls=i<passedTests?"pass":i===passedTests&&running?"run":"";
+    const icon=i<passedTests?"✓":i===passedTests&&running?"●":"○";
+    const status=i<passedTests?"PASS":i===passedTests&&running?"RUN":"WAIT";
+    return `<div class="test-row ${cls}"><span class="icon">${icon}</span><b>${name}</b><small>${status}</small></div>`;
+  }).join("");
+  const active=$("#testList .run");
+  if(active)active.scrollIntoView({block:"center"});
+}
+function drawChart(){
+  const canvas=$("#chart");
+  const dpr=devicePixelRatio||1;
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle="#202a35";ctx.lineWidth=1;
+  for(let i=1;i<5;i++){const y=h*i/5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  ctx.fillStyle="#566270";ctx.font="8px Consolas";
+  ctx.fillText("90%",4,10);ctx.fillText("80%",4,h-5);
+  if(chartPoints.length<2)return;
+  const min=80,max=90;
+  ctx.strokeStyle="#56d4dd";ctx.lineWidth=2;ctx.beginPath();
+  chartPoints.forEach((v,i)=>{
+    const x=28+(w-40)*(i/(Math.max(chartPoints.length-1,1)));
+    const y=h-12-(h-24)*((v-min)/(max-min));
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });ctx.stroke();
+  chartPoints.forEach((v,i)=>{
+    const x=28+(w-40)*(i/(Math.max(chartPoints.length-1,1)));
+    const y=h-12-(h-24)*((v-min)/(max-min));
+    ctx.fillStyle="#7ee787";ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+  });
+}
+function resetUI(){
+  clearInterval(stageTimer);stageTimer=null;running=false;stageIndex=0;chartPoints=[];passedTests=0;
+  $("#progressBar").style.width="0%";$("#progressText").textContent="0%";$("#stageName").textContent="等待启动命令";
+  $("#metricAccuracy").textContent="--";$("#metricSamples").textContent="0";$("#metricMape").textContent="--";$("#metricR2").textContent="--";
+  $("#runState").textContent="IDLE";$("#chartState").textContent="等待数据";$("#statusRight").textContent="系统就绪";
+  renderTests();drawChart();
+}
+function runStage(stage){
+  $("#progressBar").style.width=stage.p+"%";$("#progressText").textContent=stage.p+"%";
+  $("#stageName").textContent=stage.name;$("#runState").textContent=stage.p===100?"DONE":"RUNNING";
+  $("#statusRight").textContent=stage.name;
+  if(stage.line)focusLine(stage.line);
+  stage.log.forEach((line,i)=>setTimeout(()=>appendLog(line,line.includes("PASS")||line.includes("READY")||line.includes("87.0%")?"#7ee787":line.includes("ERROR")?"#ff7b72":null),i*150));
+  if(stage.accuracy!==undefined){
+    $("#metricAccuracy").textContent=stage.accuracy+"%";
+    $("#metricSamples").textContent=stage.samples.toLocaleString();
+    $("#metricMape").textContent=stage.mape;
+    $("#metricR2").textContent=stage.r2;
+    chartPoints.push(stage.accuracy);
+    $("#chartState").textContent="实时更新";
+    drawChart();
+  }
+  if(stage.p>=88){
+    const target=stage.p===88?18:stage.p===96?36:42;
+    const testInterval=setInterval(()=>{
+      if(passedTests>=target){clearInterval(testInterval);return}
+      passedTests++;renderTests();
+    },35);
+  }
+}
+function startRun(){
+  if(running){toast("测试正在运行");return}
+  running=true;stageIndex=0;chartPoints=[];passedTests=0;
+  $("#resultOverlay").classList.remove("show");
+  $("#termOutput").innerHTML="";
+  appendLog("(.venv) PS D:\\agri-price-system> python src/evaluate_system.py --mode production","#56d4dd");
+  $("#runState").textContent="RUNNING";renderTests();drawChart();
+  runStage(STAGES[0]);
+  stageTimer=setInterval(()=>{
+    stageIndex++;
+    if(stageIndex>=STAGES.length){
+      clearInterval(stageTimer);stageTimer=null;running=false;
+      passedTests=42;renderTests();
+      $("#chartState").textContent="测试完成";$("#statusRight").textContent="准确率 87% · 部署标准通过";
+      setTimeout(()=>$("#resultOverlay").classList.add("show"),650);
+      return;
+    }
+    runStage(STAGES[stageIndex]);
+  },1050);
+}
+$("#termInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const cmd=e.target.value.trim();
+    appendLog(`(.venv) PS D:\\agri-price-system> ${cmd}`,"#56d4dd");
+    e.target.value="";
+    if(cmd.toLowerCase()==="start")startRun();
+    else if(cmd.toLowerCase()==="clear")$("#termOutput").innerHTML="";
+    else if(cmd.toLowerCase()==="reset"){resetUI();appendLog("[SYSTEM] state reset");}
+    else if(cmd)appendLog(`'${cmd}' 不是有效命令。可用命令：start / clear / reset`,"#f2cc60");
+  }
+});
+$("#runBtn").onclick=startRun;
+$("#clearBtn").onclick=()=>$("#termOutput").innerHTML="";
+$("#newTermBtn").onclick=()=>{appendLog("");appendLog("[SYSTEM] new terminal session opened","#7d8590");$("#termInput").focus()};
+$$(".tree-row[data-file]").forEach(x=>x.onclick=()=>openFile(x.dataset.file));
+$("#closeResult").onclick=()=>$("#resultOverlay").classList.remove("show");
+$("#rerunResult").onclick=()=>{resetUI();$("#resultOverlay").classList.remove("show");setTimeout(startRun,250)};
+$("#fullResult").onclick=()=>{const card=$(".result-card");if(card.requestFullscreen)card.requestFullscreen()};
+$("#fullBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+$(".window-btn.close").onclick=()=>toast("拍摄模式下不关闭窗口");
+$(".window-btn:not(.close):not(#fullBtn)").onclick=()=>toast("窗口已最小化（模拟）");
+setInterval(()=>$("#clock").textContent=new Date().toLocaleTimeString("zh-CN",{hour12:false}),1000);
+window.addEventListener("resize",drawChart);
+
+openFile(currentFile);
+resetUI();
+$("#termInput").focus();
+})();
+</script>
+</body>
+</html>
