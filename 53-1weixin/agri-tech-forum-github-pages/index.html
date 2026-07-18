@@ -33,6 +33,7 @@
         </footer>
 
         <aside id="push-notice" class="push-notice" role="button" tabindex="0" hidden aria-hidden="true" aria-label="打开论坛推送：农业部助学金匹配系统推迟上线，疑因系统漏洞被恶意利用">
+          <a class="notice-hit" href="./forum.html" aria-label="进入栈界技术论坛查看完整报道"></a>
           <div class="notice-app">
             <span class="forum-icon" aria-hidden="true"><b>&lt;/&gt;</b></span>
             <strong>栈界 · TECH FORUM</strong>
@@ -43,55 +44,6 @@
           <p><span>突发</span> 政务系统安全 · 多位开发者称上线计划已临时暂停</p>
           <div class="notice-foot"><em>技术快讯</em><b>轻点查看 ›</b></div>
         </aside>
-      </section>
-
-      <section id="article-screen" class="screen article-screen" hidden aria-label="栈界技术论坛文章">
-        <header class="forum-head">
-          <button id="back-to-wechat" type="button" aria-label="返回微信">‹ <small>微信</small></button>
-          <div class="forum-brand">
-            <span class="forum-icon" aria-hidden="true"><b>&lt;/&gt;</b></span>
-            <span><strong>栈界</strong><small>STACK / FORUM</small></span>
-          </div>
-          <button class="search-button" type="button" aria-label="搜索">⌕</button>
-        </header>
-
-        <main class="article-scroll">
-          <nav class="topic-path"><span>首页</span><b>/</b><span>政务系统</span><b>/</b><strong>安全预警</strong></nav>
-          <article>
-            <div class="article-badges"><span>突发</span><em>政务系统</em><em>漏洞预警</em></div>
-            <h1>农业部助学金匹配系统推迟上线，疑因系统漏洞被恶意利用</h1>
-            <p class="deck">原定近期开放的助学金智能匹配平台已临时调整上线时间。论坛安全版块监测到，系统规则引擎可能遭遇异常参数覆盖。</p>
-
-            <div class="author-row">
-              <span class="author-avatar">政</span>
-              <div><strong>政务系统观察员</strong><small>论坛编辑核验 · 发布于 23:43</small></div>
-              <button type="button">＋ 关注</button>
-            </div>
-
-            <div class="article-stats"><span>8,426 次浏览</span><span>63 条讨论</span><span>4 分钟前更新</span></div>
-
-            <section class="key-note">
-              <strong>目前确认</strong>
-              <p>项目方已暂停正式上线流程，并开始对匹配规则、访问日志与异常拒绝记录进行复核。</p>
-            </section>
-
-            <p>据多名参与测试的开发者透露，异常集中出现在家庭收入与劳动力权重的交叉判定环节。部分原本符合资助条件的申请被批量标记为不通过，且相关请求具有重复触发特征。</p>
-            <p>一名不愿具名的安全工程师表示，现有迹象更接近外部请求对规则参数的恶意覆盖，而非普通的配置错误。项目技术团队目前尚未公布完整影响范围。</p>
-
-            <section class="code-card">
-              <header><span>security-feed / MATCH-RULE-07</span><em>READ ONLY</em></header>
-              <pre>[23:18:04] WARN  request signature anomaly
-[23:18:05] ERROR labor_weight override detected
-[23:18:06] ALERT batch reject queue escalated
-[23:19:40] INFO  deploy status -&gt; SUSPENDED</pre>
-            </section>
-
-            <h2>上线时间暂未公布</h2>
-            <p>相关页面现已进入维护状态。论坛将继续跟踪项目公告及后续安全审计结果。文中系统名称、日志片段与时间均来自测试环境公开讨论，最终信息以正式通报为准。</p>
-
-            <footer class="article-end"><span>最后编辑于 23:45</span><b>#助学金系统</b><b>#规则引擎</b><b>#安全事件</b></footer>
-          </article>
-        </main>
       </section>
     </div>
   </main>
