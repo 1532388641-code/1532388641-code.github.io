@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#081019">
+<title>21-1A · 未完成代码工作台</title>
+<style>
+:root{
+  --bg:#070b10;--panel:#0b1219;--panel2:#101a23;--line:#20313d;--line2:#15232d;
+  --ink:#dce8f1;--muted:#6f8291;--cyan:#41d8c2;--blue:#4cadff;--green:#72e59a;
+  --yellow:#e8b74a;--red:#ff6775;--purple:#bc95ff;--code-size:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{height:100vh;display:grid;grid-template-rows:40px 72px minmax(0,1fr) 25px;background:
+radial-gradient(circle at 80% 0,rgba(65,216,194,.08),transparent 28%),var(--bg)}
+.top{display:flex;align-items:center;gap:10px;padding:0 14px;background:#081019;border-bottom:1px solid #203441;font-size:10px;color:#90a2b0}
+.logo{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#1b82c5,#41d8c2);display:grid;place-items:center;font-weight:900;color:#fff}
+.top b{color:#e5eff6}.branch{color:#4cadff}.grow{flex:1}.top button{width:32px;height:27px;border:0;background:transparent;color:#7d91a0}.top button:hover{background:#15232d}
+.banner{display:flex;align-items:center;padding:10px 22px;background:linear-gradient(90deg,rgba(27,130,197,.18),rgba(65,216,194,.05),transparent 70%),#09131b;border-bottom:1px solid #203441}
+.banner h1{font-size:26px;margin:0;color:#f0f8ff;letter-spacing:.6px}.banner p{margin:5px 0 0;font-size:9px;color:#788b9a}
+.badges{display:flex;gap:8px;margin-left:auto}.badge{min-width:95px;padding:8px 10px;border:1px solid #263b48;background:#0c1821;border-radius:5px}.badge span{display:block;font-size:8px;color:#718594}.badge b{display:block;margin-top:3px;font:15px Consolas,monospace}.badge.warn b{color:#e8b74a}
+.workspace{min-height:0;display:grid;grid-template-columns:220px minmax(540px,1.6fr) 315px}
+.sidebar{min-height:0;background:#0a1118;border-right:1px solid #1d303c;display:grid;grid-template-rows:35px minmax(0,1fr) 165px}
+.side-head{display:flex;align-items:center;padding:0 10px;border-bottom:1px solid #20313d;font-size:9px;font-weight:700;letter-spacing:.8px}
+.tree{overflow:auto;padding:5px 0;font:10px/1.65 Consolas,monospace}
+.row{height:27px;display:flex;align-items:center;gap:7px;padding:0 9px;color:#94a3af;white-space:nowrap;border-left:2px solid transparent}
+.row.i1{padding-left:22px}.row.i2{padding-left:38px}.row:hover,.row.active{background:linear-gradient(90deg,rgba(76,173,255,.13),rgba(65,216,194,.03));border-left-color:#41d8c2;color:#ecf7ff}
+.folder{color:#e8b74a}.py{color:#4cadff}.sql{color:#41d8c2}.json{color:#bc95ff}.md{color:#8294a1}
+.todo{border-top:1px solid #20313d;padding:10px;background:#081018}.todo h3{margin:0 0 8px;font-size:9px;color:#b8c7d1}.todo-item{display:grid;grid-template-columns:14px 1fr;gap:6px;margin:5px 0;font:8px/1.45 Consolas,monospace;color:#788b99}.todo-item i{font-style:normal;color:#e8b74a}
+.editor-zone{min-height:0;display:grid;grid-template-rows:32px minmax(0,1fr) 215px;background:#070b10}
+.tabs{display:flex;background:#0a1118;border-bottom:1px solid #20313d;overflow:hidden}
+.tab{height:32px;min-width:145px;border:0;border-right:1px solid #20313d;background:#0a1118;color:#758693;font:9px Consolas,monospace;padding:0 10px;text-align:left}
+.tab.active{background:#070b10;color:#eaf4fb;border-top:2px solid #41d8c2}
+.editor{min-height:0;display:grid;grid-template-columns:48px minmax(0,1fr);background:#070b10}
+.lines{overflow:hidden;padding-top:8px;background:#080d13;border-right:1px solid #17252f;color:#3f4d59;text-align:right;font:var(--code-size)/1.55 Consolas,monospace;user-select:none}
+.lines div{height:calc(var(--code-size)*1.55);padding-right:9px}
+.codearea{width:100%;height:100%;resize:none;border:0;outline:none;background:#070b10;color:#d6e0e8;padding:8px 14px;tab-size:4;white-space:pre;overflow:auto;font:var(--code-size)/1.55 Consolas,"Courier New",monospace;caret-color:#41d8c2}
+.codearea::selection{background:rgba(76,173,255,.24)}
+.terminal{min-height:0;border-top:1px solid #20313d;background:#04090d;display:grid;grid-template-rows:30px minmax(0,1fr) 32px}
+.term-head{display:flex;align-items:center;padding:0 10px;border-bottom:1px solid #17252f;font-size:9px;color:#718493}.term-head b{height:30px;display:flex;align-items:center;border-bottom:1px solid #dce8f1;padding:0 7px;color:#dce8f1}.term-head span{padding-left:10px}.term-head .grow{flex:1}.term-head button{width:27px;height:24px;border:0;background:transparent;color:#718493}
+.output{overflow:auto;padding:8px 10px;font:10px/1.5 Consolas,monospace;color:#a9b8c3;white-space:pre-wrap}
+.cmdrow{display:flex;align-items:center;gap:7px;border-top:1px solid #17252f;padding:0 10px;font:9px Consolas,monospace}
+.prompt{color:#41d8c2}.cmd{flex:1;background:transparent;border:0;outline:none;font:10px Consolas,monospace}
+.monitor{min-height:0;background:#09121a;border-left:1px solid #1d303c;display:grid;grid-template-rows:40px 152px 138px minmax(0,1fr)}
+.mon-head{display:flex;align-items:center;padding:0 11px;border-bottom:1px solid #20313d;font-size:10px;font-weight:700}.mon-head span{margin-left:auto;color:#e8b74a;font:8px Consolas,monospace}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:11px;border-bottom:1px solid #1d303c}
+.stat{padding:9px;background:#0c1821;border:1px solid #223744;border-radius:5px}.stat span{display:block;font-size:8px;color:#6f8392}.stat b{display:block;margin-top:5px;font:19px Consolas,monospace}.stat small{font:8px Consolas,monospace;color:#41d8c2}
+.issues{padding:10px 11px;border-bottom:1px solid #1d303c}.issues h3{font-size:9px;margin:0 0 8px;color:#aebfca}.issue{display:flex;align-items:center;gap:7px;height:24px;font:8px Consolas,monospace;color:#7d909e}.issue i{width:7px;height:7px;border-radius:50%;background:#e8b74a}.issue.red i{background:#ff6775}.issue b{font-weight:400;color:#bbc9d3}.issue span{margin-left:auto;color:#536a79}
+.logs{min-height:0;display:grid;grid-template-rows:30px minmax(0,1fr)}.logs h3{margin:0;padding:0 11px;display:flex;align-items:center;font-size:9px;color:#9dafbb;border-bottom:1px solid #17252f}.runtime-events{overflow:auto;padding:4px 10px}.evt{min-height:29px;display:grid;grid-template-columns:16px 1fr auto;align-items:center;border-bottom:1px solid #15232d;font:8px Consolas,monospace;color:#718493}.evt b{font-weight:400;color:#b6c5cf}.evt.pass i{color:#72e59a}.evt.run i{color:#e8b74a}.evt.err i{color:#ff6775}.evt span{color:#506776}
+.status{display:flex;align-items:center;gap:12px;padding:0 8px;background:#081018;border-top:1px solid #1d303c;font:8px Consolas,monospace;color:#647786}.status .ok{color:#72e59a}.status span:last-child{margin-left:auto}
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(10px);opacity:0;background:#263541;border:1px solid #40515e;border-radius:6px;padding:8px 11px;font-size:9px;transition:.18s}.toast.show{opacity:1;transform:translateX(-50%)}
+@media(max-width:1080px){.workspace{grid-template-columns:185px minmax(480px,1fr) 280px}.banner h1{font-size:22px}.badge{min-width:78px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="logo">DF</div><b>DataForge Studio</b><span>—</span><span>21-1A 未完成工作区</span>
+  <span class="branch">feature/customer-growth</span><div class="grow"></div>
+  <button id="saveBtn" title="保存">⌁</button><button id="fontBtn" title="字号">A</button><button id="fullBtn" title="全屏">□</button>
+</header>
+<section class="banner">
+  <div><h1>全渠道电商经营数据分析系统</h1><p>当前文件仍在编辑，部分客户价值与归因模块尚未完成</p></div>
+  <div class="badges">
+    <div class="badge warn"><span>工作状态</span><b>未完成</b></div>
+    <div class="badge"><span>待处理问题</span><b>7</b></div>
+    <div class="badge"><span>代码文件</span><b>47</b></div>
+  </div>
+</section>
+
+<section class="workspace">
+<aside class="sidebar">
+  <div class="side-head">资源管理器 · ECOM-GROWTH</div>
+  <div class="tree">
+    <div class="row"><span class="folder">▾</span><b>ecom-growth-analytics</b></div>
+    <div class="row i1"><span class="folder">▾</span><b>src</b></div>
+    <div class="row i2 active" data-file="src/incomplete_pipeline.py"><span class="py">PY</span>incomplete_pipeline.py</div>
+    <div class="row i2" data-file="src/customer_ltv.py"><span class="py">PY</span>customer_ltv.py</div>
+    <div class="row i2" data-file="src/channel_attribution.py"><span class="py">PY</span>channel_attribution.py</div>
+    <div class="row i2" data-file="src/report_draft.py"><span class="py">PY</span>report_draft.py</div>
+    <div class="row i1"><span class="folder">▾</span><b>sql</b></div>
+    <div class="row i2" data-file="sql/customer_cohort.sql"><span class="sql">SQL</span>customer_cohort.sql</div>
+    <div class="row i1"><span class="folder">▸</span><b>data</b></div>
+    <div class="row i2"><span class="json">CSV</span>orders_cleaning.csv</div>
+    <div class="row i2"><span class="json">CSV</span>customers_raw.csv</div>
+    <div class="row i1"><span class="folder">▸</span><b>tests</b></div>
+    <div class="row i1"><span class="md">MD</span>README_DRAFT.md</div>
+  </div>
+  <div class="todo">
+    <h3>未完成事项</h3>
+    <div class="todo-item"><i>□</i><span>补全客户生命周期价值计算</span></div>
+    <div class="todo-item"><i>□</i><span>修复退款订单重复归因</span></div>
+    <div class="todo-item"><i>□</i><span>增加渠道自然流量校正</span></div>
+    <div class="todo-item"><i>□</i><span>完善管理层摘要生成器</span></div>
+    <div class="todo-item"><i>□</i><span>补写边界条件测试</span></div>
+  </div>
+</aside>
+
+<section class="editor-zone">
+  <div class="tabs" id="tabs"></div>
+  <div class="editor">
+    <div class="lines" id="lines"></div>
+    <textarea class="codearea" id="codearea" spellcheck="false"></textarea>
+  </div>
+  <div class="terminal">
+    <div class="term-head"><b>终端</b><span>输出</span><span>问题</span><div class="grow"></div><button id="clearBtn">⌫</button></div>
+    <div class="output" id="output">Microsoft PowerShell 7.4.2
+Copyright (C) Microsoft Corporation.
+
+(.venv) PS D:\ecom-growth-analytics&gt; <span style="color:#657887">可输入 run、test、save、clear。运行结果会逐行输出。</span>
+</div>
+    <div class="cmdrow"><span class="prompt">(.venv) PS D:\ecom-growth-analytics&gt;</span><input class="cmd" id="cmd" autocomplete="off" spellcheck="false"></div>
+  </div>
+</section>
+
+<aside class="monitor">
+  <div class="mon-head">代码诊断 <span id="state">EDITING</span></div>
+  <div class="stats">
+    <div class="stat"><span>当前文件行数</span><b id="lineCount">0</b><small>lines</small></div>
+    <div class="stat"><span>未解决TODO</span><b id="todoCount">7</b><small>items</small></div>
+    <div class="stat"><span>测试通过</span><b id="testsPassed">18</b><small>/ 26</small></div>
+    <div class="stat"><span>代码覆盖率</span><b id="coverage">61%</b><small>draft</small></div>
+  </div>
+  <div class="issues">
+    <h3>诊断问题</h3>
+    <div class="issue red"><i></i><b>customer_ltv() 尚未实现</b><span>E001</span></div>
+    <div class="issue"><i></i><b>退款订单可能重复计数</b><span>W014</span></div>
+    <div class="issue"><i></i><b>报告模板存在占位内容</b><span>W023</span></div>
+    <div class="issue"><i></i><b>缺少异常渠道测试</b><span>W031</span></div>
+  </div>
+  <div class="logs">
+    <h3>运行事件</h3>
+    <div class="runtime-events" id="events"></div>
+  </div>
+</aside>
+</section>
+
+<footer class="status"><span class="ok">● 本地环境已连接</span><span>Python 3.11.8</span><span>UTF-8</span><span id="cursorPos">Ln 1, Col 1</span><span id="statusText">文件可编辑</span></footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const DEFAULT_FILES={
+"src/incomplete_pipeline.py":`"""全渠道电商经营数据分析系统。
+
+当前状态：开发中。
+已完成数据读取、基础清洗、订单指标和客户分层框架。
+客户LTV、渠道归因修正和报告摘要仍有待完成。
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from datetime import date, datetime
+from pathlib import Path
+from statistics import mean
+from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
+import csv
+import json
+import math
+import time
+
+from customer_ltv import CustomerLTVCalculator
+from channel_attribution import ChannelAttribution
+from report_draft import DraftReportBuilder
+
+
+DATA_DIR = Path("data")
+OUTPUT_DIR = Path("output")
+CACHE_DIR = Path(".cache")
+
+
+@dataclass(frozen=True)
+class Order:
+    order_id: str
+    customer_id: str
+    product_id: str
+    channel: str
+    order_date: date
+    quantity: int
+    unit_price: float
+    discount_rate: float
+    refund_amount: float
+    campaign_id: str
+
+
+@dataclass
+class QualitySummary:
+    total_rows: int
+    valid_rows: int
+    duplicate_rows: int
+    missing_customer_rows: int
+    invalid_amount_rows: int
+    quality_score: float
+
+
+@dataclass
+class AnalysisResult:
+    order_count: int
+    customer_count: int
+    product_count: int
+    channel_count: int
+    gross_merchandise_value: float
+    net_revenue: float
+    refund_rate: float
+    repeat_purchase_rate: float
+    customer_ltv: Dict[str, float]
+    channel_contribution: Dict[str, float]
+    generated_at: str
+
+
+class OrderLoader:
+    required_fields = {
+        "order_id",
+        "customer_id",
+        "product_id",
+        "channel",
+        "order_date",
+        "quantity",
+        "unit_price",
+        "discount_rate",
+        "refund_amount",
+        "campaign_id",
+    }
+
+    def __init__(
+        self,
+        root: Path = DATA_DIR,
+    ) -> None:
+        self.root = root
+
+    def load(
+        self,
+        filename: str,
+    ) -> List[Order]:
+        path = self.root / filename
+        orders: List[Order] = []
+
+        with path.open(
+            "r",
+            encoding="utf-8-sig",
+            newline="",
+        ) as handle:
+            reader = csv.DictReader(handle)
+            self._check_columns(reader.fieldnames)
+
+            for raw in reader:
+                orders.append(
+                    self._parse(raw)
+                )
+
+        return orders
+
+    def _check_columns(
+        self,
+        fields: Sequence[str] | None,
+    ) -> None:
+        if not fields:
+            raise ValueError(
+                "order file contains no header"
+            )
+
+        missing = self.required_fields.difference(fields)
+        if missing:
+            raise ValueError(
+                f"missing fields: {sorted(missing)}"
+            )
+
+    def _parse(
+        self,
+        raw: Mapping[str, str],
+    ) -> Order:
+        return Order(
+            order_id=raw["order_id"].strip(),
+            customer_id=raw["customer_id"].strip(),
+            product_id=raw["product_id"].strip(),
+            channel=raw["channel"].strip(),
+            order_date=date.fromisoformat(
+                raw["order_date"]
+            ),
+            quantity=int(raw["quantity"]),
+            unit_price=float(raw["unit_price"]),
+            discount_rate=float(raw["discount_rate"]),
+            refund_amount=float(raw["refund_amount"]),
+            campaign_id=raw["campaign_id"].strip(),
+        )
+
+
+class QualityScanner:
+    def scan(
+        self,
+        orders: Sequence[Order],
+    ) -> QualitySummary:
+        seen: set[str] = set()
+        duplicate_rows = 0
+        missing_customer_rows = 0
+        invalid_amount_rows = 0
+        valid_rows = 0
+
+        for order in orders:
+            if order.order_id in seen:
+                duplicate_rows += 1
+                continue
+
+            seen.add(order.order_id)
+
+            if not order.customer_id:
+                missing_customer_rows += 1
+                continue
+
+            amount = (
+                order.quantity
+                * order.unit_price
+                * (1.0 - order.discount_rate)
+            )
+
+            if amount < 0:
+                invalid_amount_rows += 1
+                continue
+
+            valid_rows += 1
+
+        quality_score = (
+            valid_rows
+            / max(len(orders), 1)
+        )
+
+        return QualitySummary(
+            total_rows=len(orders),
+            valid_rows=valid_rows,
+            duplicate_rows=duplicate_rows,
+            missing_customer_rows=missing_customer_rows,
+            invalid_amount_rows=invalid_amount_rows,
+            quality_score=round(
+                quality_score,
+                4,
+            ),
+        )
+
+
+class MetricEngine:
+    def gross_amount(
+        self,
+        order: Order,
+    ) -> float:
+        return (
+            order.quantity
+            * order.unit_price
+            * (1.0 - order.discount_rate)
+        )
+
+    def net_amount(
+        self,
+        order: Order,
+    ) -> float:
+        return (
+            self.gross_amount(order)
+            - order.refund_amount
+        )
+
+    def aggregate(
+        self,
+        orders: Sequence[Order],
+    ) -> Dict[str, float]:
+        gmv = sum(
+            self.gross_amount(order)
+            for order in orders
+        )
+        net_revenue = sum(
+            self.net_amount(order)
+            for order in orders
+        )
+        refund_amount = sum(
+            order.refund_amount
+            for order in orders
+        )
+
+        customer_ids = {
+            order.customer_id
+            for order in orders
+        }
+        product_ids = {
+            order.product_id
+            for order in orders
+        }
+        channels = {
+            order.channel
+            for order in orders
+        }
+
+        return {
+            "order_count": float(len(orders)),
+            "customer_count": float(len(customer_ids)),
+            "product_count": float(len(product_ids)),
+            "channel_count": float(len(channels)),
+            "gmv": round(gmv, 2),
+            "net_revenue": round(net_revenue, 2),
+            "refund_rate": round(
+                refund_amount / max(gmv, 1.0),
+                4,
+            ),
+        }
+
+
+class IncompleteAnalysisPipeline:
+    def __init__(self) -> None:
+        self.loader = OrderLoader()
+        self.quality = QualityScanner()
+        self.metrics = MetricEngine()
+        self.ltv = CustomerLTVCalculator()
+        self.attribution = ChannelAttribution()
+        self.reporter = DraftReportBuilder()
+
+    def run(
+        self,
+        filename: str = "orders_cleaning.csv",
+    ) -> AnalysisResult:
+        started = time.perf_counter()
+        orders = self.loader.load(filename)
+        quality = self.quality.scan(orders)
+
+        if quality.quality_score < 0.92:
+            raise RuntimeError(
+                "data quality below threshold"
+            )
+
+        base_metrics = self.metrics.aggregate(orders)
+
+        # TODO: 当前返回值仍可能包含退款订单重复计数。
+        customer_ltv = self.ltv.calculate(
+            orders
+        )
+
+        # TODO: 补充自然流量与跨渠道重复曝光校正。
+        channel_contribution = self.attribution.calculate(
+            orders
+        )
+
+        # TODO: 复购率需改成按客户首购日期计算。
+        repeat_purchase_rate = 0.0
+
+        result = AnalysisResult(
+            order_count=int(base_metrics["order_count"]),
+            customer_count=int(base_metrics["customer_count"]),
+            product_count=int(base_metrics["product_count"]),
+            channel_count=int(base_metrics["channel_count"]),
+            gross_merchandise_value=base_metrics["gmv"],
+            net_revenue=base_metrics["net_revenue"],
+            refund_rate=base_metrics["refund_rate"],
+            repeat_purchase_rate=repeat_purchase_rate,
+            customer_ltv=customer_ltv,
+            channel_contribution=channel_contribution,
+            generated_at=datetime.now().isoformat(),
+        )
+
+        # FIXME: 管理层摘要模板仍包含占位段落。
+        self.reporter.write_draft(
+            result=result,
+            output_dir=OUTPUT_DIR,
+        )
+
+        elapsed = time.perf_counter() - started
+        print(
+            f"draft pipeline completed in {elapsed:.3f}s"
+        )
+        return result
+
+
+def main() -> None:
+    pipeline = IncompleteAnalysisPipeline()
+    result = pipeline.run()
+
+    print(
+        json.dumps(
+            asdict(result),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
+`,
+"src/customer_ltv.py":`from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import Dict, List, Sequence
+import math
+
+
+@dataclass
+class CustomerValue:
+    customer_id: str
+    order_count: int
+    gross_value: float
+    refund_value: float
+    active_months: int
+    ltv: float
+
+
+class CustomerLTVCalculator:
+    def calculate(
+        self,
+        orders: Sequence,
+    ) -> Dict[str, float]:
+        grouped = defaultdict(list)
+
+        for order in orders:
+            grouped[order.customer_id].append(order)
+
+        result: Dict[str, float] = {}
+
+        for customer_id, items in grouped.items():
+            gross = sum(
+                item.quantity
+                * item.unit_price
+                * (1.0 - item.discount_rate)
+                for item in items
+            )
+            refunds = sum(
+                item.refund_amount
+                for item in items
+            )
+            active_months = len({
+                (
+                    item.order_date.year,
+                    item.order_date.month,
+                )
+                for item in items
+            })
+
+            # TODO: 加入客户流失概率与毛利率。
+            # TODO: 当前公式仅为临时占位。
+            ltv = (
+                gross
+                - refunds
+            )
+
+            result[customer_id] = round(
+                ltv,
+                2,
+            )
+
+        return result
+
+
+def estimate_churn_probability(
+    recency_days: int,
+    order_count: int,
+    active_months: int,
+) -> float:
+    # FIXME: 该函数尚未接入主流程。
+    recency_factor = min(
+        1.0,
+        recency_days / 180.0,
+    )
+    frequency_factor = max(
+        0.0,
+        1.0 - order_count / 12.0,
+    )
+    stability_factor = max(
+        0.0,
+        1.0 - active_months / 12.0,
+    )
+
+    return round(
+        recency_factor * 0.55
+        + frequency_factor * 0.25
+        + stability_factor * 0.20,
+        4,
+    )
+`,
+"src/channel_attribution.py":`from __future__ import annotations
+
+from collections import defaultdict
+from typing import Dict, Sequence
+
+
+class ChannelAttribution:
+    DEFAULT_WEIGHTS = {
+        "first_touch": 0.30,
+        "middle_touch": 0.20,
+        "last_touch": 0.50,
+    }
+
+    def calculate(
+        self,
+        orders: Sequence,
+    ) -> Dict[str, float]:
+        contribution = defaultdict(float)
+
+        for order in orders:
+            gross = (
+                order.quantity
+                * order.unit_price
+                * (1.0 - order.discount_rate)
+            )
+
+            # TODO: 同一客户跨渠道曝光尚未去重。
+            # TODO: 自然流量订单不应分配广告成本。
+            contribution[order.channel] += gross
+
+        total = sum(
+            contribution.values()
+        )
+
+        if total <= 0:
+            return {}
+
+        return {
+            channel: round(
+                value / total,
+                4,
+            )
+            for channel, value in contribution.items()
+        }
+
+
+def remove_duplicate_exposures(
+    rows,
+):
+    # TODO: 待实现。
+    raise NotImplementedError(
+        "cross-channel exposure deduplication is unfinished"
+    )
+`,
+"src/report_draft.py":`from __future__ import annotations
+
+from dataclasses import asdict
+from pathlib import Path
+import json
+
+
+class DraftReportBuilder:
+    def write_draft(
+        self,
+        result,
+        output_dir: Path,
+    ) -> None:
+        output_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        payload = asdict(result)
+
+        (output_dir / "draft_result.json").write_text(
+            json.dumps(
+                payload,
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
+        # TODO: 以下摘要仍为草稿模板。
+        summary = f"""# 经营分析草稿
+
+订单记录：{result.order_count}
+客户数量：{result.customer_count}
+渠道数量：{result.channel_count}
+
+## 核心发现
+
+- [待补充] 客户价值分层结论
+- [待补充] 渠道投入产出差异
+- [待补充] 退款异常商品
+- [待补充] 复购提升建议
+
+## 风险提示
+
+当前客户LTV和渠道归因模块尚未完成，
+本报告不得直接用于最终交付。
+"""
+
+        (output_dir / "management_summary_DRAFT.md").write_text(
+            summary,
+            encoding="utf-8",
+        )
+`,
+"sql/customer_cohort.sql":`WITH first_orders AS (
+    SELECT
+        customer_id,
+        MIN(order_date::date) AS first_order_date
+    FROM fact_orders
+    WHERE order_status NOT IN ('cancelled', 'fraud')
+    GROUP BY customer_id
+),
+cohort_orders AS (
+    SELECT
+        o.customer_id,
+        DATE_TRUNC('month', f.first_order_date) AS cohort_month,
+        DATE_TRUNC('month', o.order_date) AS order_month,
+        (
+            EXTRACT(YEAR FROM AGE(o.order_date, f.first_order_date)) * 12
+            + EXTRACT(MONTH FROM AGE(o.order_date, f.first_order_date))
+        )::integer AS month_index,
+        o.order_id,
+        o.net_amount
+    FROM fact_orders o
+    JOIN first_orders f
+      ON o.customer_id = f.customer_id
+    WHERE o.order_status NOT IN ('cancelled', 'fraud')
+),
+cohort_size AS (
+    SELECT
+        cohort_month,
+        COUNT(DISTINCT customer_id) AS customer_count
+    FROM cohort_orders
+    WHERE month_index = 0
+    GROUP BY cohort_month
+),
+retention AS (
+    SELECT
+        cohort_month,
+        month_index,
+        COUNT(DISTINCT customer_id) AS retained_customers,
+        SUM(net_amount) AS net_revenue
+    FROM cohort_orders
+    GROUP BY cohort_month, month_index
+)
+SELECT
+    r.cohort_month,
+    r.month_index,
+    r.retained_customers,
+    c.customer_count AS cohort_size,
+    r.retained_customers::numeric
+        / NULLIF(c.customer_count, 0) AS retention_rate,
+    r.net_revenue
+FROM retention r
+JOIN cohort_size c
+  ON r.cohort_month = c.cohort_month
+WHERE r.month_index BETWEEN 0 AND 12
+ORDER BY r.cohort_month, r.month_index;
+`
+};
+
+const TABS=["src/incomplete_pipeline.py","src/customer_ltv.py","src/channel_attribution.py","sql/customer_cohort.sql"];
+const RUN_LINES=[
+["[ENV] activating .venv ... OK","ok"],
+["[ENV] Python 3.11.8 | pandas 2.2.2 | sqlalchemy 2.0.31","ok"],
+["[LOAD] orders_cleaning.csv",""],
+["[LOAD] rows detected: 128,640",""],
+["[CHECK] validating columns ... PASS","ok"],
+["[CHECK] duplicates: 214 rows","warn"],
+["[CHECK] invalid amount: 37 rows","warn"],
+["[CLEAN] valid rows retained: 128,389","ok"],
+["[METRIC] calculating GMV and net revenue",""],
+["[METRIC] customer profiles: 38,216",""],
+["[LTV] running customer lifetime value module",""],
+["[WARNING] temporary LTV formula is still active","warn"],
+["[ATTRIBUTION] processing seven sales channels",""],
+["[WARNING] cross-channel exposure deduplication not implemented","warn"],
+["[REPORT] writing draft_result.json",""],
+["[REPORT] management_summary_DRAFT.md",""],
+["[TEST] 18 passed, 6 warnings, 2 failed","err"],
+["[FAILED] test_refund_order_deduplication","err"],
+["[FAILED] test_customer_ltv_margin_adjustment","err"],
+["[STATUS] pipeline finished with unfinished modules","warn"],
+["[STATUS] final delivery package was NOT generated","err"]
+];
+const TEST_LINES=[
+["collecting 26 items ...",""],
+["tests/test_loader.py ....... PASSED","ok"],
+["tests/test_quality.py ...... PASSED","ok"],
+["tests/test_metrics.py ...... PASSED","ok"],
+["tests/test_customer_ltv.py . FAILED","err"],
+["tests/test_attribution.py .. FAILED","err"],
+["tests/test_report.py ....... 2 WARNINGS","warn"],
+["18 passed, 2 failed, 6 warnings","warn"]
+];
+let current=localStorage.getItem("scene21codeFile")||TABS[0];
+let files={};
+let running=false;
+let fontSize=Number(localStorage.getItem("scene21codeFont")||12);
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function loadFiles(){
+ Object.keys(DEFAULT_FILES).forEach(k=>{
+   files[k]=localStorage.getItem("scene21buf:"+k)??DEFAULT_FILES[k];
+ });
+}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300)}
+function renderTabs(){
+ $("#tabs").innerHTML=TABS.map(f=>`<button class="tab ${f===current?"active":""}" data-tab="${f}">${f.split("/").pop()}</button>`).join("");
+ $$("[data-tab]").forEach(b=>b.onclick=()=>openFile(b.dataset.tab));
+}
+function renderLines(){
+ const count=$("#codearea").value.split("\n").length;
+ $("#lines").innerHTML=Array.from({length:count},(_,i)=>`<div>${i+1}</div>`).join("");
+ $("#lineCount").textContent=count;
+}
+function openFile(file){
+ saveCurrent(false);
+ current=file;
+ localStorage.setItem("scene21codeFile",file);
+ $("#codearea").value=files[file]??"";
+ renderTabs();renderLines();
+ $$(".row[data-file]").forEach(r=>r.classList.toggle("active",r.dataset.file===file));
+ $("#statusText").textContent="正在编辑 "+file;
+}
+function saveCurrent(show=true){
+ if(current){
+   files[current]=$("#codearea").value;
+   localStorage.setItem("scene21buf:"+current,files[current]);
+ }
+ if(show)toast("代码已保存到本机");
+}
+function updateCursor(){
+ const ta=$("#codearea"),before=ta.value.slice(0,ta.selectionStart),lines=before.split("\n");
+ $("#cursorPos").textContent=`Ln ${lines.length}, Col ${lines.at(-1).length+1}`;
+}
+function append(text,type=""){
+ const div=document.createElement("div");div.textContent=text;
+ if(type==="ok")div.style.color="#72e59a";
+ if(type==="warn")div.style.color="#e8b74a";
+ if(type==="err")div.style.color="#ff6775";
+ $("#output").appendChild(div);$("#output").scrollTop=$("#output").scrollHeight;
+}
+function renderEvents(items=[]){
+ $("#events").innerHTML=items.map(x=>`<div class="evt ${x[1]}"><i>${x[1]==="pass"?"✓":x[1]==="err"?"×":"●"}</i><b>${x[0]}</b><span>${x[2]}</span></div>`).join("");
+}
+async function runLines(lines,mode){
+ if(running)return toast("任务正在运行");
+ running=true;$("#state").textContent="RUNNING";$("#statusText").textContent=mode==="test"?"正在执行测试":"正在运行草稿代码";
+ const events=[];
+ for(let i=0;i<lines.length;i++){
+   const [text,type]=lines[i];
+   append(text,type);
+   events.push([text.replace(/^\[[^\]]+\]\s*/,"").slice(0,34),type==="ok"?"pass":type==="err"?"err":"run",String(i+1).padStart(2,"0")]);
+   renderEvents(events.slice(-12));
+   await new Promise(r=>setTimeout(r,430+Math.floor(Math.random()*260)));
+ }
+ running=false;$("#state").textContent="EDITING";$("#statusText").textContent=mode==="test"?"测试结束：仍有失败项":"运行结束：项目仍未完成";
+}
+function execute(command){
+ const c=command.trim();
+ if(!c)return;
+ append(`(.venv) PS D:\\ecom-growth-analytics> ${c}`,"");
+ if(c==="run"||c==="start"||c==="python src/incomplete_pipeline.py")runLines(RUN_LINES,"run");
+ else if(c==="test"||c==="pytest")runLines(TEST_LINES,"test");
+ else if(c==="clear")$("#output").innerHTML="";
+ else if(c==="save")saveCurrent();
+ else if(c.startsWith("open ")){
+   const name=c.slice(5).trim(),target=Object.keys(files).find(k=>k===name||k.endsWith("/"+name)||k.endsWith(name));
+   if(target)openFile(target);else append("[ERROR] file not found","err");
+ } else if(c==="help"){
+   append("commands: run / test / save / clear / open <file>","ok");
+ } else append("[ERROR] unknown command. type help","err");
+}
+$("#codearea").addEventListener("input",()=>{renderLines();updateCursor();$("#statusText").textContent="存在未保存修改"});
+$("#codearea").addEventListener("scroll",()=>{$("#lines").scrollTop=$("#codearea").scrollTop});
+$("#codearea").addEventListener("click",updateCursor);
+$("#codearea").addEventListener("keyup",updateCursor);
+$("#codearea").addEventListener("keydown",e=>{
+ if(e.key==="Tab"){e.preventDefault();const s=e.target.selectionStart,en=e.target.selectionEnd;e.target.setRangeText("    ",s,en,"end");renderLines()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveCurrent()}
+});
+$("#cmd").addEventListener("keydown",e=>{if(e.key==="Enter"){const v=e.target.value;e.target.value="";execute(v)}});
+$("#saveBtn").onclick=()=>saveCurrent();
+$("#clearBtn").onclick=()=>$("#output").innerHTML="";
+$("#fontBtn").onclick=()=>{fontSize++;if(fontSize>16)fontSize=10;document.documentElement.style.setProperty("--code-size",fontSize+"px");localStorage.setItem("scene21codeFont",fontSize);renderLines();toast("代码字号 "+fontSize+"px")};
+$("#fullBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+$$(".row[data-file]").forEach(r=>r.onclick=()=>openFile(r.dataset.file));
+document.documentElement.style.setProperty("--code-size",fontSize+"px");
+loadFiles();renderEvents([["编辑器已加载","pass","01"],["7个TODO等待处理","run","02"],["草稿报告不可交付","err","03"]]);openFile(current);$("#cmd").focus();
+})();
+</script>
+</body>
+</html>
