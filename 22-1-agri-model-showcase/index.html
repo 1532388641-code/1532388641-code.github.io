@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050b12">
+<title>22-1 · 农产品价格预测模型成果展示</title>
+<style>
+:root{
+  --bg:#040910;--panel:#091522;--panel2:#0d1b29;--line:#1b3443;
+  --ink:#edf8ff;--muted:#7d95a5;--cyan:#45e2cf;--blue:#53b8ff;
+  --green:#7af2a8;--yellow:#ffd166;--red:#ff6878;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:
+radial-gradient(circle at 50% -15%,rgba(63,175,255,.14),transparent 35%),
+linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+background-size:auto,44px 44px,44px 44px}
+.app{height:100vh;display:grid;grid-template-rows:54px 96px minmax(0,1fr) 28px;position:relative;z-index:1}
+.top{display:flex;align-items:center;padding:0 20px;background:rgba(4,11,18,.96);border-bottom:1px solid #193445}
+.logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(145deg,#1d88ca,#45e2cf);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 0 25px rgba(69,226,207,.14)}
+.brand{margin-left:11px}.brand b{display:block;font-size:14px}.brand span{display:block;margin-top:3px;font-size:10px;color:#6f8798}
+.topname{margin-left:26px;padding-left:26px;border-left:1px solid #1a3544;font-size:12px;color:#90a7b5}.topname strong{color:#edf8ff}
+.grow{flex:1}
+.chip{height:30px;padding:0 12px;border:1px solid #244655;border-radius:4px;background:#081722;display:flex;align-items:center;font:10px Consolas,monospace;color:#79a0b3;margin-left:8px}
+.chip i{width:7px;height:7px;border-radius:50%;background:#7af2a8;margin-right:7px;box-shadow:0 0 10px rgba(122,242,168,.7)}
+.icon{width:34px;height:30px;border:0;background:transparent;margin-left:5px;color:#7892a3}
+.icon:hover{background:#102531}
+.hero{display:flex;align-items:center;padding:0 26px;background:linear-gradient(90deg,rgba(31,122,180,.17),rgba(69,226,207,.05),transparent 70%),#07131d;border-bottom:1px solid #193443}
+.hero h1{margin:0;font-size:34px;letter-spacing:1px}
+.hero p{margin:8px 0 0;font-size:12px;color:#7f96a6}
+.hero-right{margin-left:auto;display:flex;gap:10px}
+.hero-box{min-width:128px;padding:11px 12px;background:#0a1823;border:1px solid #244150;border-radius:5px}
+.hero-box span{display:block;font-size:10px;color:#718a9a}.hero-box b{display:block;margin-top:5px;font:19px Consolas,monospace}
+.dashboard{min-height:0;padding:12px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(360px,.75fr);gap:12px;background:rgba(2,7,12,.75)}
+.left{min-height:0;display:grid;grid-template-rows:minmax(320px,1.4fr) minmax(180px,.6fr);gap:12px}
+.right{min-height:0;display:grid;grid-template-rows:255px 195px minmax(0,1fr);gap:12px}
+.panel{background:linear-gradient(180deg,rgba(10,26,39,.96),rgba(6,18,28,.96));border:1px solid #1a3443;box-shadow:0 14px 30px rgba(0,0,0,.14);position:relative;overflow:hidden}
+.panel:before{content:"";position:absolute;left:0;top:0;width:36px;height:2px;background:#45e2cf}
+.panel-title{height:48px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid #17303d;font-size:14px;font-weight:700;letter-spacing:.4px}
+.panel-title span{margin-left:auto;font:10px Consolas,monospace;color:#55768a}
+.main-visual{display:grid;grid-template-columns:minmax(0,1fr) 250px;min-height:0}
+.chart-wrap{min-height:0;padding:14px 16px 18px}
+.chart-head{height:31px;display:flex;align-items:center;gap:20px;font-size:11px;color:#7b94a4}
+.legend{display:flex;align-items:center;gap:6px}.legend i{display:block;width:20px;height:3px}.actual{background:#53b8ff}.pred{background:#45e2cf}.future{background:#ffd166}
+.chart-wrap canvas{width:100%;height:calc(100% - 31px)}
+.score-box{border-left:1px solid #1a3443;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(69,226,207,.085),transparent 68%)}
+.score-label{font-size:14px;color:#8ca3b1;letter-spacing:1px}
+.score-line{margin-top:10px}.score{font:700 72px/1 Consolas,monospace;color:#fff;text-shadow:0 0 30px rgba(69,226,207,.35)}.score-suffix{font-size:25px;color:#45e2cf}
+.score-sub{margin-top:8px;font-size:11px;color:#7af2a8}
+.score-detail{width:190px;margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.score-detail div{padding:10px;border:1px solid #24414f;background:#091824;border-radius:4px;text-align:center}
+.score-detail span{display:block;font-size:9px;color:#708898}.score-detail b{display:block;margin-top:4px;font:16px Consolas,monospace}
+.pass{margin-top:16px;padding:10px 15px;border:1px solid rgba(122,242,168,.32);background:rgba(31,105,66,.14);color:#89f8b1;font-size:11px;border-radius:4px;opacity:0;transition:.5s}
+.pass.show{opacity:1}
+.lower{display:grid;grid-template-columns:1fr 1fr;min-height:0}
+.bar-zone{padding:12px 16px 15px}
+.bar-item{margin:12px 0;opacity:0;transition:.35s}.bar-item.show{opacity:1}
+.bar-top{display:flex;justify-content:space-between;font-size:11px;color:#8399a8}.bar-top b{color:#cfdee7}.bar-top span{font:12px Consolas,monospace;color:#45e2cf}
+.bar{height:7px;margin-top:7px;background:#132a36;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#248fcf,#45e2cf);transition:1.2s}
+.feed{border-left:1px solid #1a3443;padding:8px 14px 14px;overflow:auto}
+.feed-row{min-height:36px;display:grid;grid-template-columns:18px 1fr auto;align-items:center;border-bottom:1px solid #142b37;font:10px Consolas,monospace;color:#7790a0;opacity:0;transform:translateX(8px);transition:.3s}
+.feed-row.show{opacity:1;transform:none}.feed-row i{font-style:normal;color:#45e2cf}.feed-row b{font-weight:400;color:#c5d6df}.feed-row span{color:#516e7f}
+.kpis{padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{padding:14px;background:#0a1924;border:1px solid #203c4b;border-radius:5px;opacity:0;transform:translateY(8px);transition:.4s}
+.kpi.show{opacity:1;transform:none}.kpi span{display:block;font-size:10px;color:#748d9d}.kpi b{display:block;margin-top:6px;font:26px Consolas,monospace}.kpi small{font:9px Consolas,monospace;color:#45e2cf}
+.radar{padding:8px 14px 12px}.radar canvas{width:100%;height:135px}
+.matrix{padding:10px 13px 13px}.matrix table{width:100%;border-collapse:collapse;font:10px Consolas,monospace}.matrix th{height:31px;color:#647f90;font-weight:400;border-bottom:1px solid #18303d}.matrix td{height:34px;text-align:center;border-bottom:1px solid #132a36;color:#8399a7}.matrix td:first-child{text-align:left;color:#c0d0da}.h1{background:rgba(83,184,255,.08)}.h2{background:rgba(69,226,207,.13)}.h3{background:rgba(122,242,168,.18);color:#a5ffc4!important}
+.status{display:flex;align-items:center;padding:0 11px;gap:16px;background:#06111a;border-top:1px solid #193443;font:9px Consolas,monospace;color:#637d8d}.status .ok{color:#7af2a8}.status span:last-child{margin-left:auto}
+.boot{position:fixed;inset:0;z-index:100;background:#02070c;display:flex;align-items:center;justify-content:center;transition:.7s}
+.boot.hide{opacity:0;pointer-events:none}.boot-box{width:540px}.boot-title{text-align:center;font-size:16px;letter-spacing:4px}.boot-sub{text-align:center;margin-top:10px;font:10px Consolas,monospace;color:#557586}
+.boot-line{height:3px;background:#102a36;margin:28px 0 15px;overflow:hidden}.boot-line i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1a85c5,#45e2cf);transition:1.6s}
+.boot-msg{text-align:center;font:10px Consolas,monospace;color:#698797}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0;background:radial-gradient(circle at 62% 46%,rgba(69,226,207,.15),transparent 35%);transition:.45s}.flash.show{opacity:1}
+@media(max-width:1200px){.hero h1{font-size:29px}.dashboard{grid-template-columns:minmax(0,1.4fr) 330px}.score{font-size:60px}.main-visual{grid-template-columns:minmax(0,1fr) 220px}}
+</style>
+
+<style>
+.start-overlay{
+  position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
+  background:rgba(2,7,12,.78);backdrop-filter:blur(8px);transition:.45s;
+}
+.start-overlay.hide{opacity:0;pointer-events:none}
+.start-card{
+  width:520px;padding:34px 36px 30px;border:1px solid #244b5c;border-radius:10px;
+  background:linear-gradient(180deg,rgba(10,29,43,.98),rgba(5,17,27,.98));
+  box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.025);text-align:center;
+}
+.start-card .mini{font:11px Consolas,monospace;color:#658596;letter-spacing:2px}
+.start-card h2{margin:14px 0 8px;font-size:30px;letter-spacing:.6px}
+.start-card p{margin:0 auto 24px;max-width:390px;color:#7e96a5;font-size:13px;line-height:1.8}
+.start-model-btn{
+  width:240px;height:58px;border:1px solid rgba(69,226,207,.65);border-radius:7px;
+  background:linear-gradient(90deg,#187fbd,#27cbb7);color:#fff;font-size:18px;font-weight:800;
+  letter-spacing:1px;box-shadow:0 12px 32px rgba(39,203,183,.16);
+}
+.start-model-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.start-model-btn:active{transform:translateY(0)}
+.start-note{margin-top:15px;font:10px Consolas,monospace;color:#567687}
+
+.process-strip{
+  position:absolute;left:16px;right:16px;bottom:14px;z-index:8;
+  height:54px;padding:0 14px;display:flex;align-items:center;gap:12px;
+  border:1px solid #1d3b4a;border-radius:5px;background:rgba(5,17,27,.92);
+}
+.process-state{min-width:145px}
+.process-state span{display:block;font-size:9px;color:#6f8796}
+.process-state b{display:block;margin-top:4px;font-size:12px;color:#d9edf7}
+.process-track{flex:1;height:8px;background:#112a36;border-radius:999px;overflow:hidden}
+.process-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#258ecf,#45e2cf);transition:.55s}
+.process-percent{width:52px;text-align:right;font:16px Consolas,monospace;color:#45e2cf}
+.run-step-list{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 0}
+.run-step{padding:10px 8px;border:1px solid #1e3947;background:#081824;border-radius:4px;font-size:10px;color:#5f7a8b;text-align:center}
+.run-step.active{border-color:#45e2cf;color:#dff9f5;background:rgba(38,145,130,.13)}
+.run-step.done{border-color:#326a4b;color:#7af2a8;background:rgba(41,123,76,.10)}
+.run-step.err{border-color:#6f3c43;color:#ff8793}
+.model-log{
+  position:absolute;left:18px;top:64px;width:340px;max-height:170px;overflow:auto;z-index:7;
+  padding:10px 12px;border:1px solid #1e3947;background:rgba(4,13,21,.9);
+  font:10px/1.55 Consolas,monospace;color:#7f96a5;opacity:0;transition:.35s
+}
+.model-log.show{opacity:1}
+.model-log div.ok{color:#7af2a8}.model-log div.warn{color:#ffd166}
+</style>
+
+</head>
+<body>
+
+<div class="start-overlay" id="startOverlay">
+  <div class="start-card">
+    <div class="mini">MODEL EXECUTION CONSOLE</div>
+    <h2>农产品价格预测模型</h2>
+    <p>点击后将依次执行数据读取、特征构建、训练验证、价格预测与成果锁定。</p>
+    <button class="start-model-btn" id="startModelBtn">▶ 启动模型</button>
+    <div class="run-step-list">
+      <div class="run-step" data-run-step>数据读取</div>
+      <div class="run-step" data-run-step>特征构建</div>
+      <div class="run-step" data-run-step>模型训练</div>
+      <div class="run-step" data-run-step>五折验证</div>
+      <div class="run-step" data-run-step>成果生成</div>
+    </div>
+    <div class="start-note">点击启动后，模型过程将逐步运行</div>
+  </div>
+</div>
+
+<div class="boot hide" id="boot">
+  <div class="boot-box">
+    <div class="boot-title">AGRICULTURAL INTELLIGENCE LAB</div>
+    <div class="boot-sub">MODEL EVALUATION · RESULTS CONSOLE</div>
+    <div class="boot-line"><i id="bootBar"></i></div>
+    <div class="boot-msg" id="bootMsg">正在载入模型评估结果...</div>
+  </div>
+</div>
+<div class="flash" id="flash"></div>
+
+<div class="app">
+<header class="top">
+  <div class="logo">禾</div>
+  <div class="brand"><b>清北大学计算机学院</b><span>农业智能计算实验室</span></div>
+  <div class="topname"><strong>农产品价格预测系统</strong> · 模型成果终端</div>
+  <div class="grow"></div>
+  <div class="chip"><i></i>RESULT VERIFIED</div>
+  <div class="chip">MODEL v23.11</div>
+  <button class="icon" id="replayBtn">↻</button>
+  <button class="icon" id="fullBtn">□</button>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>全国农产品价格智能预测模型</h1>
+    <p>多源数据融合 · 5折时间序列验证 · 未来30日滚动预测</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-box"><span>特征维度</span><b>126</b></div>
+    <div class="hero-box"><span>样本规模</span><b>186,400</b></div>
+    <div class="hero-box"><span>关键测试</span><b>52 / 52</b></div>
+  </div>
+</section>
+
+<main class="dashboard">
+  <section class="left">
+    <div class="panel main-visual">
+      <div class="chart-wrap">
+        <div class="chart-head">
+          <span class="legend"><i class="actual"></i>真实价格</span>
+          <span class="legend"><i class="pred"></i>模型预测</span>
+          <span class="legend"><i class="future"></i>未来预测</span>
+        </div>
+        <canvas id="mainChart"></canvas>
+      </div>
+      <div class="score-box">
+        <div class="score-label">综合预测准确率</div>
+        <div class="score-line"><span class="score" id="score">0.0</span><span class="score-suffix">%</span></div>
+        <div class="score-sub">达到科研项目接入标准</div>
+        <div class="score-detail">
+          <div><span>MAPE</span><b>6.4%</b></div>
+          <div><span>R²</span><b>0.947</b></div>
+        </div>
+        <div class="pass" id="pass">✓ 全部核心测试通过</div>
+      </div>
+      <div class="model-log" id="modelLog"></div>
+      <div class="process-strip">
+        <div class="process-state"><span>当前阶段</span><b id="processStage">等待启动</b></div>
+        <div class="process-track"><i id="processBar"></i></div>
+        <div class="process-percent" id="processPercent">0%</div>
+      </div>
+    </div>
+
+    <div class="panel lower">
+      <div>
+        <div class="panel-title">模型关键能力 <span>MODEL CAPABILITY</span></div>
+        <div class="bar-zone" id="bars"></div>
+      </div>
+      <div>
+        <div class="panel-title">验证过程 <span>VALIDATION FEED</span></div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="right">
+    <div class="panel">
+      <div class="panel-title">核心评估指标 <span>SCORECARD</span></div>
+      <div class="kpis">
+        <div class="kpi"><span>综合准确率</span><b data-value="93.0">0.0%</b><small>+6.0% vs baseline</small></div>
+        <div class="kpi"><span>平均误差 MAPE</span><b data-value="6.4">0.0%</b><small>lower is better</small></div>
+        <div class="kpi"><span>稳定性评分</span><b data-value="91.8">0.0</b><small>cross validation</small></div>
+        <div class="kpi"><span>测试通过</span><b data-value="52">0 / 52</b><small>all passed</small></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">模型能力雷达 <span>6 DIMENSIONS</span></div>
+      <div class="radar"><canvas id="radar"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">交叉验证矩阵 <span>ACCURACY %</span></div>
+      <div class="matrix" id="matrix"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="status">
+  <span class="ok">● 模型成果数据已验证</span>
+  <span>GPU NODE · QB-AI-12</span>
+  <span>NO LEAKAGE DETECTED</span>
+  <span>DATA HASH · 8F3A7C21</span>
+  <span id="statusText">等待启动模型</span>
+</footer>
+</div>
+
+<script>
+(() => {
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const BARS=[
+ ["预测精度",93],
+ ["跨周期稳定性",91],
+ ["异常天气适应性",89],
+ ["区域泛化能力",90],
+ ["未来30日可靠性",87]
+];
+const FEED=[
+ ["数据完整性检查通过","00:01"],
+ ["时间泄漏检测通过","00:02"],
+ ["126项特征构建完成","00:04"],
+ ["第1折验证：92.8%","00:06"],
+ ["第2折验证：93.1%","00:08"],
+ ["第3折验证：93.4%","00:10"],
+ ["第4折验证：92.9%","00:12"],
+ ["第5折验证：92.8%","00:14"],
+ ["综合准确率锁定 93.0%","00:16"]
+];
+const PROCESS_STAGES=[
+ {name:"读取历史价格与气象数据",percent:12,logs:[["[DATA] 历史价格样本 186,400 条","ok"],["[DATA] 气象与运输特征已载入","ok"]]},
+ {name:"清洗异常值并构建126项特征",percent:28,logs:[["[CLEAN] 缺失值填补完成","ok"],["[FEATURE] 126项特征构建完成","ok"]]},
+ {name:"训练多尺度价格预测模型",percent:48,logs:[["[TRAIN] 主模型开始训练",""],["[TRAIN] 区域联动层收敛","ok"]]},
+ {name:"执行五折时间序列验证",percent:68,logs:[["[CV-1] 92.8%","ok"],["[CV-2] 93.1%","ok"],["[CV-3] 93.4%","ok"],["[CV-4] 92.9%","ok"],["[CV-5] 92.8%","ok"]]},
+ {name:"生成未来30日价格预测",percent:84,logs:[["[FORECAST] 未来30日曲线生成完成","ok"],["[CHECK] 时间泄漏检测通过","ok"]]},
+ {name:"锁定模型成果",percent:100,logs:[["[RESULT] 综合准确率 93.0%","ok"],["[RESULT] 52项核心测试全部通过","ok"]]}
+];
+let playing=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function countTo(el,target,dec=1,duration=1100,type="percent"){
+ const start=performance.now();
+ function step(now){
+  const p=Math.min(1,(now-start)/duration),e=1-Math.pow(1-p,3),v=target*e;
+  if(type==="tests")el.textContent=Math.round(v)+" / 52";
+  else el.textContent=v.toFixed(dec)+(type==="percent"?"%":"");
+  if(p<1)requestAnimationFrame(step);
+ }
+ requestAnimationFrame(step);
+}
+function drawMain(progress=1){
+ const c=$("#mainChart"),dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;
+ c.width=w*dpr;c.height=h*dpr;const ctx=c.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle="#183441";ctx.lineWidth=1;
+ for(let i=1;i<5;i++){let y=h*i/5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ const actual=[44,47,45,51,55,52,58,61,59,64,66,63,69,72,70,75,78,76,81,84,82,87,90,88,92,95];
+ const pred=[43,46,46,50,54,53,57,60,60,63,65,64,68,71,71,74,77,77,80,83,83,86,89,89,91,94];
+ const future=[94,96,98,97,99,101,102,104];
+ const draw=(data,color,limit,dash=false,offset=0)=>{
+   ctx.beginPath();if(dash)ctx.setLineDash([5,5]);else ctx.setLineDash([]);
+   data.slice(0,limit).forEach((v,i)=>{const total=actual.length+future.length-1,x=(i+offset)*(w/(total-1)),y=h-16-(v-38)/72*(h-32);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+   ctx.strokeStyle=color;ctx.lineWidth=3;ctx.stroke();ctx.setLineDash([]);
+ };
+ const n=Math.max(2,Math.floor(actual.length*progress));draw(actual,"#53b8ff",n);draw(pred,"#45e2cf",n);
+ if(progress>.78){const fp=(progress-.78)/.22;draw([pred.at(-1),...future],"#ffd166",Math.max(2,Math.floor((future.length+1)*fp)),true,actual.length-1)}
+}
+function drawRadar(progress=1){
+ const c=$("#radar"),dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*dpr;c.height=h*dpr;
+ const ctx=c.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ const labels=["精度","稳定","泛化","时效","解释","抗异常"],vals=[.93,.91,.90,.94,.86,.89].map(v=>v*progress),N=6,cx=w/2,cy=h/2+2,R=Math.min(w,h)*.34;
+ for(let l=1;l<=4;l++){ctx.beginPath();for(let i=0;i<N;i++){let a=-Math.PI/2+i*Math.PI*2/N,x=cx+Math.cos(a)*R*l/4,y=cy+Math.sin(a)*R*l/4;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.strokeStyle="#183542";ctx.stroke()}
+ for(let i=0;i<N;i++){let a=-Math.PI/2+i*Math.PI*2/N;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.strokeStyle="#15303c";ctx.stroke();ctx.fillStyle="#7891a1";ctx.font='10px "Microsoft YaHei"';ctx.textAlign=i===0||i===3?"center":i<3?"left":"right";ctx.fillText(labels[i],cx+Math.cos(a)*(R+17),cy+Math.sin(a)*(R+13)+4)}
+ ctx.beginPath();vals.forEach((v,i)=>{let a=-Math.PI/2+i*Math.PI*2/N,x=cx+Math.cos(a)*R*v,y=cy+Math.sin(a)*R*v;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();
+ const g=ctx.createLinearGradient(cx-R,cy,cx+R,cy);g.addColorStop(0,"rgba(83,184,255,.25)");g.addColorStop(1,"rgba(69,226,207,.28)");ctx.fillStyle=g;ctx.fill();ctx.strokeStyle="#45e2cf";ctx.lineWidth=2.5;ctx.stroke();
+}
+function render(){
+ $("#bars").innerHTML=BARS.map(x=>`<div class="bar-item"><div class="bar-top"><b>${x[0]}</b><span>${x[1]}%</span></div><div class="bar"><i data-w="${x[1]}"></i></div></div>`).join("");
+ const rows=[["第1折","92.8","6.7","0.942"],["第2折","93.1","6.3","0.946"],["第3折","93.4","6.1","0.951"],["第4折","92.9","6.5","0.944"],["第5折","92.8","6.4","0.948"]];
+ $("#matrix").innerHTML=`<table><thead><tr><th>验证轮次</th><th>准确率</th><th>MAPE</th><th>R²</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="${Number(r[1])>=93.1?"h3":"h2"}">${r[1]}</td><td class="h1">${r[2]}</td><td class="h2">${r[3]}</td></tr>`).join("")}</tbody></table>`;
+}
+
+function resetProcessUI(){
+ $("#processStage").textContent="等待启动";
+ $("#processBar").style.width="0%";
+ $("#processPercent").textContent="0%";
+ $("#modelLog").innerHTML="";
+ $("#modelLog").classList.remove("show");
+ $$("[data-run-step]").forEach(x=>x.className="run-step");
+}
+function addModelLog(text,type=""){
+ const row=document.createElement("div");
+ row.textContent=text;
+ if(type)row.className=type;
+ $("#modelLog").appendChild(row);
+ $("#modelLog").scrollTop=$("#modelLog").scrollHeight;
+}
+async function runProcessStages(){
+ const stepEls=$$("[data-run-step]");
+ $("#modelLog").classList.add("show");
+ for(let i=0;i<PROCESS_STAGES.length;i++){
+   const stage=PROCESS_STAGES[i];
+   $("#processStage").textContent=stage.name;
+   $("#processBar").style.width=stage.percent+"%";
+   $("#processPercent").textContent=stage.percent+"%";
+   const stepIndex=Math.min(i,stepEls.length-1);
+   stepEls.forEach((el,idx)=>{
+     if(idx<stepIndex)el.className="run-step done";
+     else if(idx===stepIndex)el.className="run-step active";
+     else el.className="run-step";
+   });
+   for(const [line,type] of stage.logs){
+     addModelLog(line,type);
+     await sleep(320+Math.floor(Math.random()*180));
+   }
+   await sleep(360);
+ }
+ stepEls.forEach(el=>el.className="run-step done");
+}
+
+async function boot(){
+ $("#boot").classList.remove("hide");$("#bootBar").style.width="0";
+ await sleep(100);$("#bootBar").style.width="35%";$("#bootMsg").textContent="正在校验训练集与测试集...";
+ await sleep(550);$("#bootBar").style.width="70%";$("#bootMsg").textContent="正在载入五折验证结果...";
+ await sleep(550);$("#bootBar").style.width="100%";$("#bootMsg").textContent="模型成果数据加载完成";
+ await sleep(450);$("#boot").classList.add("hide");
+}
+async function play(){
+ if(playing)return;
+ playing=true;
+ $("#startOverlay").classList.add("hide");
+ $("#statusText").textContent="模型正在运行";
+ resetProcessUI();
+ $$(".kpi,.bar-item,.feed-row").forEach(x=>x.classList.remove("show"));
+ $("#pass").classList.remove("show");
+ $("#score").textContent="0.0";
+ $("#feed").innerHTML="";
+ drawMain(0);
+ drawRadar(0);
+
+ await runProcessStages();
+
+ for(const k of $$(".kpi")){
+   k.classList.add("show");
+   const b=k.querySelector("b"),v=Number(b.dataset.value);
+   countTo(b,v,v===52?0:1,900,v===52?"tests":v===91.8?"raw":"percent");
+   await sleep(220);
+ }
+
+ for(let p=.05;p<=1;p+=.05){
+   drawMain(p);
+   drawRadar(p);
+   await sleep(45);
+ }
+
+ for(const x of $$(".bar-item")){
+   x.classList.add("show");
+   await sleep(90);
+   x.querySelector("i").style.width=x.querySelector("i").dataset.w+"%";
+ }
+
+ for(const [text,time] of FEED){
+   const row=document.createElement("div");
+   row.className="feed-row";
+   row.innerHTML=`<i>✓</i><b>${text}</b><span>${time}</span>`;
+   $("#feed").appendChild(row);
+   await sleep(130);
+   row.classList.add("show");
+   $("#feed").scrollTop=$("#feed").scrollHeight;
+ }
+
+ countTo($("#score"),93,1,1700,"raw");
+ await sleep(1300);
+ $("#pass").classList.add("show");
+ $("#flash").classList.add("show");
+ setTimeout(()=>$("#flash").classList.remove("show"),600);
+ $("#statusText").textContent="综合准确率 93.0% · 全部核心测试通过";
+ playing=false;
+}
+render();drawMain(0);drawRadar(0);resetProcessUI();
+$("#startModelBtn").onclick=play;
+$("#replayBtn").onclick=()=>{
+ if(playing)return;
+ $("#startOverlay").classList.remove("hide");
+ $("#startModelBtn").textContent="▶ 重新运行模型";
+ resetProcessUI();
+};
+$("#fullBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+window.addEventListener("resize",()=>{drawMain(playing?0:1);drawRadar(playing?0:1)});
+})();
+</script>
+</body>
+</html>
