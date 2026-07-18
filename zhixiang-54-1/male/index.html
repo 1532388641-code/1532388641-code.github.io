@@ -57,6 +57,6 @@
 <script>
   const send=document.querySelector('#send'),transfer=document.querySelector('#transfer'),progress=document.querySelector('#progress'),percent=document.querySelector('#percent'),packet=document.querySelector('#packet'),done=document.querySelector('#done'),toast=document.querySelector('#toast');let timer;
   function run(){clearInterval(timer);let n=0;transfer.classList.add('show');done.classList.remove('show');toast.classList.remove('show');send.disabled=true;send.textContent='正在安全传输…';progress.style.width='0%';percent.textContent='0%';packet.textContent='正在建立端到端加密通道…';timer=setInterval(()=>{n+=Math.ceil(Math.random()*5);if(n>100)n=100;progress.style.width=n+'%';percent.textContent=n+'%';if(n>18)packet.textContent='分片 '+String(Math.ceil(n/4)).padStart(2,'0')+'/25 · AES-256-GCM';if(n>72)packet.textContent='正在验证数据完整性…';if(n===100){clearInterval(timer);packet.textContent='SHA-256  8f3ac7…c921  ·  验证一致';done.classList.add('show');toast.classList.add('show');send.disabled=false;send.textContent='重新发送';setTimeout(()=>toast.classList.remove('show'),4000)}},95)}
-  send.addEventListener('click',run);document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();run()}if(e.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.()});setTimeout(run,1800);
+  send.addEventListener('click',run);document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();run()}if(e.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.()});
 </script>
 </body></html>
