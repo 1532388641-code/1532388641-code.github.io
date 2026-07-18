@@ -1,0 +1,1447 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>20-1 · 全渠道电商经营数据分析系统</title>
+<style>
+:root{
+  --bg:#070b10;--panel:#0d141c;--panel2:#111b25;--panel3:#081018;--line:#20303d;--line2:#14222d;
+  --ink:#dce8f2;--muted:#6e8292;--blue:#4fb3ff;--cyan:#38d9c5;--green:#43d17a;--green2:#82f0a8;
+  --yellow:#e8b84b;--orange:#ff914d;--red:#ff5f6d;--purple:#b68cff;--code-size:11px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05080c;color:var(--ink);
+font-family:"Segoe UI","Microsoft YaHei",Arial,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{height:100vh;display:grid;grid-template-rows:40px 92px minmax(0,1fr) 26px;background:radial-gradient(circle at 84% 2%,rgba(56,217,197,.09),transparent 26%),var(--bg)}
+.titlebar{display:flex;align-items:center;gap:10px;padding:0 14px;background:rgba(7,13,20,.96);border-bottom:1px solid #1d3442;font-size:10px;color:#8fa3b3;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.logo{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#1488cc,#38d9c5);display:grid;place-items:center;font-weight:900;color:white;box-shadow:0 0 18px rgba(56,217,197,.22)}
+.titlebar b{color:#dfe6ee}.branch{color:#58a6ff}.grow{flex:1}
+.win{width:34px;height:26px;border:0;background:transparent;color:#7d8997}.win:hover{background:#202833}.win.close:hover{background:#b42318;color:#fff}
+.project-banner{display:flex;align-items:center;gap:22px;padding:14px 24px;background:
+linear-gradient(100deg,rgba(20,136,204,.18),rgba(56,217,197,.08),transparent 68%),#09121a;border-bottom:1px solid #1e3442;position:relative;overflow:hidden}
+.project-banner:after{content:"";position:absolute;right:30px;top:-70px;width:230px;height:230px;border:1px solid rgba(56,217,197,.08);border-radius:50%;box-shadow:0 0 0 35px rgba(79,179,255,.025),0 0 0 70px rgba(56,217,197,.02)}
+.project-title{min-width:0}.project-title h1{margin:0;font-size:31px;line-height:1.05;letter-spacing:.8px;color:#f0f8ff;text-shadow:0 0 22px rgba(79,179,255,.10)}
+.project-title p{margin:7px 0 0;color:#7f8c9c;font-size:10px}
+.banner-stats{margin-left:auto;display:grid;grid-template-columns:repeat(4,92px);gap:7px}
+.banner-stat{background:rgba(11,23,32,.82);border:1px solid #223847;border-radius:4px;padding:9px 10px;box-shadow:inset 0 1px rgba(255,255,255,.025)}
+.banner-stat span{display:block;font-size:8px;color:#6f7b89}.banner-stat b{display:block;margin-top:4px;font:17px Consolas,monospace;color:#dbe5ef}
+.workspace{min-height:0;display:grid;grid-template-columns:224px minmax(520px,1.55fr) minmax(330px,.82fr)}
+.sidebar{min-height:0;background:#0a1118;border-right:1px solid #1e303d;display:grid;grid-template-rows:36px minmax(0,1fr) 156px}
+.side-head{display:flex;align-items:center;padding:0 10px;border-bottom:1px solid var(--line);font-size:9px;font-weight:700;letter-spacing:.8px}
+.filetree{overflow:auto;padding:5px 0;font:10px/1.6 Consolas,monospace}
+.tree{height:27px;display:flex;align-items:center;gap:7px;padding:0 9px;color:#9aa5b2;white-space:nowrap}
+.tree:hover,.tree.active{background:linear-gradient(90deg,rgba(79,179,255,.14),rgba(56,217,197,.035));color:#eef8ff;border-left:2px solid #38d9c5}.tree.i1{padding-left:21px}.tree.i2{padding-left:37px}
+.folder{color:#d29922}.py{color:#58a6ff}.sql{color:#56d4dd}.yml{color:#bc8cff}.json{color:#f0883e}.md{color:#7d8590}
+.side-card{border-top:1px solid var(--line);padding:9px;background:#0b1016}
+.side-card h3{font-size:9px;margin:0 0 7px;color:#aeb8c4}
+.kv{display:grid;grid-template-columns:1fr auto;gap:5px;font:8px/1.5 Consolas,monospace;color:#667382}.kv b{color:#c4ced8}
+.editor-zone{min-height:0;display:grid;grid-template-rows:33px minmax(0,1fr) 210px;background:#080d13}
+.tabs{display:flex;overflow:hidden;background:#0d1218;border-bottom:1px solid var(--line)}
+.tab{min-width:145px;height:31px;border:0;border-right:1px solid var(--line);background:#0d1218;color:#7d8896;
+font:9px Consolas,monospace;display:flex;align-items:center;gap:7px;padding:0 9px}
+.tab.active{background:#080d13;color:#eaf5fc;border-top:2px solid #38d9c5}.tab .dot{margin-left:auto;color:#596473}
+.editor-wrap{min-height:0;overflow:auto;background:var(--bg);scrollbar-width:thin;scrollbar-color:#2c3642 transparent}
+.code-grid{display:grid;grid-template-columns:46px max-content;min-width:100%;font:var(--code-size)/1.55 Consolas,"Courier New",monospace}
+.line-no{padding:0 8px 0 0;text-align:right;color:#39434f;border-right:1px solid #171e27;user-select:none;min-height:17px}
+.code-line{padding:0 13px;white-space:pre;min-height:17px;min-width:760px}
+.code-line.active,.line-no.active{background:rgba(56,139,253,.10)}.line-no.active{color:#58a6ff}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.num{color:#79c0ff}.com{color:#7d8590}.cls{color:#ffa657}.self{color:#ffa657}.dec{color:#d2a8ff}.op{color:#56d4dd}
+.terminal{min-height:0;border-top:1px solid #1c303c;background:#050a0f;display:grid;grid-template-rows:30px minmax(0,1fr) 32px;box-shadow:inset 0 8px 24px rgba(0,0,0,.18)}
+.term-head{display:flex;align-items:center;padding:0 9px;border-bottom:1px solid var(--line);font-size:9px;color:#788493}
+.term-head b{height:29px;display:flex;align-items:center;padding:0 8px;border-bottom:1px solid white;color:#dce4ec}.term-tools{margin-left:auto}
+.term-tools button{width:27px;height:24px;border:0;background:transparent;color:#6e7987}
+.term-output{overflow:auto;padding:7px 10px;font:10px/1.48 Consolas,monospace;color:#aab5c1;white-space:pre-wrap}
+.term-input-row{display:flex;align-items:center;gap:6px;border-top:1px solid #171e27;padding:0 9px;font:9px Consolas,monospace}
+.prompt{color:#56d4dd}.term-input{flex:1;background:transparent;border:0;outline:none;font:10px Consolas,monospace}
+.run-btn{height:24px;border:1px solid #2e6b43;background:#173b25;color:#7ee787;border-radius:5px;padding:0 10px;font-size:9px}
+.right{min-height:0;border-left:1px solid #1e3340;background:#09121a;display:grid;grid-template-rows:42px 168px 178px minmax(0,1fr)}
+.right-head{display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #203543;font-size:10px;font-weight:700;letter-spacing:.7px;background:#0b151e}
+.right-head span{margin-left:auto;font:8px Consolas,monospace;color:#4f6b7d}
+.stream-monitor{padding:11px 12px;border-bottom:1px solid #1b2d39}
+.stream-title{display:flex;align-items:center;font-size:9px;color:#8ba1b1}
+.stream-title b{font-size:11px;color:#dce8f2}.stream-title span{margin-left:auto;color:#38d9c5;font:9px Consolas,monospace}
+.stream-main{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.live-card{background:#0c1821;border:1px solid #203845;border-radius:5px;padding:9px;position:relative;overflow:hidden}
+.live-card:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,#1488cc,#38d9c5)}
+.live-card span{display:block;font-size:8px;color:#6d8292}.live-card b{display:block;margin-top:4px;font:20px Consolas,monospace;color:#e3f1fa}
+.live-card small{display:block;margin-top:2px;font:8px Consolas,monospace;color:#43d17a}
+.sparkline{width:100%;height:45px;margin-top:9px;border:1px solid #1e3340;background:#071019;border-radius:4px}
+.resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:11px 12px;border-bottom:1px solid #1b2d39}
+.resource{background:#0c1720;border:1px solid #1f3441;border-radius:5px;padding:9px}
+.resource-top{display:flex;justify-content:space-between;align-items:center;font-size:8px;color:#6e8393}
+.resource-top b{font:13px Consolas,monospace;color:#dce9f2}
+.meter{height:5px;background:#172631;border-radius:999px;overflow:hidden;margin-top:7px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1488cc,#38d9c5);transition:width .35s}
+.health-panel{min-height:0;display:grid;grid-template-rows:31px minmax(0,1fr)}
+.health-title{display:flex;align-items:center;padding:0 12px;font-size:9px;color:#8ca1b1;border-bottom:1px solid #172833}
+.health-title span{margin-left:auto;color:#43d17a;font:8px Consolas,monospace}
+.event-list{overflow:auto;padding:5px 10px 10px}
+.event-row{min-height:31px;display:grid;grid-template-columns:18px 1fr auto;align-items:center;border-bottom:1px solid #152630;font:8px Consolas,monospace;color:#718695}
+.event-row b{font-weight:400;color:#b9cbd7}.event-row .icon{color:#4e6878}.event-row.pass .icon{color:#43d17a}.event-row.run .icon{color:#e8b84b}.event-row.warn .icon{color:#ff914d}
+.event-row small{color:#496272}
+.status{display:flex;align-items:center;gap:12px;padding:0 8px;background:#0c1117;border-top:1px solid var(--line);font:8px Consolas,monospace;color:#65717e}.status .ok{color:#3fb950}.status span:last-child{margin-left:auto}
+.searchbox{position:fixed;right:320px;top:132px;z-index:20;display:none;gap:5px;background:#161b22;border:1px solid #30363d;padding:5px;border-radius:7px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.searchbox.open{display:flex}.searchbox input{width:180px;height:28px;background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:0 7px;font-size:9px;outline:none}
+.searchbox button{height:28px;border:1px solid #30363d;background:#21262d;border-radius:5px;font-size:9px}
+.toast{position:fixed;left:50%;bottom:36px;z-index:100;transform:translateX(-50%) translateY(10px);opacity:0;background:#26313c;border:1px solid #3c4855;border-radius:7px;padding:8px 11px;font-size:9px;transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:1100px){.workspace{grid-template-columns:176px minmax(480px,1fr) 270px}.banner-stats{grid-template-columns:repeat(4,78px)}.project-title h1{font-size:25px}.right{grid-template-rows:38px 132px 145px minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="titlebar">
+    <div class="logo">EC</div>
+    <b>DataForge Studio</b><span>—</span><span>20-1 项目工作区</span>
+    <span class="branch">feature/growth-analysis</span><div class="grow"></div>
+    <button class="win" id="searchBtn">⌕</button><button class="win" id="fontBtn">A</button><button class="win" id="fullBtn">□</button><button class="win close">×</button>
+  </header>
+
+  <section class="project-banner">
+    <div class="project-title">
+      <h1>全渠道电商经营数据分析系统</h1>
+      <p>订单、用户、商品、渠道、复购与经营增长一体化分析工程</p>
+    </div>
+    <div class="banner-stats">
+      <div class="banner-stat"><span>数据表</span><b>18</b></div>
+      <div class="banner-stat"><span>分析模块</span><b>9</b></div>
+      <div class="banner-stat"><span>代码文件</span><b>47</b></div>
+      <div class="banner-stat"><span>当前进度</span><b>62%</b></div>
+    </div>
+  </section>
+
+  <section class="workspace">
+    <aside class="sidebar">
+      <div class="side-head">资源管理器 · ECOM-GROWTH-ANALYTICS</div>
+      <div class="filetree">
+        <div class="tree"><span class="folder">▾</span><b>ecom-growth-analytics</b></div>
+        <div class="tree i1"><span class="folder">▾</span><b>src</b></div>
+        <div class="tree i2 active" data-file="src/pipeline.py"><span class="py">PY</span>pipeline.py</div>
+        <div class="tree i2" data-file="src/customer_segmentation.py"><span class="py">PY</span>customer_segmentation.py</div>
+        <div class="tree i2" data-file="src/channel_roi.py"><span class="py">PY</span>channel_roi.py</div>
+        <div class="tree i2" data-file="src/retention_model.py"><span class="py">PY</span>retention_model.py</div>
+        <div class="tree i2" data-file="src/report_builder.py"><span class="py">PY</span>report_builder.py</div>
+        <div class="tree i1"><span class="folder">▾</span><b>sql</b></div>
+        <div class="tree i2" data-file="sql/order_metrics.sql"><span class="sql">SQL</span>order_metrics.sql</div>
+        <div class="tree i2" data-file="sql/customer_ltv.sql"><span class="sql">SQL</span>customer_ltv.sql</div>
+        <div class="tree i1"><span class="folder">▾</span><b>config</b></div>
+        <div class="tree i2" data-file="config/project.yaml"><span class="yml">YML</span>project.yaml</div>
+        <div class="tree i2"><span class="json">{ }</span>channels.json</div>
+        <div class="tree i1"><span class="folder">▾</span><b>data</b></div>
+        <div class="tree i2"><span class="json">CSV</span>orders_2024_2026.csv</div>
+        <div class="tree i2"><span class="json">CSV</span>customers.csv</div>
+        <div class="tree i2"><span class="json">CSV</span>products.csv</div>
+        <div class="tree i1"><span class="folder">▸</span><b>reports</b></div>
+        <div class="tree i1"><span class="folder">▸</span><b>tests</b></div>
+        <div class="tree i1"><span class="md">MD</span>README.md</div>
+      </div>
+      <div class="side-card">
+        <h3>项目环境</h3>
+        <div class="kv">
+          <span>Python</span><b>3.11.8</b><span>数据库</span><b>PostgreSQL</b><span>数据量</span><b>128,640行</b><span>渠道</span><b>7个</b><span>分支</span><b>growth-analysis</b><span>状态</span><b style="color:#7ee787">READY</b>
+        </div>
+      </div>
+    </aside>
+
+    <section class="editor-zone">
+      <div class="tabs" id="tabs"></div>
+      <div class="editor-wrap" id="editorWrap"><div class="code-grid" id="codeGrid"></div></div>
+      <div class="terminal">
+        <div class="term-head"><b>终端</b><span style="padding-left:10px">输出</span><span style="padding-left:10px">问题</span><div class="term-tools"><button id="clearBtn">⌫</button><button>＋</button><button>⋮</button></div></div>
+        <div class="term-output" id="termOutput">Microsoft PowerShell 7.4.2
+Copyright (C) Microsoft Corporation.
+
+(.venv) PS D:\ecom-growth-analytics&gt; <span style="color:#667280">输入 start 启动完整分析流程。</span>
+</div>
+        <div class="term-input-row"><span class="prompt">(.venv) PS D:\ecom-growth-analytics&gt;</span><input id="termInput" class="term-input" autocomplete="off" spellcheck="false"></div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="right-head">实时数据控制台 <span id="runState">STANDBY</span></div>
+
+      <div class="stream-monitor">
+        <div class="stream-title"><b>数据流监控</b><span id="streamStatus">WAITING</span></div>
+        <div class="stream-main">
+          <div class="live-card"><span>实时吞吐</span><b id="throughput">0</b><small>rows / sec</small></div>
+          <div class="live-card"><span>数据库延迟</span><b id="dbLatency">--</b><small>milliseconds</small></div>
+        </div>
+        <canvas class="sparkline" id="sparkline"></canvas>
+      </div>
+
+      <div class="resource-grid">
+        <div class="resource">
+          <div class="resource-top"><span>CPU</span><b id="cpuText">8%</b></div>
+          <div class="meter"><i id="cpuMeter"></i></div>
+        </div>
+        <div class="resource">
+          <div class="resource-top"><span>内存</span><b id="memoryText">2.1 GB</b></div>
+          <div class="meter"><i id="memoryMeter"></i></div>
+        </div>
+        <div class="resource">
+          <div class="resource-top"><span>任务队列</span><b id="queueText">0</b></div>
+          <div class="meter"><i id="queueMeter"></i></div>
+        </div>
+        <div class="resource">
+          <div class="resource-top"><span>数据质量</span><b id="qualityText">--</b></div>
+          <div class="meter"><i id="qualityMeter"></i></div>
+        </div>
+      </div>
+
+      <div class="health-panel">
+        <div class="health-title">实时事件与健康检查 <span id="healthState">SYSTEM READY</span></div>
+        <div class="event-list" id="eventList"></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer class="status"><span class="ok">● 工作区已连接</span><span>growth-analysis*</span><span>Python 3.11.8</span><span>UTF-8</span><span id="lineStatus">Ln 1</span><span id="statusText">系统就绪</span></footer>
+</div>
+
+<div class="searchbox" id="searchbox"><input id="searchInput" placeholder="搜索当前文件"><button id="nextBtn">下一个</button><button id="closeSearch">×</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const FILES = {
+"src/pipeline.py": `"""全渠道电商经营数据分析主流程。
+
+整合订单、用户、商品、渠道、活动与售后数据，
+输出经营总览、客户分层、渠道效率、复购与增长建议。
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from datetime import date, datetime
+from pathlib import Path
+from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
+import csv
+import hashlib
+import json
+import math
+import statistics
+import time
+
+from customer_segmentation import CustomerSegmenter
+from channel_roi import ChannelROIAnalyzer
+from retention_model import RetentionAnalyzer
+from report_builder import ReportBuilder
+
+
+DATA_DIR = Path("data")
+REPORT_DIR = Path("reports")
+CACHE_DIR = Path(".cache")
+
+
+@dataclass(frozen=True)
+class OrderRow:
+    order_id: str
+    customer_id: str
+    product_id: str
+    channel: str
+    order_date: date
+    quantity: int
+    unit_price: float
+    discount: float
+    refund_amount: float
+    shipping_fee: float
+    campaign_id: str
+
+
+@dataclass
+class DataQualityReport:
+    total_rows: int
+    valid_rows: int
+    duplicate_rows: int
+    missing_customer: int
+    invalid_amount: int
+    date_errors: int
+    quality_score: float
+
+
+@dataclass
+class ProjectResult:
+    created_at: str
+    order_count: int
+    customer_count: int
+    product_count: int
+    channel_count: int
+    gross_merchandise_value: float
+    net_revenue: float
+    refund_rate: float
+    repeat_purchase_rate: float
+    data_quality_score: float
+    segment_summary: Dict[str, int]
+    channel_summary: Dict[str, Dict[str, float]]
+    recommendations: List[str]
+
+
+class DataLoader:
+    REQUIRED_FIELDS = {
+        "order_id",
+        "customer_id",
+        "product_id",
+        "channel",
+        "order_date",
+        "quantity",
+        "unit_price",
+        "discount",
+        "refund_amount",
+        "shipping_fee",
+        "campaign_id",
+    }
+
+    def __init__(
+        self,
+        data_dir: Path = DATA_DIR,
+    ) -> None:
+        self.data_dir = data_dir
+
+    def load_orders(
+        self,
+        filename: str,
+    ) -> List[OrderRow]:
+        path = self.data_dir / filename
+        rows: List[OrderRow] = []
+
+        with path.open(
+            "r",
+            encoding="utf-8-sig",
+            newline="",
+        ) as file:
+            reader = csv.DictReader(file)
+            self._validate_columns(reader.fieldnames)
+
+            for raw in reader:
+                rows.append(
+                    self._parse_order(raw)
+                )
+
+        return rows
+
+    def _validate_columns(
+        self,
+        columns: Sequence[str] | None,
+    ) -> None:
+        if not columns:
+            raise ValueError(
+                "order file has no header"
+            )
+
+        missing = self.REQUIRED_FIELDS.difference(columns)
+        if missing:
+            raise ValueError(
+                f"missing fields: {sorted(missing)}"
+            )
+
+    def _parse_order(
+        self,
+        raw: Mapping[str, str],
+    ) -> OrderRow:
+        return OrderRow(
+            order_id=raw["order_id"].strip(),
+            customer_id=raw["customer_id"].strip(),
+            product_id=raw["product_id"].strip(),
+            channel=raw["channel"].strip(),
+            order_date=date.fromisoformat(
+                raw["order_date"]
+            ),
+            quantity=int(raw["quantity"]),
+            unit_price=float(raw["unit_price"]),
+            discount=float(raw["discount"]),
+            refund_amount=float(raw["refund_amount"]),
+            shipping_fee=float(raw["shipping_fee"]),
+            campaign_id=raw["campaign_id"].strip(),
+        )
+
+
+class DataQualityScanner:
+    def scan(
+        self,
+        orders: Sequence[OrderRow],
+    ) -> DataQualityReport:
+        seen: set[str] = set()
+        duplicate_rows = 0
+        missing_customer = 0
+        invalid_amount = 0
+        date_errors = 0
+        valid_rows = 0
+
+        for order in orders:
+            if order.order_id in seen:
+                duplicate_rows += 1
+                continue
+            seen.add(order.order_id)
+
+            if not order.customer_id:
+                missing_customer += 1
+                continue
+
+            gross = (
+                order.quantity
+                * order.unit_price
+                * (1.0 - order.discount)
+            )
+            if gross < 0.0:
+                invalid_amount += 1
+                continue
+
+            if order.order_date.year < 2020:
+                date_errors += 1
+                continue
+
+            valid_rows += 1
+
+        penalties = (
+            duplicate_rows
+            + missing_customer
+            + invalid_amount
+            + date_errors
+        )
+        quality = (
+            valid_rows
+            / max(len(orders), 1)
+        )
+
+        return DataQualityReport(
+            total_rows=len(orders),
+            valid_rows=valid_rows,
+            duplicate_rows=duplicate_rows,
+            missing_customer=missing_customer,
+            invalid_amount=invalid_amount,
+            date_errors=date_errors,
+            quality_score=round(quality, 4),
+        )
+
+
+class MetricEngine:
+    def gross_amount(
+        self,
+        order: OrderRow,
+    ) -> float:
+        return (
+            order.quantity
+            * order.unit_price
+            * (1.0 - order.discount)
+        )
+
+    def net_amount(
+        self,
+        order: OrderRow,
+    ) -> float:
+        return (
+            self.gross_amount(order)
+            - order.refund_amount
+            + order.shipping_fee
+        )
+
+    def aggregate(
+        self,
+        orders: Sequence[OrderRow],
+    ) -> Dict[str, float]:
+        gmv = sum(
+            self.gross_amount(order)
+            for order in orders
+        )
+        net_revenue = sum(
+            self.net_amount(order)
+            for order in orders
+        )
+        refund_amount = sum(
+            order.refund_amount
+            for order in orders
+        )
+        customer_ids = {
+            order.customer_id
+            for order in orders
+        }
+        product_ids = {
+            order.product_id
+            for order in orders
+        }
+        channels = {
+            order.channel
+            for order in orders
+        }
+
+        return {
+            "order_count": float(len(orders)),
+            "customer_count": float(len(customer_ids)),
+            "product_count": float(len(product_ids)),
+            "channel_count": float(len(channels)),
+            "gmv": round(gmv, 2),
+            "net_revenue": round(net_revenue, 2),
+            "refund_rate": round(
+                refund_amount / max(gmv, 1.0),
+                4,
+            ),
+        }
+
+
+class AnalysisPipeline:
+    def __init__(
+        self,
+        loader: DataLoader | None = None,
+    ) -> None:
+        self.loader = loader or DataLoader()
+        self.quality_scanner = DataQualityScanner()
+        self.metric_engine = MetricEngine()
+        self.segmenter = CustomerSegmenter()
+        self.channel_analyzer = ChannelROIAnalyzer()
+        self.retention_analyzer = RetentionAnalyzer()
+        self.report_builder = ReportBuilder()
+
+    def run(
+        self,
+        order_file: str = "orders_2024_2026.csv",
+    ) -> ProjectResult:
+        started = time.perf_counter()
+        orders = self.loader.load_orders(order_file)
+
+        quality = self.quality_scanner.scan(orders)
+        if quality.quality_score < 0.92:
+            raise RuntimeError(
+                "data quality below project threshold"
+            )
+
+        metrics = self.metric_engine.aggregate(orders)
+        segments = self.segmenter.fit_transform(orders)
+        channels = self.channel_analyzer.analyze(orders)
+        retention = self.retention_analyzer.analyze(orders)
+
+        recommendations = self._recommend(
+            metrics=metrics,
+            segments=segments,
+            channels=channels,
+            retention=retention,
+        )
+
+        result = ProjectResult(
+            created_at=datetime.now().isoformat(),
+            order_count=int(metrics["order_count"]),
+            customer_count=int(metrics["customer_count"]),
+            product_count=int(metrics["product_count"]),
+            channel_count=int(metrics["channel_count"]),
+            gross_merchandise_value=metrics["gmv"],
+            net_revenue=metrics["net_revenue"],
+            refund_rate=metrics["refund_rate"],
+            repeat_purchase_rate=retention["repeat_purchase_rate"],
+            data_quality_score=quality.quality_score,
+            segment_summary=segments["counts"],
+            channel_summary=channels,
+            recommendations=recommendations,
+        )
+
+        REPORT_DIR.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+        self.report_builder.write(
+            result=result,
+            output_dir=REPORT_DIR,
+        )
+
+        elapsed = time.perf_counter() - started
+        print(
+            f"analysis completed in {elapsed:.3f}s"
+        )
+        return result
+
+    def _recommend(
+        self,
+        metrics: Mapping[str, float],
+        segments: Mapping[str, object],
+        channels: Mapping[str, Mapping[str, float]],
+        retention: Mapping[str, float],
+    ) -> List[str]:
+        recommendations: List[str] = []
+
+        if metrics["refund_rate"] > 0.08:
+            recommendations.append(
+                "优先检查高退款商品和售后原因。"
+            )
+
+        if retention["repeat_purchase_rate"] < 0.30:
+            recommendations.append(
+                "针对首购后30天未复购客户建立召回策略。"
+            )
+
+        weak_channels = [
+            name
+            for name, item in channels.items()
+            if item["roi"] < 1.0
+        ]
+        if weak_channels:
+            recommendations.append(
+                "降低低ROI渠道预算："
+                + "、".join(weak_channels)
+            )
+
+        recommendations.append(
+            "对高价值客户单独设置新品和会员权益。"
+        )
+        recommendations.append(
+            "建立渠道、商品和客户三层周度经营看板。"
+        )
+        return recommendations
+
+
+def file_hash(
+    path: Path,
+) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for block in iter(
+            lambda: file.read(1024 * 1024),
+            b"",
+        ):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def main() -> None:
+    pipeline = AnalysisPipeline()
+    result = pipeline.run()
+    print(
+        json.dumps(
+            asdict(result),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
+`,
+"src/customer_segmentation.py": `from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import date
+from typing import Dict, Iterable, List, Mapping, Sequence
+import math
+import statistics
+
+
+@dataclass
+class CustomerProfile:
+    customer_id: str
+    recency_days: int
+    order_count: int
+    gross_value: float
+    refund_value: float
+    category_count: int
+    channel_count: int
+    active_months: int
+
+
+class CustomerSegmenter:
+    SEGMENTS = (
+        "高价值客户",
+        "稳定复购客户",
+        "成长客户",
+        "价格敏感客户",
+        "沉睡客户",
+        "新客户",
+    )
+
+    def build_profiles(
+        self,
+        orders: Sequence,
+    ) -> List[CustomerProfile]:
+        grouped: Dict[str, List] = defaultdict(list)
+
+        for order in orders:
+            grouped[order.customer_id].append(order)
+
+        latest_date = max(
+            order.order_date
+            for order in orders
+        )
+        profiles: List[CustomerProfile] = []
+
+        for customer_id, items in grouped.items():
+            order_dates = [
+                item.order_date
+                for item in items
+            ]
+            gross_values = [
+                item.quantity
+                * item.unit_price
+                * (1.0 - item.discount)
+                for item in items
+            ]
+            months = {
+                (item.order_date.year, item.order_date.month)
+                for item in items
+            }
+            categories = {
+                item.product_id.split("-")[0]
+                for item in items
+            }
+            channels = {
+                item.channel
+                for item in items
+            }
+
+            profiles.append(
+                CustomerProfile(
+                    customer_id=customer_id,
+                    recency_days=(
+                        latest_date - max(order_dates)
+                    ).days,
+                    order_count=len(items),
+                    gross_value=round(
+                        sum(gross_values),
+                        2,
+                    ),
+                    refund_value=round(
+                        sum(item.refund_amount for item in items),
+                        2,
+                    ),
+                    category_count=len(categories),
+                    channel_count=len(channels),
+                    active_months=len(months),
+                )
+            )
+
+        return profiles
+
+    def score(
+        self,
+        profile: CustomerProfile,
+    ) -> Dict[str, float]:
+        recency_score = max(
+            0.0,
+            1.0 - profile.recency_days / 180.0,
+        )
+        frequency_score = min(
+            1.0,
+            math.log1p(profile.order_count) / math.log(20.0),
+        )
+        value_score = min(
+            1.0,
+            math.log1p(profile.gross_value) / math.log(20000.0),
+        )
+        diversity_score = min(
+            1.0,
+            (
+                profile.category_count
+                + profile.channel_count
+            ) / 10.0,
+        )
+        stability_score = min(
+            1.0,
+            profile.active_months / 12.0,
+        )
+        refund_penalty = min(
+            0.6,
+            profile.refund_value
+            / max(profile.gross_value, 1.0),
+        )
+
+        total = (
+            recency_score * 0.24
+            + frequency_score * 0.24
+            + value_score * 0.30
+            + diversity_score * 0.10
+            + stability_score * 0.12
+            - refund_penalty
+        )
+
+        return {
+            "recency": round(recency_score, 4),
+            "frequency": round(frequency_score, 4),
+            "value": round(value_score, 4),
+            "diversity": round(diversity_score, 4),
+            "stability": round(stability_score, 4),
+            "total": round(max(total, 0.0), 4),
+        }
+
+    def classify(
+        self,
+        profile: CustomerProfile,
+        scores: Mapping[str, float],
+    ) -> str:
+        if profile.order_count <= 1:
+            return "新客户"
+        if profile.recency_days > 120:
+            return "沉睡客户"
+        if scores["value"] >= 0.76 and scores["frequency"] >= 0.62:
+            return "高价值客户"
+        if scores["stability"] >= 0.55 and profile.order_count >= 5:
+            return "稳定复购客户"
+        if profile.refund_value > profile.gross_value * 0.12:
+            return "价格敏感客户"
+        return "成长客户"
+
+    def fit_transform(
+        self,
+        orders: Sequence,
+    ) -> Dict[str, object]:
+        profiles = self.build_profiles(orders)
+        counts = {
+            name: 0
+            for name in self.SEGMENTS
+        }
+        customer_rows = []
+
+        for profile in profiles:
+            scores = self.score(profile)
+            segment = self.classify(
+                profile,
+                scores,
+            )
+            counts[segment] += 1
+            customer_rows.append({
+                "customer_id": profile.customer_id,
+                "segment": segment,
+                "scores": scores,
+                "order_count": profile.order_count,
+                "gross_value": profile.gross_value,
+                "recency_days": profile.recency_days,
+            })
+
+        return {
+            "counts": counts,
+            "customers": customer_rows,
+        }
+`,
+"src/channel_roi.py": `from __future__ import annotations
+
+from collections import defaultdict
+from typing import Dict, Mapping, Sequence
+
+
+class ChannelROIAnalyzer:
+    def analyze(
+        self,
+        orders: Sequence,
+    ) -> Dict[str, Dict[str, float]]:
+        grouped = defaultdict(list)
+
+        for order in orders:
+            grouped[order.channel].append(order)
+
+        result: Dict[str, Dict[str, float]] = {}
+
+        for channel, items in grouped.items():
+            gmv = sum(
+                item.quantity
+                * item.unit_price
+                * (1.0 - item.discount)
+                for item in items
+            )
+            refunds = sum(
+                item.refund_amount
+                for item in items
+            )
+            shipping = sum(
+                item.shipping_fee
+                for item in items
+            )
+            estimated_cost = (
+                gmv * 0.62
+                + shipping
+                + refunds
+            )
+            estimated_marketing = (
+                gmv * self._marketing_rate(channel)
+            )
+            net = (
+                gmv
+                - estimated_cost
+                - estimated_marketing
+            )
+            roi = (
+                net
+                / max(estimated_marketing, 1.0)
+            )
+
+            customers = {
+                item.customer_id
+                for item in items
+            }
+
+            result[channel] = {
+                "orders": float(len(items)),
+                "customers": float(len(customers)),
+                "gmv": round(gmv, 2),
+                "refund_rate": round(
+                    refunds / max(gmv, 1.0),
+                    4,
+                ),
+                "estimated_marketing": round(
+                    estimated_marketing,
+                    2,
+                ),
+                "net_contribution": round(net, 2),
+                "roi": round(roi, 3),
+            }
+
+        return dict(
+            sorted(
+                result.items(),
+                key=lambda item: item[1]["roi"],
+                reverse=True,
+            )
+        )
+
+    def _marketing_rate(
+        self,
+        channel: str,
+    ) -> float:
+        rates = {
+            "直营网店": 0.045,
+            "平台旗舰店": 0.092,
+            "直播渠道": 0.138,
+            "社群渠道": 0.061,
+            "分销渠道": 0.115,
+            "线下门店": 0.052,
+            "小程序": 0.073,
+        }
+        return rates.get(
+            channel,
+            0.10,
+        )
+`,
+"src/retention_model.py": `from __future__ import annotations
+
+from collections import defaultdict
+from datetime import date
+from typing import Dict, List, Sequence, Tuple
+
+
+class RetentionAnalyzer:
+    def analyze(
+        self,
+        orders: Sequence,
+    ) -> Dict[str, float]:
+        grouped = defaultdict(list)
+
+        for order in orders:
+            grouped[order.customer_id].append(
+                order.order_date
+            )
+
+        repeat_customers = 0
+        retained_30d = 0
+        retained_60d = 0
+        retained_90d = 0
+
+        for customer_id, dates in grouped.items():
+            ordered = sorted(set(dates))
+            if len(ordered) >= 2:
+                repeat_customers += 1
+
+            first = ordered[0]
+            gaps = [
+                (day - first).days
+                for day in ordered[1:]
+            ]
+
+            if any(1 <= gap <= 30 for gap in gaps):
+                retained_30d += 1
+            if any(31 <= gap <= 60 for gap in gaps):
+                retained_60d += 1
+            if any(61 <= gap <= 90 for gap in gaps):
+                retained_90d += 1
+
+        total = max(len(grouped), 1)
+
+        return {
+            "customer_count": float(len(grouped)),
+            "repeat_customers": float(repeat_customers),
+            "repeat_purchase_rate": round(
+                repeat_customers / total,
+                4,
+            ),
+            "retention_30d": round(
+                retained_30d / total,
+                4,
+            ),
+            "retention_60d": round(
+                retained_60d / total,
+                4,
+            ),
+            "retention_90d": round(
+                retained_90d / total,
+                4,
+            ),
+        }
+`,
+"src/report_builder.py": `from __future__ import annotations
+
+from dataclasses import asdict
+from pathlib import Path
+from typing import Any, Dict
+import csv
+import json
+
+
+class ReportBuilder:
+    def write(
+        self,
+        result,
+        output_dir: Path,
+    ) -> None:
+        output_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+        payload = asdict(result)
+
+        self._write_json(
+            output_dir / "project_result.json",
+            payload,
+        )
+        self._write_summary(
+            output_dir / "management_summary.md",
+            payload,
+        )
+        self._write_channel_csv(
+            output_dir / "channel_summary.csv",
+            payload["channel_summary"],
+        )
+
+    def _write_json(
+        self,
+        path: Path,
+        payload: Dict[str, Any],
+    ) -> None:
+        path.write_text(
+            json.dumps(
+                payload,
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
+    def _write_summary(
+        self,
+        path: Path,
+        payload: Dict[str, Any],
+    ) -> None:
+        recommendations = "\n".join(
+            f"- {item}"
+            for item in payload["recommendations"]
+        )
+
+        content = f"""# 全渠道电商经营数据分析系统
+
+## 数据范围
+
+- 订单记录：{payload["order_count"]:,}
+- 客户数量：{payload["customer_count"]:,}
+- 商品数量：{payload["product_count"]:,}
+- 渠道数量：{payload["channel_count"]:,}
+- 数据质量：{payload["data_quality_score"]:.1%}
+
+## 经营指标
+
+- GMV：{payload["gross_merchandise_value"]:,.2f}
+- 净收入：{payload["net_revenue"]:,.2f}
+- 退款率：{payload["refund_rate"]:.1%}
+- 复购率：{payload["repeat_purchase_rate"]:.1%}
+
+## 建议
+
+{recommendations}
+"""
+        path.write_text(
+            content,
+            encoding="utf-8",
+        )
+
+    def _write_channel_csv(
+        self,
+        path: Path,
+        channels: Dict[str, Dict[str, float]],
+    ) -> None:
+        rows = [
+            {
+                "channel": name,
+                **values,
+            }
+            for name, values in channels.items()
+        ]
+        if not rows:
+            return
+
+        with path.open(
+            "w",
+            encoding="utf-8-sig",
+            newline="",
+        ) as file:
+            writer = csv.DictWriter(
+                file,
+                fieldnames=list(rows[0].keys()),
+            )
+            writer.writeheader()
+            writer.writerows(rows)
+`,
+"sql/order_metrics.sql": `WITH valid_orders AS (
+    SELECT
+        order_id,
+        customer_id,
+        product_id,
+        channel,
+        order_date::date AS order_date,
+        quantity,
+        unit_price,
+        discount,
+        refund_amount,
+        shipping_fee,
+        quantity * unit_price * (1 - discount) AS gross_amount,
+        quantity * unit_price * (1 - discount)
+            - refund_amount
+            + shipping_fee AS net_amount
+    FROM fact_orders
+    WHERE order_status NOT IN ('cancelled', 'fraud')
+      AND quantity > 0
+      AND unit_price >= 0
+      AND order_date >= DATE '2024-01-01'
+),
+daily_metrics AS (
+    SELECT
+        order_date,
+        channel,
+        COUNT(DISTINCT order_id) AS order_count,
+        COUNT(DISTINCT customer_id) AS customer_count,
+        SUM(gross_amount) AS gmv,
+        SUM(net_amount) AS net_revenue,
+        SUM(refund_amount) AS refund_amount,
+        AVG(discount) AS avg_discount,
+        SUM(refund_amount)
+            / NULLIF(SUM(gross_amount), 0) AS refund_rate
+    FROM valid_orders
+    GROUP BY order_date, channel
+),
+customer_first_order AS (
+    SELECT
+        customer_id,
+        MIN(order_date) AS first_order_date
+    FROM valid_orders
+    GROUP BY customer_id
+),
+new_customer_metrics AS (
+    SELECT
+        v.order_date,
+        v.channel,
+        COUNT(DISTINCT v.customer_id) AS new_customer_count
+    FROM valid_orders v
+    JOIN customer_first_order f
+      ON v.customer_id = f.customer_id
+     AND v.order_date = f.first_order_date
+    GROUP BY v.order_date, v.channel
+)
+SELECT
+    d.order_date,
+    d.channel,
+    d.order_count,
+    d.customer_count,
+    COALESCE(n.new_customer_count, 0) AS new_customer_count,
+    d.gmv,
+    d.net_revenue,
+    d.refund_amount,
+    d.refund_rate,
+    d.avg_discount,
+    d.net_revenue
+        / NULLIF(d.order_count, 0) AS average_order_value
+FROM daily_metrics d
+LEFT JOIN new_customer_metrics n
+  ON d.order_date = n.order_date
+ AND d.channel = n.channel
+ORDER BY d.order_date, d.channel;
+`,
+"sql/customer_ltv.sql": `WITH customer_orders AS (
+    SELECT
+        customer_id,
+        MIN(order_date::date) AS first_order_date,
+        MAX(order_date::date) AS latest_order_date,
+        COUNT(DISTINCT order_id) AS order_count,
+        SUM(
+            quantity * unit_price * (1 - discount)
+            - refund_amount
+            + shipping_fee
+        ) AS net_revenue,
+        COUNT(DISTINCT product_id) AS product_count,
+        COUNT(DISTINCT channel) AS channel_count
+    FROM fact_orders
+    WHERE order_status NOT IN ('cancelled', 'fraud')
+    GROUP BY customer_id
+),
+customer_features AS (
+    SELECT
+        customer_id,
+        CURRENT_DATE - latest_order_date AS recency_days,
+        order_count,
+        net_revenue,
+        product_count,
+        channel_count,
+        GREATEST(
+            1,
+            latest_order_date - first_order_date
+        ) AS active_days
+    FROM customer_orders
+)
+SELECT
+    customer_id,
+    recency_days,
+    order_count,
+    net_revenue,
+    product_count,
+    channel_count,
+    active_days,
+    net_revenue
+        / NULLIF(order_count, 0) AS average_order_value,
+    CASE
+        WHEN net_revenue >= 10000
+         AND order_count >= 8
+         AND recency_days <= 45
+            THEN '高价值客户'
+        WHEN order_count >= 5
+         AND recency_days <= 60
+            THEN '稳定复购客户'
+        WHEN recency_days > 120
+            THEN '沉睡客户'
+        WHEN order_count = 1
+            THEN '新客户'
+        ELSE '成长客户'
+    END AS customer_segment
+FROM customer_features
+ORDER BY net_revenue DESC;
+`,
+"config/project.yaml": `project:
+  name: 全渠道电商经营数据分析系统
+  code: ecom-growth-analytics
+  owner: azhi
+  branch: feature/growth-analysis
+
+runtime:
+  python: "3.11.8"
+  database: postgresql
+  cache_enabled: true
+  parallel_workers: 4
+
+data:
+  orders: data/orders_2024_2026.csv
+  customers: data/customers.csv
+  products: data/products.csv
+  channels: 7
+  expected_rows: 128640
+  minimum_quality_score: 0.92
+
+analysis:
+  customer_segmentation: true
+  channel_roi: true
+  retention: true
+  product_structure: true
+  campaign_attribution: true
+  refund_analysis: true
+  cohort_analysis: true
+
+report:
+  output_dir: reports
+  formats:
+    - json
+    - csv
+    - markdown
+  management_summary: true
+  include_recommendations: true
+`
+};
+
+const OPEN_TABS=[
+ "src/pipeline.py",
+ "src/customer_segmentation.py",
+ "sql/order_metrics.sql",
+ "config/project.yaml"
+];
+
+const EVENTS=[
+ "数据库连接池已建立",
+ "订单分区表开始读取",
+ "客户主表完成校验",
+ "商品维度索引已加载",
+ "渠道映射关系已同步",
+ "退款异常规则已执行",
+ "客户分层任务已启动",
+ "渠道ROI计算已完成",
+ "留存矩阵生成完成",
+ "管理摘要已写入报告目录"
+];
+
+const STAGES=[
+ {name:"初始化项目环境",logs:["[SYSTEM] Python 3.11.8","[SYSTEM] PostgreSQL connection ... OK","[SYSTEM] loading project.yaml"],line:25,throughput:120,latency:18,cpu:14,memory:24,queue:2,quality:96.1,event:1},
+ {name:"读取并校验原始数据",logs:["[DATA] orders_2024_2026.csv  128,640 rows","[DATA] customers.csv           38,216 rows","[CHECK] schema / duplicates / amount ... PASS"],line:69,throughput:3860,latency:24,cpu:41,memory:39,queue:7,quality:97.8,event:3},
+ {name:"计算核心经营指标",logs:["[METRIC] GMV / net revenue / refund rate","[METRIC] daily and channel aggregation complete"],line:170,throughput:5240,latency:31,cpu:63,memory:48,queue:5,quality:97.8,event:4},
+ {name:"执行客户价值分层",logs:["[SEGMENT] profiles=38,216","[SEGMENT] high value / repeat / growth / sleeping"],file:"src/customer_segmentation.py",line:76,throughput:4410,latency:27,cpu:72,memory:57,queue:4,quality:97.8,event:6},
+ {name:"分析渠道投入与回报",logs:["[CHANNEL] 7 channels processed","[CHANNEL] ROI ranking generated"],file:"src/channel_roi.py",line:20,throughput:3180,latency:22,cpu:54,memory:61,queue:3,quality:97.8,event:8},
+ {name:"计算复购与留存",logs:["[RETENTION] repeat purchase / 30d / 60d / 90d","[RETENTION] cohort matrix complete"],file:"src/retention_model.py",line:18,throughput:2780,latency:20,cpu:48,memory:63,queue:2,quality:97.8,event:9},
+ {name:"执行SQL汇总与交叉校验",logs:["[SQL] order_metrics.sql ... OK","[SQL] customer_ltv.sql ... OK"],file:"sql/order_metrics.sql",line:1,throughput:1960,latency:16,cpu:33,memory:55,queue:1,quality:98.2,event:9},
+ {name:"生成报告与管理层摘要",logs:["[REPORT] project_result.json","[REPORT] management_summary.md","[REPORT] channel_summary.csv"],file:"src/report_builder.py",line:14,throughput:620,latency:12,cpu:21,memory:42,queue:1,quality:98.2,event:10},
+ {name:"分析任务完成",logs:["","===================================================="," ECOMMERCE GROWTH ANALYTICS · COMPLETED"," Orders      : 128,640"," Customers   : 38,216"," Channels    : 7"," Data quality: 98.2%"," Reports     : 3 files generated","===================================================="],line:270,throughput:0,latency:9,cpu:9,memory:30,queue:0,quality:98.2,event:10}
+];
+
+let currentFile=localStorage.getItem("ecom20v2file")||OPEN_TABS[0];
+let fontSize=Number(localStorage.getItem("ecom20v2font")||11);
+let running=false,stageIndex=0,timer=null,matched=-1;
+let sparkValues=[4,7,6,9,8,11,10,13,12,15,14,16];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function highlight(line,lang){
+ let x=esc(line);
+ if(lang==="py"){
+  x=x.replace(/(#.*)$/g,'<span class="com">$1</span>');
+  x=x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+  x=x.replace(/\b(class)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="cls">$2</span>');
+  x=x.replace(/\b(def)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="fn">$2</span>');
+  x=x.replace(/\b(from|import|as|return|if|else|elif|for|while|in|not|and|or|True|False|None|raise|with|yield|continue|break|try|except|finally|pass)\b/g,'<span class="kw">$1</span>');
+  x=x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+  x=x.replace(/\b(self)\b/g,'<span class="self">$1</span>');
+ } else if(lang==="sql"){
+  x=x.replace(/\b(WITH|SELECT|FROM|WHERE|GROUP BY|ORDER BY|LEFT JOIN|JOIN|ON|AS|CASE|WHEN|THEN|ELSE|END|COUNT|SUM|AVG|MIN|MAX|DISTINCT|NULLIF|COALESCE|AND|OR|NOT IN|DATE)\b/gi,'<span class="kw">$1</span>');
+  x=x.replace(/('[^']*')/g,'<span class="str">$1</span>');
+  x=x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+ } else {
+  x=x.replace(/(^|\s)([A-Za-z_][\w-]*)(:)/g,'$1<span class="fn">$2</span>$3');
+  x=x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+  x=x.replace(/\b(true|false|null)\b/g,'<span class="kw">$1</span>');
+  x=x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+ }
+ return x||" ";
+}
+function lang(path){return path.endsWith(".py")?"py":path.endsWith(".sql")?"sql":"yaml"}
+function icon(path){return path.endsWith(".py")?"PY":path.endsWith(".sql")?"SQL":"YML"}
+function renderTabs(){
+ $("#tabs").innerHTML=OPEN_TABS.map(path=>`<button class="tab ${path===currentFile?'active':''}" data-tab-file="${path}"><span class="${lang(path)==='py'?'py':lang(path)==='sql'?'sql':'yml'}">${icon(path)}</span><span>${path.split('/').pop()}</span><span class="dot">●</span></button>`).join("");
+ $$("[data-tab-file]").forEach(b=>b.onclick=()=>openFile(b.dataset.tabFile));
+}
+function openFile(path){
+ if(!FILES[path])return;
+ currentFile=path;localStorage.setItem("ecom20v2file",path);renderTabs();
+ const lines=FILES[path].split("\n"),l=lang(path);
+ $("#codeGrid").innerHTML=lines.map((line,i)=>`<div class="line-no" data-line="${i+1}">${i+1}</div><div class="code-line" data-line="${i+1}">${highlight(line,l)}</div>`).join("");
+ $$(".tree[data-file]").forEach(x=>x.classList.toggle("active",x.dataset.file===path));
+ $$(".line-no,.code-line").forEach(x=>x.onclick=()=>focusLine(Number(x.dataset.line)));
+ focusLine(1);$("#editorWrap").scrollTop=Number(localStorage.getItem("ecom20v2scroll:"+path)||0);
+}
+function focusLine(n){
+ $$(".line-no,.code-line").forEach(x=>x.classList.toggle("active",Number(x.dataset.line)===n));
+ $("#lineStatus").textContent="Ln "+n;
+ document.querySelector(`.code-line[data-line="${n}"]`)?.scrollIntoView({block:"center",behavior:"smooth"});
+}
+function appendLog(text,color){
+ const out=$("#termOutput"),div=document.createElement("div");div.textContent=text;if(color)div.style.color=color;out.appendChild(div);out.scrollTop=out.scrollHeight;
+}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300)}
+function renderEvents(done=0,runningIndex=-1){
+ $("#eventList").innerHTML=EVENTS.map((name,i)=>{
+   const cls=i<done?"pass":i===runningIndex?"run":"";
+   const icon=i<done?"✓":i===runningIndex?"●":"○";
+   return `<div class="event-row ${cls}"><span class="icon">${icon}</span><b>${name}</b><small>${i<done?"OK":i===runningIndex?"LIVE":"WAIT"}</small></div>`;
+ }).join("");
+ const active=$("#eventList .run");
+ if(active)active.scrollIntoView({block:"center"});
+}
+function setMeter(id,value){
+ $(id).style.width=Math.max(0,Math.min(value,100))+"%";
+}
+function updateMonitor(stage){
+ $("#throughput").textContent=stage.throughput.toLocaleString();
+ $("#dbLatency").textContent=stage.latency+" ms";
+ $("#cpuText").textContent=stage.cpu+"%";
+ $("#memoryText").textContent=(stage.memory*0.12).toFixed(1)+" GB";
+ $("#queueText").textContent=stage.queue;
+ $("#qualityText").textContent=stage.quality+"%";
+ setMeter("#cpuMeter",stage.cpu);
+ setMeter("#memoryMeter",stage.memory);
+ setMeter("#queueMeter",stage.queue*11);
+ setMeter("#qualityMeter",stage.quality);
+ $("#streamStatus").textContent=stage.throughput>0?"STREAMING":"IDLE";
+ $("#healthState").textContent=stage.name;
+ sparkValues.push(Math.max(2,Math.min(100,stage.throughput/60)));
+ sparkValues=sparkValues.slice(-18);
+ drawSparkline();
+}
+function drawSparkline(){
+ const canvas=$("#sparkline"),dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+ canvas.width=w*dpr;canvas.height=h*dpr;
+ const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle="#17303c";ctx.lineWidth=1;
+ for(let i=1;i<4;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ const max=Math.max(...sparkValues,20);
+ const pts=sparkValues.map((v,i)=>[i*(w/(sparkValues.length-1)),h-5-(v/max)*(h-10)]);
+ const grad=ctx.createLinearGradient(0,0,w,0);grad.addColorStop(0,"#1488cc");grad.addColorStop(1,"#38d9c5");
+ ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.beginPath();
+ pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
+ ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();
+ const fill=ctx.createLinearGradient(0,0,0,h);fill.addColorStop(0,"rgba(56,217,197,.20)");fill.addColorStop(1,"rgba(56,217,197,0)");
+ ctx.fillStyle=fill;ctx.fill();
+}
+function runStage(stage,index){
+ $("#runState").textContent=index===STAGES.length-1?"COMPLETE":"LIVE";
+ $("#statusText").textContent=stage.name;
+ if(stage.file&&stage.file!==currentFile)openFile(stage.file);
+ if(stage.line)focusLine(stage.line);
+ stage.logs.forEach((x,i)=>setTimeout(()=>appendLog(x,x.includes("PASS")||x.includes("COMPLETED")||x.includes("98.2%")?"#82f0a8":null),i*120));
+ updateMonitor(stage);
+ renderEvents(stage.event,Math.min(stage.event,EVENTS.length-1));
+}
+function startRun(){
+ if(running){toast("分析正在运行");return}
+ running=true;stageIndex=0;$("#termOutput").innerHTML="";appendLog("(.venv) PS D:\\ecom-growth-analytics> python src/pipeline.py","#56d4dd");
+ runStage(STAGES[0],0);
+ timer=setInterval(()=>{
+  stageIndex++;
+  if(stageIndex>=STAGES.length){
+   clearInterval(timer);timer=null;running=false;renderEvents(EVENTS.length,-1);$("#runState").textContent="COMPLETE";$("#streamStatus").textContent="IDLE";$("#healthState").textContent="ALL CHECKS PASSED";$("#statusText").textContent="分析任务完成";toast("分析任务完成");
+   return;
+  }
+  runStage(STAGES[stageIndex],stageIndex);
+ },850);
+}
+function searchNext(){
+ const q=$("#searchInput").value.trim().toLowerCase();if(!q)return;
+ const lines=FILES[currentFile].split("\n");
+ for(let step=1;step<=lines.length;step++){
+  const i=(matched+step+lines.length)%lines.length;
+  if(lines[i].toLowerCase().includes(q)){matched=i;focusLine(i+1);toast("第 "+(i+1)+" 行");return}
+ }
+ toast("没有找到");
+}
+$("#editorWrap").addEventListener("scroll",()=>localStorage.setItem("ecom20v2scroll:"+currentFile,$("#editorWrap").scrollTop));
+$("#termInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"){
+  const cmd=e.target.value.trim();appendLog("(.venv) PS D:\\ecom-growth-analytics> "+cmd,"#56d4dd");e.target.value="";
+  if(cmd.toLowerCase()==="start")startRun();
+  else if(cmd.toLowerCase()==="clear")$("#termOutput").innerHTML="";
+  else if(cmd.toLowerCase()==="test"){appendLog("[TEST] 36 checks passed","#7ee787")}
+  else if(cmd)appendLog("可用命令：start / clear / test","#f2cc60");
+ }
+});
+$("#clearBtn").onclick=()=>$("#termOutput").innerHTML="";
+$$(".tree[data-file]").forEach(x=>x.onclick=()=>openFile(x.dataset.file));
+$("#searchBtn").onclick=()=>{$("#searchbox").classList.toggle("open");$("#searchInput").focus()};
+$("#closeSearch").onclick=()=>$("#searchbox").classList.remove("open");$("#nextBtn").onclick=searchNext;$("#searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchNext()});
+$("#fontBtn").onclick=()=>{fontSize++;if(fontSize>15)fontSize=9;document.documentElement.style.setProperty("--code-size",fontSize+"px");localStorage.setItem("ecom20v2font",fontSize);toast("代码字号 "+fontSize+"px")};
+$("#fullBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+$(".win.close").onclick=()=>toast("拍摄模式下不关闭窗口");
+document.documentElement.style.setProperty("--code-size",fontSize+"px");
+renderEvents();openFile(currentFile);drawSparkline();$("#cpuMeter").style.width='8%';$("#memoryMeter").style.width='18%';window.addEventListener('resize',drawSparkline);$("#termInput").focus();
+})();
+</script>
+</body>
+</html>
+<style>
+.term-input-row{padding-right:12px}
+.term-input{min-width:0}
+</style>
