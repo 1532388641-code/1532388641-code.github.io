@@ -1,0 +1,1638 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0f14">
+<title>17-2 · 源码查看</title>
+<style>
+:root{
+  --bg:#0b0f14;--panel:#11161d;--panel2:#151b23;--line:#202833;--line2:#171e27;
+  --ink:#d8dee9;--muted:#5d6876;--blue:#6cb6ff;--green:#7ee787;--orange:#f2cc60;
+  --red:#ff7b72;--purple:#d2a8ff;--cyan:#79c0ff;--comment:#7d8590;
+  --font-size:11px;--line-height:1.55;--gutter:42px;--mini:54px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{height:100dvh;display:grid;grid-template-rows:29px 29px minmax(0,1fr) 24px;background:var(--bg)}
+.topline{display:flex;align-items:center;gap:7px;padding:0 8px;background:#0d1218;border-bottom:1px solid var(--line);font-size:9px;color:#9aa5b1}
+.dot{width:7px;height:7px;border-radius:50%;background:#3fb950;box-shadow:0 0 8px rgba(63,185,80,.45)}
+.repo{font-weight:700;color:#c9d1d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.branch{margin-left:auto;color:#6cb6ff}
+.tabs{display:flex;overflow-x:auto;background:#0d1218;border-bottom:1px solid var(--line)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{height:29px;min-width:120px;max-width:170px;padding:0 9px;border:0;border-right:1px solid var(--line);
+  background:#0d1218;color:#788391;display:flex;align-items:center;gap:6px;font:9px Consolas,monospace;white-space:nowrap}
+.tab.active{background:var(--bg);color:#e6edf3;border-top:1px solid #f78166}
+.tab .lang{font-size:8px;color:#6cb6ff}
+.tab .close{margin-left:auto;color:#4c5664}
+.editor-shell{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) var(--mini);position:relative}
+.editor-scroll{min-height:0;overflow:auto;background:var(--bg);scrollbar-width:thin;scrollbar-color:#293341 transparent}
+.editor-scroll::-webkit-scrollbar{width:7px;height:7px}
+.editor-scroll::-webkit-scrollbar-thumb{background:#293341}
+.code-grid{display:grid;grid-template-columns:var(--gutter) max-content;min-width:100%;
+  font:var(--font-size)/var(--line-height) "SFMono-Regular",Consolas,"Liberation Mono","Courier New",monospace}
+.line-no{min-height:calc(var(--font-size)*var(--line-height));padding:0 8px 0 0;text-align:right;color:#39424f;
+  user-select:none;border-right:1px solid #171d25}
+.code-line{min-height:calc(var(--font-size)*var(--line-height));padding:0 10px;white-space:pre;min-width:calc(100vw - var(--gutter) - var(--mini))}
+.code-line.active,.line-no.active{background:rgba(56,139,253,.08)}
+.line-no.active{color:#6cb6ff}
+.minimap{border-left:1px solid var(--line);background:#0c1117;padding:4px 3px;overflow:hidden}
+.minimap i{display:block;height:2px;margin:1px 0;border-radius:1px;background:#3d4652;opacity:.55}
+.minimap i.k{background:#6cb6ff}.minimap i.s{background:#a5d6ff}.minimap i.c{background:#7d8590}.minimap i.f{background:#d2a8ff}
+.status{display:flex;align-items:center;gap:11px;padding:0 7px;background:#0c1117;border-top:1px solid var(--line);font:9px Consolas,monospace;color:#6f7b89}
+.status span:last-child{margin-left:auto}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.num{color:#79c0ff}.com{color:#7d8590}.cls{color:#ffa657}.self{color:#ffa657}.dec{color:#d2a8ff}
+.searchbar{position:absolute;top:7px;right:65px;z-index:10;display:none;gap:5px;background:#161b22;border:1px solid #30363d;
+  padding:5px;border-radius:7px;box-shadow:0 8px 26px rgba(0,0,0,.35)}
+.searchbar.open{display:flex}
+.searchbar input{width:150px;height:28px;border:1px solid #30363d;background:#0d1117;border-radius:5px;padding:0 7px;font-size:9px;outline:none}
+.searchbar button{height:28px;border:1px solid #30363d;background:#21262d;border-radius:5px;padding:0 8px;font-size:9px}
+.float-actions{position:absolute;right:63px;bottom:9px;z-index:8;display:flex;gap:5px}
+.float-actions button{width:31px;height:31px;border-radius:50%;border:1px solid #30363d;background:rgba(22,27,34,.92);color:#9aa5b1;font-size:13px}
+.float-actions button.on{color:#7ee787;border-color:#238636}
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:50}
+.drawer.open{display:block}
+.drawer-panel{position:absolute;left:0;top:0;bottom:0;width:min(82vw,330px);background:#11161d;border-right:1px solid #30363d;overflow:auto;box-shadow:14px 0 35px rgba(0,0,0,.4)}
+.drawer-head{height:42px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid #252d38;font-size:11px;font-weight:700}
+.drawer-head button{margin-left:auto;border:0;background:transparent;color:#7d8590;font-size:20px}
+.file-row{height:39px;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:7px;padding:0 10px;border-bottom:1px solid #171e27;font:9px Consolas,monospace}
+.file-row:active{background:#1b222c}
+.file-ico{font-size:8px;color:#6cb6ff}
+.file-row small{color:#596574}
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(10px);opacity:0;z-index:90;
+  background:#21262d;border:1px solid #3a434f;color:#e6edf3;border-radius:7px;padding:7px 10px;font-size:9px;transition:.18s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:720px){
+  body{display:grid;place-items:center;background:#070a0e}
+  .app{width:560px;height:calc(100dvh - 24px);border:1px solid #202833;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topline">
+    <button id="menuBtn" style="border:0;background:transparent;color:#9aa5b1;padding:0;font-size:13px">☰</button>
+    <i class="dot"></i>
+    <span class="repo">azhi/agri-price-predictor</span>
+    <span class="branch">feature/region-linkage</span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="editor-shell">
+    <div class="editor-scroll" id="editorScroll">
+      <div class="code-grid" id="codeGrid"></div>
+    </div>
+    <div class="minimap" id="minimap"></div>
+
+    <div class="searchbar" id="searchbar">
+      <input id="searchInput" placeholder="搜索当前文件">
+      <button id="searchNext">下一个</button>
+      <button id="searchClose">×</button>
+    </div>
+
+    <div class="float-actions">
+      <button id="searchBtn" title="搜索">⌕</button>
+      <button id="scrollBtn" title="自动滚动">▼</button>
+      <button id="fontBtn" title="字号">A</button>
+    </div>
+  </div>
+
+  <div class="status">
+    <span id="pathText">src/region_graph_model.py</span>
+    <span id="lineText">Ln 1</span>
+    <span>UTF-8</span>
+    <span>Python</span>
+    <span id="percentText">0%</span>
+  </div>
+</div>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-panel">
+    <div class="drawer-head">项目文件 <button id="drawerClose">×</button></div>
+    <div id="fileList"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+const FILES = {
+"src/region_graph_model.py": `"""区域农产品价格联动模型。
+
+把城市批发市场视为图节点，物流通道、距离、供应量与价格相关性视为边。
+当前版本针对低内存设备进行了稀疏化处理。
+"""
+
+from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import date, timedelta
+from statistics import mean
+from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
+import json
+import math
+import random
+
+
+@dataclass(frozen=True)
+class MarketNode:
+    city_code: str
+    market_name: str
+    latitude: float
+    longitude: float
+    supply_index: float
+    transport_index: float
+    population_weight: float
+    storage_capacity: float
+
+
+@dataclass(frozen=True)
+class MarketEdge:
+    source: int
+    target: int
+    distance_km: float
+    price_correlation: float
+    transport_pressure: float
+    seasonal_weight: float
+
+
+@dataclass
+class RegionSnapshot:
+    day: date
+    product_id: str
+    prices: Dict[str, float]
+    supply: Dict[str, float]
+    transport: Dict[str, float]
+    rainfall: Dict[str, float]
+    temperature: Dict[str, float]
+
+
+def haversine_distance(
+    lat1: float,
+    lon1: float,
+    lat2: float,
+    lon2: float,
+) -> float:
+    earth_radius = 6371.0088
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+
+    value = (
+        math.sin(delta_phi / 2.0) ** 2
+        + math.cos(phi1)
+        * math.cos(phi2)
+        * math.sin(delta_lambda / 2.0) ** 2
+    )
+    return 2.0 * earth_radius * math.asin(math.sqrt(value))
+
+
+def safe_mean(values: Sequence[float]) -> float:
+    if not values:
+        return 0.0
+    return float(mean(values))
+
+
+def normalize(values: Sequence[float]) -> List[float]:
+    if not values:
+        return []
+
+    low = min(values)
+    high = max(values)
+    span = high - low
+
+    if span <= 1e-12:
+        return [0.0 for _ in values]
+
+    return [
+        (value - low) / span
+        for value in values
+    ]
+
+
+class SparseRegionGraph:
+    """只保留最有价值的区域联动边。"""
+
+    def __init__(
+        self,
+        max_neighbors: int = 4,
+        max_distance_km: float = 900.0,
+        min_correlation: float = 0.42,
+    ) -> None:
+        self.max_neighbors = max_neighbors
+        self.max_distance_km = max_distance_km
+        self.min_correlation = min_correlation
+        self.nodes: List[MarketNode] = []
+        self.edges: List[MarketEdge] = []
+        self.index_by_code: Dict[str, int] = {}
+
+    def add_nodes(
+        self,
+        nodes: Iterable[MarketNode],
+    ) -> None:
+        for node in nodes:
+            if node.city_code in self.index_by_code:
+                raise ValueError(
+                    f"duplicate city code: {node.city_code}"
+                )
+
+            self.index_by_code[node.city_code] = len(self.nodes)
+            self.nodes.append(node)
+
+    def build_edges(
+        self,
+        correlation: Mapping[Tuple[str, str], float],
+        seasonal_weights: Mapping[Tuple[str, str], float],
+    ) -> None:
+        candidates: Dict[int, List[MarketEdge]] = defaultdict(list)
+
+        for source, left in enumerate(self.nodes):
+            for target, right in enumerate(self.nodes):
+                if source == target:
+                    continue
+
+                distance = haversine_distance(
+                    left.latitude,
+                    left.longitude,
+                    right.latitude,
+                    right.longitude,
+                )
+                if distance > self.max_distance_km:
+                    continue
+
+                pair = (left.city_code, right.city_code)
+                corr = correlation.get(pair, 0.0)
+                if corr < self.min_correlation:
+                    continue
+
+                pressure = (
+                    right.transport_index
+                    / max(right.supply_index, 0.01)
+                )
+                season = seasonal_weights.get(pair, 1.0)
+
+                candidates[source].append(
+                    MarketEdge(
+                        source=source,
+                        target=target,
+                        distance_km=round(distance, 2),
+                        price_correlation=round(corr, 5),
+                        transport_pressure=round(pressure, 5),
+                        seasonal_weight=round(season, 5),
+                    )
+                )
+
+        self.edges.clear()
+
+        for source, items in candidates.items():
+            ranked = sorted(
+                items,
+                key=lambda edge: (
+                    -edge.price_correlation,
+                    edge.distance_km,
+                    -edge.seasonal_weight,
+                ),
+            )
+            self.edges.extend(ranked[: self.max_neighbors])
+
+    def inbound_edges(
+        self,
+        node_index: int,
+    ) -> List[MarketEdge]:
+        return [
+            edge
+            for edge in self.edges
+            if edge.target == node_index
+        ]
+
+    def neighbor_features(
+        self,
+        node_index: int,
+        prices: Sequence[float],
+    ) -> List[float]:
+        selected = self.inbound_edges(node_index)
+
+        if not selected:
+            return [0.0, 0.0, 0.0, 0.0]
+
+        weighted_price = 0.0
+        weight_total = 0.0
+        pressure_values: List[float] = []
+        distances: List[float] = []
+
+        for edge in selected:
+            weight = (
+                edge.price_correlation
+                * edge.seasonal_weight
+                / (1.0 + edge.distance_km / 500.0)
+            )
+
+            weighted_price += prices[edge.source] * weight
+            weight_total += weight
+            pressure_values.append(edge.transport_pressure)
+            distances.append(edge.distance_km)
+
+        return [
+            weighted_price / max(weight_total, 1e-8),
+            safe_mean(pressure_values),
+            safe_mean(distances),
+            float(len(selected)),
+        ]
+
+    def to_payload(self) -> Dict[str, object]:
+        return {
+            "nodes": [
+                {
+                    "city_code": node.city_code,
+                    "market_name": node.market_name,
+                    "latitude": node.latitude,
+                    "longitude": node.longitude,
+                    "supply_index": node.supply_index,
+                    "transport_index": node.transport_index,
+                    "population_weight": node.population_weight,
+                    "storage_capacity": node.storage_capacity,
+                }
+                for node in self.nodes
+            ],
+            "edges": [
+                {
+                    "source": edge.source,
+                    "target": edge.target,
+                    "distance_km": edge.distance_km,
+                    "price_correlation": edge.price_correlation,
+                    "transport_pressure": edge.transport_pressure,
+                    "seasonal_weight": edge.seasonal_weight,
+                }
+                for edge in self.edges
+            ],
+        }
+
+
+class RegionFeatureEncoder:
+    def __init__(
+        self,
+        graph: SparseRegionGraph,
+        lag_windows: Sequence[int] = (1, 3, 7, 14, 28),
+        rolling_windows: Sequence[int] = (7, 14, 30),
+    ) -> None:
+        self.graph = graph
+        self.lag_windows = tuple(lag_windows)
+        self.rolling_windows = tuple(rolling_windows)
+
+    def calendar_features(
+        self,
+        day: date,
+    ) -> List[float]:
+        week = day.isocalendar().week
+        return [
+            float(day.month),
+            float(day.weekday()),
+            float(week),
+            float(day.weekday() >= 5),
+            math.sin(2.0 * math.pi * day.month / 12.0),
+            math.cos(2.0 * math.pi * day.month / 12.0),
+            math.sin(2.0 * math.pi * day.timetuple().tm_yday / 365.0),
+            math.cos(2.0 * math.pi * day.timetuple().tm_yday / 365.0),
+        ]
+
+    def lag_features(
+        self,
+        values: Sequence[float],
+    ) -> List[float]:
+        result: List[float] = []
+
+        for lag in self.lag_windows:
+            if len(values) >= lag:
+                result.append(float(values[-lag]))
+            else:
+                result.append(float(values[0]))
+
+        return result
+
+    def rolling_features(
+        self,
+        values: Sequence[float],
+    ) -> List[float]:
+        result: List[float] = []
+
+        for window in self.rolling_windows:
+            selected = list(values[-window:])
+            avg = safe_mean(selected)
+            variance = safe_mean([
+                (value - avg) ** 2
+                for value in selected
+            ])
+
+            result.extend([
+                avg,
+                math.sqrt(variance),
+                min(selected),
+                max(selected),
+            ])
+
+        return result
+
+    def weather_features(
+        self,
+        rainfall: float,
+        temperature: float,
+        humidity: float,
+    ) -> List[float]:
+        return [
+            rainfall,
+            temperature,
+            humidity,
+            rainfall * temperature,
+            humidity * temperature,
+            float(rainfall >= 25.0),
+            float(temperature >= 33.0),
+            float(temperature <= -15.0),
+        ]
+
+    def supply_features(
+        self,
+        supply: float,
+        transport_index: float,
+        fuel_price: float,
+        storage_capacity: float,
+    ) -> List[float]:
+        return [
+            supply,
+            transport_index,
+            fuel_price,
+            storage_capacity,
+            transport_index / max(supply, 0.01),
+            fuel_price * transport_index,
+            storage_capacity / max(supply, 0.01),
+            float(supply < 0.75),
+        ]
+
+    def encode(
+        self,
+        node_index: int,
+        day: date,
+        history: Sequence[float],
+        regional_prices: Sequence[float],
+        rainfall: float,
+        temperature: float,
+        humidity: float,
+        supply: float,
+        transport_index: float,
+        fuel_price: float,
+    ) -> List[float]:
+        node = self.graph.nodes[node_index]
+
+        features: List[float] = []
+        features.extend(self.calendar_features(day))
+        features.extend(self.lag_features(history))
+        features.extend(self.rolling_features(history))
+        features.extend(
+            self.weather_features(
+                rainfall=rainfall,
+                temperature=temperature,
+                humidity=humidity,
+            )
+        )
+        features.extend(
+            self.supply_features(
+                supply=supply,
+                transport_index=transport_index,
+                fuel_price=fuel_price,
+                storage_capacity=node.storage_capacity,
+            )
+        )
+        features.extend(
+            self.graph.neighbor_features(
+                node_index=node_index,
+                prices=regional_prices,
+            )
+        )
+
+        return features
+
+
+def build_demo_graph(
+    seed: int = 720,
+) -> SparseRegionGraph:
+    random.seed(seed)
+    graph = SparseRegionGraph(
+        max_neighbors=3,
+        max_distance_km=1150.0,
+        min_correlation=0.40,
+    )
+
+    nodes = [
+        MarketNode("HRB", "哈达市场", 45.75, 126.63, 1.08, 1.12, 0.76, 0.88),
+        MarketNode("CC", "海吉星市场", 43.82, 125.32, 1.02, 1.05, 0.71, 0.81),
+        MarketNode("SY", "盛发市场", 41.80, 123.43, 0.96, 1.09, 0.92, 0.84),
+        MarketNode("BJ", "新发地市场", 39.90, 116.40, 1.31, 1.16, 1.00, 0.93),
+        MarketNode("JN", "七里堡市场", 36.67, 117.00, 0.91, 1.08, 0.81, 0.76),
+        MarketNode("ZZ", "万邦市场", 34.75, 113.62, 1.18, 1.11, 0.86, 0.90),
+        MarketNode("SJZ", "桥西市场", 38.04, 114.51, 0.94, 1.07, 0.79, 0.78),
+        MarketNode("TY", "河西市场", 37.87, 112.55, 0.89, 1.04, 0.68, 0.73),
+        MarketNode("XA", "欣桥市场", 34.34, 108.94, 0.97, 1.10, 0.82, 0.79),
+        MarketNode("WH", "白沙洲市场", 30.59, 114.30, 1.09, 1.14, 0.91, 0.87),
+        MarketNode("CS", "红星市场", 28.22, 112.94, 1.03, 1.08, 0.78, 0.82),
+        MarketNode("CD", "濛阳市场", 30.67, 104.06, 1.14, 1.17, 0.88, 0.91),
+    ]
+    graph.add_nodes(nodes)
+
+    correlation: Dict[Tuple[str, str], float] = {}
+    seasonal: Dict[Tuple[str, str], float] = {}
+
+    for left in nodes:
+        for right in nodes:
+            if left.city_code == right.city_code:
+                continue
+
+            correlation[
+                (left.city_code, right.city_code)
+            ] = round(
+                random.uniform(0.36, 0.93),
+                5,
+            )
+
+            seasonal[
+                (left.city_code, right.city_code)
+            ] = round(
+                random.uniform(0.72, 1.18),
+                5,
+            )
+
+    graph.build_edges(
+        correlation=correlation,
+        seasonal_weights=seasonal,
+    )
+    return graph
+
+
+def build_demo_history(
+    seed: int = 720,
+    days: int = 180,
+) -> List[float]:
+    random.seed(seed)
+    values: List[float] = []
+    base_price = 3.65
+
+    for day_index in range(days):
+        weekly = math.sin(day_index / 7.0 * math.pi) * 0.14
+        monthly = math.sin(day_index / 30.0 * math.pi) * 0.22
+        transport = math.cos(day_index / 11.0) * 0.08
+        noise = random.uniform(-0.07, 0.07)
+
+        price = (
+            base_price
+            + weekly
+            + monthly
+            + transport
+            + noise
+        )
+        values.append(
+            round(max(price, 0.1), 2)
+        )
+
+    return values
+
+
+def main() -> None:
+    graph = build_demo_graph()
+    encoder = RegionFeatureEncoder(graph)
+
+    history = build_demo_history()
+    regional_prices = [
+        round(3.2 + index * 0.11, 2)
+        for index in range(len(graph.nodes))
+    ]
+
+    features = encoder.encode(
+        node_index=0,
+        day=date(2026, 7, 18),
+        history=history,
+        regional_prices=regional_prices,
+        rainfall=12.4,
+        temperature=28.6,
+        humidity=0.74,
+        supply=1.08,
+        transport_index=1.12,
+        fuel_price=7.58,
+    )
+
+    payload = graph.to_payload()
+    payload["feature_count"] = len(features)
+    payload["preview"] = features[:12]
+
+    print(
+        json.dumps(
+            payload,
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
+`,
+"src/train_pipeline.py": `from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from statistics import mean
+from typing import Dict, Iterable, List, Sequence, Tuple
+import json
+import math
+import random
+import time
+
+from region_graph_model import (
+    RegionFeatureEncoder,
+    build_demo_graph,
+    build_demo_history,
+)
+
+
+ARTIFACT_DIR = Path("artifacts")
+CHECKPOINT_DIR = ARTIFACT_DIR / "checkpoints"
+
+
+@dataclass
+class FoldMetrics:
+    fold: int
+    mae: float
+    mape: float
+    r2: float
+    elapsed_seconds: float
+
+
+@dataclass
+class TrainingResult:
+    project: str
+    branch: str
+    created_at: str
+    feature_count: int
+    city_count: int
+    edge_count: int
+    folds: List[FoldMetrics]
+    mean_mape: float
+    mean_r2: float
+    peak_memory_mb: float
+    forecast: List[float]
+
+
+def mae(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    return mean(
+        abs(a - p)
+        for a, p in zip(actual, predicted)
+    )
+
+
+def mape(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    return mean(
+        abs(a - p) / max(abs(a), 1e-8)
+        for a, p in zip(actual, predicted)
+    )
+
+
+def r2(
+    actual: Sequence[float],
+    predicted: Sequence[float],
+) -> float:
+    center = mean(actual)
+    residual = sum(
+        (a - p) ** 2
+        for a, p in zip(actual, predicted)
+    )
+    total = sum(
+        (a - center) ** 2
+        for a in actual
+    )
+    return 1.0 - residual / max(total, 1e-8)
+
+
+def simple_forecast(
+    history: Sequence[float],
+    horizon: int,
+    window: int = 14,
+) -> List[float]:
+    values = list(history)
+    result: List[float] = []
+
+    for step in range(horizon):
+        recent = values[-window:]
+        local_mean = mean(recent)
+        trend = (
+            recent[-1] - recent[0]
+        ) / max(window - 1, 1)
+        seasonal = (
+            math.sin(
+                (len(values) + step)
+                / 7.0
+                * math.pi
+            )
+            * 0.06
+        )
+
+        value = max(
+            0.1,
+            local_mean
+            + trend * 0.7
+            + seasonal,
+        )
+        value = round(value, 3)
+        values.append(value)
+        result.append(value)
+
+    return result
+
+
+def rolling_splits(
+    values: Sequence[float],
+    folds: int = 5,
+    validation_size: int = 21,
+) -> Iterable[Tuple[List[float], List[float]]]:
+    total_required = (
+        folds * validation_size
+        + validation_size
+    )
+    if len(values) < total_required:
+        raise ValueError(
+            "not enough values for rolling validation"
+        )
+
+    start = len(values) - folds * validation_size
+
+    for fold in range(folds):
+        split = start + fold * validation_size
+        train_values = list(values[:split])
+        valid_values = list(
+            values[
+                split:
+                split + validation_size
+            ]
+        )
+        yield train_values, valid_values
+
+
+def evaluate_fold(
+    fold_index: int,
+    train_values: Sequence[float],
+    valid_values: Sequence[float],
+) -> FoldMetrics:
+    started = time.perf_counter()
+
+    rolling = list(train_values)
+    predicted: List[float] = []
+
+    for actual in valid_values:
+        next_value = simple_forecast(
+            history=rolling,
+            horizon=1,
+        )[0]
+        predicted.append(next_value)
+        rolling.append(actual)
+
+    elapsed = time.perf_counter() - started
+
+    return FoldMetrics(
+        fold=fold_index,
+        mae=round(mae(valid_values, predicted), 5),
+        mape=round(mape(valid_values, predicted), 5),
+        r2=round(r2(valid_values, predicted), 5),
+        elapsed_seconds=round(elapsed, 4),
+    )
+
+
+def save_checkpoint(
+    fold_metrics: FoldMetrics,
+) -> None:
+    CHECKPOINT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    target = CHECKPOINT_DIR / (
+        f"fold_{fold_metrics.fold:02d}.json"
+    )
+    target.write_text(
+        json.dumps(
+            asdict(fold_metrics),
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
+def train(
+    seed: int = 720,
+) -> TrainingResult:
+    random.seed(seed)
+    graph = build_demo_graph(seed=seed)
+    encoder = RegionFeatureEncoder(graph)
+    history = build_demo_history(
+        seed=seed,
+        days=240,
+    )
+
+    example_features = encoder.encode(
+        node_index=0,
+        day=datetime.now().date(),
+        history=history,
+        regional_prices=[
+            3.0 + index * 0.12
+            for index in range(len(graph.nodes))
+        ],
+        rainfall=10.6,
+        temperature=27.4,
+        humidity=0.72,
+        supply=1.08,
+        transport_index=1.12,
+        fuel_price=7.58,
+    )
+
+    folds: List[FoldMetrics] = []
+
+    for fold_index, (
+        train_values,
+        valid_values,
+    ) in enumerate(
+        rolling_splits(history),
+        start=1,
+    ):
+        metrics = evaluate_fold(
+            fold_index=fold_index,
+            train_values=train_values,
+            valid_values=valid_values,
+        )
+        folds.append(metrics)
+        save_checkpoint(metrics)
+
+    forecast = simple_forecast(
+        history=history,
+        horizon=14,
+    )
+
+    result = TrainingResult(
+        project="agri-price-predictor",
+        branch="feature/region-linkage",
+        created_at=datetime.now().isoformat(),
+        feature_count=len(example_features),
+        city_count=len(graph.nodes),
+        edge_count=len(graph.edges),
+        folds=folds,
+        mean_mape=round(
+            mean(item.mape for item in folds),
+            5,
+        ),
+        mean_r2=round(
+            mean(item.r2 for item in folds),
+            5,
+        ),
+        peak_memory_mb=1734.6,
+        forecast=forecast,
+    )
+
+    ARTIFACT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    target = ARTIFACT_DIR / "latest_training.json"
+    target.write_text(
+        json.dumps(
+            asdict(result),
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return result
+
+
+if __name__ == "__main__":
+    result = train()
+    print(
+        json.dumps(
+            asdict(result),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+`,
+"src/feature_engineering.py": `from __future__ import annotations
+
+from datetime import date
+from statistics import mean
+from typing import Dict, List, Sequence
+import math
+
+
+LAG_WINDOWS = (1, 3, 7, 14, 28, 56)
+ROLLING_WINDOWS = (3, 7, 14, 30, 60)
+
+
+def lag_features(
+    values: Sequence[float],
+) -> Dict[str, float]:
+    result: Dict[str, float] = {}
+
+    for lag in LAG_WINDOWS:
+        value = (
+            values[-lag]
+            if len(values) >= lag
+            else values[0]
+        )
+        result[f"price_lag_{lag}"] = float(value)
+
+    return result
+
+
+def rolling_features(
+    values: Sequence[float],
+) -> Dict[str, float]:
+    result: Dict[str, float] = {}
+
+    for window in ROLLING_WINDOWS:
+        selected = list(values[-window:])
+        avg = mean(selected)
+        variance = mean([
+            (value - avg) ** 2
+            for value in selected
+        ])
+
+        result[f"price_mean_{window}"] = avg
+        result[f"price_std_{window}"] = math.sqrt(variance)
+        result[f"price_min_{window}"] = min(selected)
+        result[f"price_max_{window}"] = max(selected)
+        result[f"price_range_{window}"] = (
+            max(selected) - min(selected)
+        )
+
+    return result
+
+
+def calendar_features(
+    day: date,
+) -> Dict[str, float]:
+    day_of_year = day.timetuple().tm_yday
+    week = day.isocalendar().week
+
+    return {
+        "month": float(day.month),
+        "day": float(day.day),
+        "weekday": float(day.weekday()),
+        "weekofyear": float(week),
+        "dayofyear": float(day_of_year),
+        "is_weekend": float(day.weekday() >= 5),
+        "month_sin": math.sin(
+            2.0 * math.pi * day.month / 12.0
+        ),
+        "month_cos": math.cos(
+            2.0 * math.pi * day.month / 12.0
+        ),
+        "day_sin": math.sin(
+            2.0 * math.pi * day_of_year / 365.0
+        ),
+        "day_cos": math.cos(
+            2.0 * math.pi * day_of_year / 365.0
+        ),
+    }
+
+
+def weather_features(
+    temperature: float,
+    rainfall: float,
+    humidity: float,
+    wind_speed: float,
+) -> Dict[str, float]:
+    return {
+        "temperature": temperature,
+        "rainfall": rainfall,
+        "humidity": humidity,
+        "wind_speed": wind_speed,
+        "rain_temp": rainfall * temperature,
+        "humidity_temp": humidity * temperature,
+        "wind_rain": wind_speed * rainfall,
+        "heavy_rain": float(rainfall >= 25.0),
+        "heat_wave": float(temperature >= 33.0),
+        "cold_wave": float(temperature <= -15.0),
+    }
+
+
+def transport_features(
+    supply: float,
+    transport_index: float,
+    fuel_price: float,
+    storage_capacity: float,
+) -> Dict[str, float]:
+    return {
+        "supply": supply,
+        "transport_index": transport_index,
+        "fuel_price": fuel_price,
+        "storage_capacity": storage_capacity,
+        "transport_pressure": (
+            transport_index
+            / max(supply, 0.01)
+        ),
+        "fuel_transport": (
+            fuel_price
+            * transport_index
+        ),
+        "storage_supply_ratio": (
+            storage_capacity
+            / max(supply, 0.01)
+        ),
+        "low_supply": float(supply < 0.75),
+        "high_transport": float(
+            transport_index > 1.20
+        ),
+    }
+
+
+def merge_features(
+    *groups: Dict[str, float],
+) -> Dict[str, float]:
+    result: Dict[str, float] = {}
+
+    for group in groups:
+        for key, value in group.items():
+            if key in result:
+                raise KeyError(
+                    f"duplicate feature: {key}"
+                )
+            result[key] = float(value)
+
+    return result
+
+
+def build_feature_row(
+    prices: Sequence[float],
+    day: date,
+    temperature: float,
+    rainfall: float,
+    humidity: float,
+    wind_speed: float,
+    supply: float,
+    transport_index: float,
+    fuel_price: float,
+    storage_capacity: float,
+) -> Dict[str, float]:
+    return merge_features(
+        lag_features(prices),
+        rolling_features(prices),
+        calendar_features(day),
+        weather_features(
+            temperature=temperature,
+            rainfall=rainfall,
+            humidity=humidity,
+            wind_speed=wind_speed,
+        ),
+        transport_features(
+            supply=supply,
+            transport_index=transport_index,
+            fuel_price=fuel_price,
+            storage_capacity=storage_capacity,
+        ),
+    )
+`,
+"src/price_predictor.py": `from __future__ import annotations
+
+from dataclasses import dataclass
+from statistics import mean
+from typing import List, Sequence
+import math
+
+
+@dataclass
+class PredictionResult:
+    horizon: int
+    values: List[float]
+    confidence: List[float]
+    lower_bounds: List[float]
+    upper_bounds: List[float]
+
+
+class PricePredictor:
+    def __init__(
+        self,
+        window: int = 14,
+    ) -> None:
+        self.window = window
+        self.history: List[float] = []
+
+    def fit(
+        self,
+        prices: Sequence[float],
+    ) -> None:
+        if len(prices) <= self.window:
+            raise ValueError(
+                "training history is too short"
+            )
+
+        self.history = [
+            float(value)
+            for value in prices
+        ]
+
+    def _forecast_one(
+        self,
+        values: Sequence[float],
+        step: int,
+    ) -> float:
+        recent = list(
+            values[-self.window:]
+        )
+        local_mean = mean(recent)
+        trend = (
+            recent[-1] - recent[0]
+        ) / max(self.window - 1, 1)
+
+        weekly = (
+            math.sin(
+                (len(values) + step)
+                / 7.0
+                * math.pi
+            )
+            * 0.06
+        )
+        monthly = (
+            math.sin(
+                (len(values) + step)
+                / 30.0
+                * math.pi
+            )
+            * 0.03
+        )
+
+        return max(
+            0.1,
+            local_mean
+            + trend * 0.70
+            + weekly
+            + monthly,
+        )
+
+    def forecast(
+        self,
+        horizon: int = 7,
+    ) -> PredictionResult:
+        if not self.history:
+            raise RuntimeError(
+                "fit must be called before forecast"
+            )
+
+        values = list(self.history)
+        predicted: List[float] = []
+        confidence: List[float] = []
+        lower: List[float] = []
+        upper: List[float] = []
+
+        for step in range(horizon):
+            value = round(
+                self._forecast_one(
+                    values,
+                    step,
+                ),
+                3,
+            )
+            score = max(
+                0.55,
+                0.94 - step * 0.026,
+            )
+            radius = (
+                0.08
+                + step * 0.012
+            )
+
+            values.append(value)
+            predicted.append(value)
+            confidence.append(round(score, 4))
+            lower.append(
+                round(
+                    max(0.1, value - radius),
+                    3,
+                )
+            )
+            upper.append(
+                round(value + radius, 3)
+            )
+
+        return PredictionResult(
+            horizon=horizon,
+            values=predicted,
+            confidence=confidence,
+            lower_bounds=lower,
+            upper_bounds=upper,
+        )
+`,
+"config/model.yaml": `project:
+  name: agri-price-predictor
+  owner: azhi
+  branch: feature/region-linkage
+  progress: 84
+
+runtime:
+  python: "3.11"
+  device: cpu
+  max_memory_mb: 1850
+  num_workers: 2
+  cache_features: true
+
+training:
+  seed: 720
+  validation_folds: 5
+  validation_days: 21
+  forecast_horizon: [7, 14, 30]
+  checkpoint_every_fold: true
+
+graph:
+  enabled: true
+  max_neighbors: 3
+  max_distance_km: 1150
+  min_correlation: 0.40
+  sparse_mode: true
+
+features:
+  lag_windows: [1, 3, 7, 14, 28, 56]
+  rolling_windows: [3, 7, 14, 30, 60]
+  include_weather: true
+  include_transport: true
+  include_storage: true
+  include_region_graph: true
+
+metrics:
+  primary: mape
+  secondary: [mae, r2]
+  target_mape: 0.09
+`,
+"tests/test_pipeline.py": `from __future__ import annotations
+
+import json
+import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from src.price_predictor import PricePredictor
+from src.region_graph_model import (
+    RegionFeatureEncoder,
+    build_demo_graph,
+    build_demo_history,
+)
+from src.train_pipeline import (
+    evaluate_fold,
+    rolling_splits,
+)
+
+
+class RegionGraphTest(unittest.TestCase):
+    def test_graph_contains_nodes_and_edges(
+        self,
+    ) -> None:
+        graph = build_demo_graph(
+            seed=720
+        )
+
+        self.assertEqual(
+            len(graph.nodes),
+            12,
+        )
+        self.assertGreater(
+            len(graph.edges),
+            20,
+        )
+
+    def test_neighbor_features_are_dense(
+        self,
+    ) -> None:
+        graph = build_demo_graph()
+        values = [
+            3.0 + index * 0.1
+            for index in range(len(graph.nodes))
+        ]
+
+        features = graph.neighbor_features(
+            node_index=0,
+            prices=values,
+        )
+
+        self.assertEqual(
+            len(features),
+            4,
+        )
+        self.assertTrue(
+            all(
+                isinstance(value, float)
+                for value in features
+            )
+        )
+
+
+class PredictorTest(unittest.TestCase):
+    def test_forecast_horizon(
+        self,
+    ) -> None:
+        prices = build_demo_history(
+            days=90
+        )
+        model = PricePredictor(
+            window=14
+        )
+        model.fit(prices)
+
+        result = model.forecast(
+            horizon=14
+        )
+
+        self.assertEqual(
+            len(result.values),
+            14,
+        )
+        self.assertEqual(
+            result.horizon,
+            14,
+        )
+
+    def test_forecast_bounds(
+        self,
+    ) -> None:
+        prices = build_demo_history(
+            days=90
+        )
+        model = PricePredictor()
+        model.fit(prices)
+        result = model.forecast(
+            horizon=7
+        )
+
+        for lower, value, upper in zip(
+            result.lower_bounds,
+            result.values,
+            result.upper_bounds,
+        ):
+            self.assertLessEqual(
+                lower,
+                value,
+            )
+            self.assertGreaterEqual(
+                upper,
+                value,
+            )
+
+
+class PipelineTest(unittest.TestCase):
+    def test_rolling_splits(
+        self,
+    ) -> None:
+        values = build_demo_history(
+            days=180
+        )
+        folds = list(
+            rolling_splits(
+                values,
+                folds=5,
+                validation_size=21,
+            )
+        )
+
+        self.assertEqual(
+            len(folds),
+            5,
+        )
+        self.assertTrue(
+            all(
+                len(valid) == 21
+                for _, valid in folds
+            )
+        )
+
+    def test_evaluate_fold(
+        self,
+    ) -> None:
+        values = build_demo_history(
+            days=180
+        )
+        train_values, valid_values = next(
+            rolling_splits(
+                values,
+                folds=2,
+                validation_size=21,
+            )
+        )
+
+        metrics = evaluate_fold(
+            fold_index=1,
+            train_values=train_values,
+            valid_values=valid_values,
+        )
+
+        self.assertGreaterEqual(
+            metrics.mae,
+            0.0,
+        )
+        self.assertGreaterEqual(
+            metrics.mape,
+            0.0,
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
+`
+};
+
+const TABS = [
+  "src/region_graph_model.py",
+  "src/train_pipeline.py",
+  "src/feature_engineering.py",
+  "config/model.yaml"
+];
+
+let current = localStorage.getItem("dense17File") || TABS[0];
+let fontSize = Number(localStorage.getItem("dense17Font") || 11);
+let currentMatch = -1;
+let autoTimer = null;
+let selectedLine = 1;
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1300);
+}
+function langOf(path){
+  if(path.endsWith(".py")) return "py";
+  if(path.endsWith(".yaml")) return "yaml";
+  return "text";
+}
+function highlight(line, lang){
+  let x = escapeHtml(line);
+  if(lang === "py"){
+    x = x.replace(/(#.*)$/g,'<span class="com">$1</span>');
+    x = x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+    x = x.replace(/\b(class)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="cls">$2</span>');
+    x = x.replace(/\b(def)\s+([A-Za-z_]\w*)/g,'<span class="kw">$1</span> <span class="fn">$2</span>');
+    x = x.replace(/\b(from|import|as|return|if|else|elif|for|while|in|not|and|or|True|False|None|raise|with|yield|continue|break|try|except|finally|pass)\b/g,'<span class="kw">$1</span>');
+    x = x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+    x = x.replace(/\b(self)\b/g,'<span class="self">$1</span>');
+    x = x.replace(/^(\s*@\w+)/,'<span class="dec">$1</span>');
+  }else if(lang === "yaml"){
+    x = x.replace(/(^|\s)([A-Za-z_][\w-]*)(:)/g,'$1<span class="fn">$2</span>$3');
+    x = x.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,'<span class="str">$1</span>');
+    x = x.replace(/\b(true|false|null)\b/g,'<span class="kw">$1</span>');
+    x = x.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="num">$1</span>');
+    x = x.replace(/(#.*)$/g,'<span class="com">$1</span>');
+  }
+  return x || " ";
+}
+function renderTabs(){
+  $("#tabs").innerHTML = TABS.map(path => `
+    <button class="tab ${path===current?'active':''}" data-file="${path}">
+      <span class="lang">${path.endsWith('.py')?'PY':'YML'}</span>
+      <span>${path.split('/').pop()}</span>
+      <span class="close">×</span>
+    </button>
+  `).join("");
+  $$("[data-file]").forEach(b => b.onclick = () => openFile(b.dataset.file));
+}
+function renderFileList(){
+  const all = Object.keys(FILES);
+  $("#fileList").innerHTML = all.map(path => `
+    <div class="file-row" data-drawer-file="${path}">
+      <span class="file-ico">${path.endsWith('.py')?'PY':'YML'}</span>
+      <span>${path}</span>
+      <small>${FILES[path].split('\n').length}行</small>
+    </div>
+  `).join("");
+  $$("[data-drawer-file]").forEach(x => x.onclick = () => {
+    openFile(x.dataset.drawerFile);
+    $("#drawer").classList.remove("open");
+  });
+}
+function openFile(path){
+  if(!(path in FILES)) return;
+  current = path;
+  localStorage.setItem("dense17File", current);
+  selectedLine = 1;
+  currentMatch = -1;
+  renderTabs();
+
+  const raw = FILES[path];
+  const lang = langOf(path);
+  const lines = raw.split("\n");
+
+  $("#codeGrid").innerHTML = lines.map((line, index) => `
+    <div class="line-no ${index===0?'active':''}" data-line="${index+1}">${index+1}</div>
+    <div class="code-line ${index===0?'active':''}" data-line="${index+1}">${highlight(line,lang)}</div>
+  `).join("");
+
+  $("#minimap").innerHTML = lines.slice(0,240).map(line => {
+    const t = line.trim();
+    const cls = t.startsWith("#") ? "c" : /\b(def|class)\b/.test(t) ? "f" : /["']/.test(t) ? "s" : /\b(from|import|return|if|for)\b/.test(t) ? "k" : "";
+    const width = Math.max(7, Math.min(47, t.length * .28));
+    return `<i class="${cls}" style="width:${width}px"></i>`;
+  }).join("");
+
+  $("#pathText").textContent = path;
+  $("#lineText").textContent = "Ln 1";
+  $("#editorScroll").scrollTop = Number(localStorage.getItem("dense17scroll:"+path) || 0);
+  updatePercent();
+
+  $$(".line-no,.code-line").forEach(el => el.onclick = () => selectLine(Number(el.dataset.line)));
+}
+function selectLine(n){
+  selectedLine = n;
+  $$(".line-no,.code-line").forEach(el => el.classList.toggle("active",Number(el.dataset.line)===n));
+  $("#lineText").textContent = "Ln " + n;
+}
+function updatePercent(){
+  const el = $("#editorScroll");
+  const max = Math.max(1, el.scrollHeight - el.clientHeight);
+  const pct = Math.round(el.scrollTop / max * 100);
+  $("#percentText").textContent = pct + "%";
+}
+function searchNext(){
+  const q = $("#searchInput").value.trim().toLowerCase();
+  if(!q) return;
+  const lines = FILES[current].split("\n");
+  for(let step=1; step<=lines.length; step++){
+    const i = (currentMatch + step + lines.length) % lines.length;
+    if(lines[i].toLowerCase().includes(q)){
+      currentMatch = i;
+      selectLine(i+1);
+      document.querySelector(`.code-line[data-line="${i+1}"]`)?.scrollIntoView({block:"center"});
+      toast(`第 ${i+1} 行`);
+      return;
+    }
+  }
+  toast("没有找到");
+}
+$("#editorScroll").addEventListener("scroll",()=>{
+  localStorage.setItem("dense17scroll:"+current,$("#editorScroll").scrollTop);
+  updatePercent();
+  $("#minimap").scrollTop = $("#editorScroll").scrollTop * .12;
+});
+$("#menuBtn").onclick = () => $("#drawer").classList.add("open");
+$("#drawerClose").onclick = () => $("#drawer").classList.remove("open");
+$("#drawer").onclick = e => {if(e.target.id==="drawer") $("#drawer").classList.remove("open")};
+$("#searchBtn").onclick = () => {
+  $("#searchbar").classList.toggle("open");
+  if($("#searchbar").classList.contains("open")) $("#searchInput").focus();
+};
+$("#searchClose").onclick = () => $("#searchbar").classList.remove("open");
+$("#searchNext").onclick = searchNext;
+$("#searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchNext()});
+$("#scrollBtn").onclick = () => {
+  if(autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = null;
+    $("#scrollBtn").classList.remove("on");
+    $("#scrollBtn").textContent = "▼";
+    return;
+  }
+  $("#scrollBtn").classList.add("on");
+  $("#scrollBtn").textContent = "Ⅱ";
+  autoTimer = setInterval(()=>{
+    const el = $("#editorScroll");
+    el.scrollTop += 1.6;
+    if(el.scrollTop + el.clientHeight >= el.scrollHeight - 2){
+      clearInterval(autoTimer);
+      autoTimer = null;
+      $("#scrollBtn").classList.remove("on");
+      $("#scrollBtn").textContent = "▼";
+    }
+  },28);
+};
+$("#fontBtn").onclick = () => {
+  fontSize++;
+  if(fontSize > 14) fontSize = 9;
+  document.documentElement.style.setProperty("--font-size",fontSize+"px");
+  localStorage.setItem("dense17Font",fontSize);
+  toast("字号 " + fontSize + "px");
+};
+
+document.documentElement.style.setProperty("--font-size",fontSize+"px");
+renderTabs();
+renderFileList();
+openFile(current);
+})();
+</script>
+</body>
+</html>
