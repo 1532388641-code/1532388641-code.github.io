@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>栀香满径 · 21个网站在线总入口</title>
+  <style>
+    *{box-sizing:border-box}html{color-scheme:dark}body{margin:0;min-height:100vh;background:#07111f;color:#edf5ff;font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif}.wrap{width:min(1120px,100%);margin:auto;padding:48px 24px 72px}.eyebrow{color:#5eead4;font-size:12px;letter-spacing:.22em}.hero{display:flex;justify-content:space-between;align-items:end;gap:28px;margin:10px 0 28px}.hero h1{font-size:40px;line-height:1.15;margin:0 0 9px}.hero p{margin:0;color:#94a3b8}.counter{white-space:nowrap;color:#cbd5e1}.counter strong{font-size:46px;color:#38bdf8;margin-right:5px}.tools{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:20px}.search{height:48px;border:1px solid #263954;border-radius:12px;background:#0b192b;color:#fff;padding:0 16px;font-size:15px;outline:none}.search:focus{border-color:#38bdf8}.clear{height:48px;padding:0 18px;border:1px solid #263954;border-radius:12px;background:#102039;color:#cbd5e1;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{display:grid;grid-template-columns:42px 1fr auto;gap:13px;align-items:center;padding:17px;border:1px solid #20334d;border-radius:14px;background:#0d1b2e;color:inherit;text-decoration:none;transition:.18s}.card:hover{transform:translateY(-2px);border-color:#38bdf8;background:#10243b}.num{font:700 12px ui-monospace,monospace;color:#64748b}.scene{display:inline-block;padding:3px 8px;border-radius:999px;background:#123d4d;color:#67e8f9;font-size:12px;font-weight:700}.card h2{font-size:15px;font-weight:600;margin:8px 0 0;line-height:1.45}.open{color:#7dd3fc;font-size:13px;white-space:nowrap}.empty{display:none;padding:30px 0;color:#94a3b8}.note{margin-top:25px;padding:16px 18px;border-left:3px solid #5eead4;background:#0d1b2e;color:#b6c2d2;line-height:1.75}.online{display:inline-flex;align-items:center;gap:7px;margin-left:8px;color:#86efac;font-size:12px}.online i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e}@media(max-width:760px){.wrap{padding:30px 16px 60px}.hero{align-items:start;flex-direction:column}.hero h1{font-size:30px}.counter strong{font-size:34px}.grid{grid-template-columns:1fr}.tools{grid-template-columns:1fr}.clear{display:none}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="eyebrow">ONLINE WEBSITE DIRECTORY <span class="online"><i></i>联网可用</span></div>
+    <div class="hero"><div><h1>栀香满径 · 网站总入口</h1><p>按原链接表顺序整理，点击即可进入对应页面</p></div><div class="counter"><strong>21</strong>个入口</div></div>
+    <div class="tools"><input id="search" class="search" placeholder="搜索场次或页面名称，例如：19-2、微信、实验室"><button id="clear" class="clear">清除搜索</button></div>
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty">没有找到对应页面</div>
+    <div class="note"><b>使用提示：</b>电脑或手机联网后打开本页，点击卡片即可进入对应网站。每个页面会在新标签页中打开，方便随时返回总入口。</div>
+  </main>
+  <script>
+    const sites=[
+      ['3-2','女主手机里的“青禾银行”软件','https://1532388641-code.github.io/'],
+      ['6-2','女主加密云盘：大数据农产品价格预测项目','https://1532388641-code.github.io/6-2-drive/'],
+      ['6-2','女主浏览的开发者技术论坛“栈途社区”','https://1532388641-code.github.io/6-2-forum/'],
+      ['10-1C','女主电脑开发工作台、VS Code代码界面','https://1532388641-code.github.io/10-1C-code-lab/'],
+      ['17-2','农产品预测项目源码查看界面','https://1532388641-code.github.io/17-2-dense-code-site/'],
+      ['19-2','农产品价格预测系统测试台','https://1532388641-code.github.io/19-2-agri-prediction-test-site/'],
+      ['19-2','开发者论坛交流、帖子和聊天页面','https://1532388641-code.github.io/19-2-forum-chat-fast-no-status/'],
+      ['20-1','全渠道电商经营数据分析代码界面','https://1532388641-code.github.io/20-1-ecommerce-analysis-code-site/'],
+      ['21-1A','明远科技有限公司企业工商档案','https://1532388641-code.github.io/21-1A-mingyuan-company/'],
+      ['21-1A','女主未完成的电商分析代码工作台','https://1532388641-code.github.io/21-1A-unfinished-code/'],
+      ['22-1','农产品价格预测模型成果展示','https://1532388641-code.github.io/22-1-agri-model-showcase/'],
+      ['27-1','傅明远私人邮件档案、协议和历史邮件','https://1532388641-code.github.io/27-1-mobile-email-redesign-v2/'],
+      ['29-1B','连锁零售销量预测与智能补货系统','https://1532388641-code.github.io/29-1B-white-coding-workspace/'],
+      ['39-1','普通高考成绩查询系统','https://1532388641-code.github.io/39-1-gaokao-score-query-v4/'],
+      ['51-1','深蓝助学金智能匹配系统、申请人档案及异常监控','https://1532388641-code.github.io/deepblue-github-pages-realistic-workers-v5/'],
+      ['53-1','男主电脑微信界面及技术论坛推送','https://1532388641-code.github.io/53-1weixin/agri-tech-forum-github-pages/'],
+      ['53-1','助学金系统漏洞论坛文章详情','https://1532388641-code.github.io/53-1weixin/agri-tech-forum-github-pages/forum.html'],
+      ['54-1','男主核心模块代码及文件传输界面','https://1532388641-code.github.io/zhixiang-54-1/male/'],
+      ['54-1','女主运行代码、攻击分析及锁定结果','https://1532388641-code.github.io/zhixiang-54-1/female/'],
+      ['57-1','男主过去三个月代码提交日志，428条记录','https://1532388641-code.github.io/zhixiang-57-1/commits/'],
+      ['57-1','男主实验室最后一轮测试界面','https://1532388641-code.github.io/zhixiang-57-1/lab-test/']
+    ];
+    const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const grid=document.querySelector('#grid'),empty=document.querySelector('#empty'),search=document.querySelector('#search');
+    function render(){const q=search.value.trim().toLowerCase();const list=sites.map((s,i)=>({s,i})).filter(x=>!q||(x.s[0]+' '+x.s[1]).toLowerCase().includes(q));grid.innerHTML=list.map(({s,i})=>`<a class="card" href="${s[2]}" target="_blank" rel="noopener"><span class="num">${String(i+1).padStart(2,'0')}</span><div><span class="scene">${esc(s[0])}</span><h2>${esc(s[1])}</h2></div><span class="open">打开 →</span></a>`).join('');empty.style.display=list.length?'none':'block'}
+    search.addEventListener('input',render);document.querySelector('#clear').onclick=()=>{search.value='';render();search.focus()};render();
+  </script>
+</body>
+</html>
