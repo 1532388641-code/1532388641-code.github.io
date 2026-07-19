@@ -89,7 +89,7 @@ button{cursor:pointer}
   </section>
 
   <section class="view" data-view="messages">
-    <div class="section-title"><h2 style="font-size:21px">消息</h2><button id="readAll">全部已读</button></div>
+    <div class="section-title"><h2 style="font-size:21px">消息</h2><button id="readAll">提醒已开启</button></div>
     <div class="tabs" id="messageTabs"><button class="active" data-msg-filter="all">全部</button><button data-msg-filter="private">私信</button><button data-msg-filter="project">项目</button><button data-msg-filter="notice">通知</button></div>
     <div class="card message-list" id="messageList"></div>
   </section>
@@ -242,14 +242,15 @@ function renderProjects(){
  $$('[data-job-view]').forEach(b=>b.onclick=()=>openJob(b.dataset.jobView));
  $$('[data-job-chat]').forEach(b=>b.onclick=()=>openChat(b.dataset.jobChat==='main'?'chenhao':b.dataset.jobChat==='j3'?'review':'lab'));
 }
-function unreadCount(){return Object.keys(chats).filter(k=>!state.readChats.includes(k)).length}
+// 拍摄时消息红点固定保留，重复进出页面也不改变画面状态。
+function unreadCount(){return Object.keys(chats).length}
 function renderMessages(filter='all'){
  const order=['lab','review','liufang','chenhao','qingshi','client','system'];
  const allMessages=k=>[...chats[k].messages,...(state.replies[k]||[])];
  const lastText=k=>{const list=allMessages(k);return list.at(-1)?.[1]||''};
  const list=order.filter(k=>filter==='all'||chats[k].type===filter);
  $('#messageList').innerHTML=list.map(k=>{
-   const c=chats[k],unread=!state.readChats.includes(k);
+   const c=chats[k],unread=true;
    return `<div class="message" data-message="${k}">
      <div class="${avatarClass(c.tone)}">${c.avatar}</div>
      <div><div class="message-title">${c.name}</div><div class="message-text">${lastText(k)}</div></div>
@@ -277,7 +278,7 @@ function renderChat(){
  $('#chatQuick').innerHTML='';
  setTimeout(()=>{$('#chatBody').scrollTop=$('#chatBody').scrollHeight},30);
 }
-function openChat(key){activeChat=key;if(!state.readChats.includes(key))state.readChats.push(key);save();renderMessages(currentMsgFilter);renderChat();$('#chatModal').classList.add('open')}
+function openChat(key){activeChat=key;renderMessages(currentMsgFilter);renderChat();$('#chatModal').classList.add('open')}
 const chenhaoScript=[
  {variants:['模型跑出来了87','结果到87了','准确率有八十七','这轮模型跑到87%'],replies:['这么高？已经到87了？','卧槽，第一轮就跑到这个数了？','可以啊，这结果比我预想的高多了。'],delay:[1050,1550]},
  {variants:['优化一下能到90','再调一调可以上九十','我还能把准确率提到90','九十应该没问题'],replies:['你是怪物吗？','还能往90冲？你也太猛了。','九十？你这是不给别人活路啊。'],delay:[1150,1750]},
@@ -440,7 +441,7 @@ $('#homeChips').onclick=e=>{const b=e.target.closest('[data-topic]');if(!b)retur
 $$('.board[data-topic]').forEach(b=>b.onclick=()=>{currentTopic=b.dataset.topic;$$('#homeChips .chip').forEach(x=>x.classList.toggle('active',x.dataset.topic===currentTopic));renderPosts(currentTopic,'');});
 $('#searchInput').oninput=e=>renderPosts(currentTopic,e.target.value.trim());
 $('#messageTabs').onclick=e=>{const b=e.target.closest('[data-msg-filter]');if(!b)return;currentMsgFilter=b.dataset.msgFilter;$$('#messageTabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMessages(currentMsgFilter)};
-$('#readAll').onclick=()=>{state.readChats=Object.keys(chats);save();renderMessages(currentMsgFilter);toast('消息中心','全部消息已标记为已读')};
+$('#readAll').onclick=()=>{renderMessages(currentMsgFilter);toast('消息提醒','红点将持续保留，方便重复拍摄')};
 $('#sendChat').onclick=sendChat;$('#chatInput').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}};
 $('#sendComment').onclick=sendComment;$('#commentInput').onkeydown=e=>{if(e.key==='Enter')sendComment()};
 $('#acceptFromModal').onclick=acceptJob;$('#successClose').onclick=()=>{$('#successModal').classList.remove('open');go('messages');openChat('chenhao')};
