@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
 <meta name="theme-color" content="#f7f8fa" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>栈途社区 · 开发者交流</title>
 <style>
 :root{
@@ -143,9 +146,12 @@ button{cursor:pointer}
 (() => {
 const initial={entered:true,accepted:false,readChats:[],likes:{},replies:{},comments:{},chenhaoStep:0};
 const storageKey='stackwayForum19SmartV2';
-const state=Object.assign({},initial,JSON.parse(localStorage.getItem(storageKey)||'{}'));
+// 每次打开都从初始状态开始，不继承上一次排练留下的任何操作。
+localStorage.removeItem(storageKey);
+localStorage.removeItem('stackwayForum19FastNoStatus');
+const state=JSON.parse(JSON.stringify(initial));
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
+const save=()=>{};
 const now=()=>new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
 
 const posts=[
