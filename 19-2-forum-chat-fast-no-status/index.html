@@ -286,11 +286,11 @@ function renderChat(){
 }
 function openChat(key){activeChat=key;renderMessages(currentMsgFilter);renderChat();$('#chatModal').classList.add('open')}
 const chenhaoScript=[
- {variants:['模型跑出来了87','结果到87了','准确率有八十七','这轮模型跑到87%'],replies:['这么高？已经到87了？','卧槽，第一轮就跑到这个数了？','可以啊，这结果比我预想的高多了。'],delay:[1050,1550]},
- {variants:['优化一下能到90','再调一调可以上九十','我还能把准确率提到90','九十应该没问题'],replies:['你是怪物吗？','还能往90冲？你也太猛了。','九十？你这是不给别人活路啊。'],delay:[1150,1750]},
- {variants:['我只是比你多花了一千个小时','无非多练了1000小时','我投入的时间多一点','这东西就是时间堆出来的'],replies:['一千个小时？难怪。我导师肯定想见你。','原来是硬生生练出来的……阿栀，我导师真的很想见你。','你说得轻松，一千个小时可不是谁都熬得下来。我导师一定想见你。'],delay:[1450,2150]},
- {variants:['等准确率做到95再说','先把模型做到九十五','等我跑到95%再谈','再等等我想先冲95'],replies:['你到底什么人啊？高考七百二十六，还会编程，还会做数据模型，你是人类吗？','还要做到95？你高考七百二十六，又会编程又会做模型，真不给普通人留活路。','等一下，95？你到底怎么学的，高考和模型都能做到这种程度。'],delay:[1900,2750]},
- {variants:['最后警告别叫我非人类','不许再叫我怪物','我就是普通人别乱说','再说我不是人就拉黑你'],replies:['好好好，不说了。对了，你之前那份电商数据分析报告客户很感兴趣，想追加合作，预算十五万。','行，我收回。说正事：客户看中了你之前的电商分析报告，准备追加十五万继续合作。','知道了，你是普通人。顺便告诉你个消息，之前那位客户想追加合作，酬劳十五万。'],delay:[2400,3400]},
+ {variants:[],replies:['卧槽。'],delay:[1050,1550]},
+ {variants:[],replies:['你是怪物吗？'],delay:[1150,1750]},
+ {variants:[],replies:['阿栀，我导师真的很想见你。'],delay:[1450,2150]},
+ {variants:[],replies:['你到底什么人啊？高考七百二十六，还会编程，还会做数据模型，你是人类吗？'],delay:[1900,2750]},
+ {variants:[],replies:['好好好，对了，有个事跟你说，你之前做的那个电商数据分析报告，客户那边有个高管看了，非常感兴趣，想追加合作，酬十五万。'],delay:[2400,3400]},
  {variants:['接','可以接','这个项目我做','行发资料吧','没问题我接了'],replies:['行，我马上跟客户确认，把资料和要求发给你。','好，我这就回复客户，稍后把项目资料转给你。','收到，那我替你确认了，合同和数据说明一会儿发你。'],delay:[900,1450]}
 ];
 
@@ -333,16 +333,9 @@ function intentRule(index,text){
  return false;
 }
 
-function findScriptStep(text){
- const expectedIndex=Math.min(state.chenhaoStep||0,chenhaoScript.length-1);
- if(intentRule(expectedIndex,text))return expectedIndex;
- let bestIndex=-1,bestScore=0;
- chenhaoScript.forEach((step,index)=>{
-   if(intentRule(index,text)){bestIndex=index;bestScore=1;return}
-   const score=Math.max(...step.variants.map(v=>similarity(text,v)))+(index===expectedIndex?.12:0);
-   if(score>bestScore){bestScore=score;bestIndex=index}
- });
- return bestScore>=.38?bestIndex:-1;
+function findScriptStep(){
+ // 演员输入内容不参与判断，只按剧本顺序触发前五条陈昊回复。
+ return state.chenhaoStep<5?state.chenhaoStep:-1;
 }
 
 function pick(list){return list[Math.floor(Math.random()*list.length)]}
@@ -379,6 +372,8 @@ function sendChat(){
  if(chat.type==='notice')return;
 
  if(activeChat==='chenhao'){
+   // 五条陈昊台词结束后，沈栀输入“接”只上屏，不再追加回复。
+   if(state.chenhaoStep>=5)return;
    const matchedIndex=findScriptStep(value);
 
    if(matchedIndex>=0&&matchedIndex<chenhaoScript.length){
