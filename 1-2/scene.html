@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>江城大学校园社区</title>
+<link rel="stylesheet" href="./assets/forum-mobile-v4.css?v=20260724-4">
+<link rel="icon" href="assets/favicon.svg">
+<style id="github-mobile-critical">
+
+:root{
+  --brand:#193b72;--brand-soft:#eef4fb;--accent:#e75d3c;
+  --ink:#172033;--muted:#6b7280;--line:#e6e9ef;--bg:#f4f6f9
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--ink);-webkit-text-size-adjust:100%}
+body.scene-page{background:#dfe4eb;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+.scene-shell{width:100%;max-width:430px;min-height:100dvh;margin:0 auto;background:var(--bg);position:relative;padding-bottom:76px;box-shadow:0 0 40px rgba(20,35,60,.16)}
+.site-header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.topbar{height:58px;padding:0 12px;display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;min-width:0}
+.logo-mark{width:35px;height:35px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#193b72,#3876bb);color:#fff;font-weight:800;flex:none}
+.logo-title{font-size:16px;font-weight:800;white-space:nowrap}
+.logo-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.header-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{font-size:11px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.avatar{width:33px;height:33px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700;background:linear-gradient(145deg,#5578a9,#1e3d6d)}
+.nav{background:#193b72;color:#fff;overflow:hidden}
+.nav-inner{display:flex;padding:0 6px;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav a{padding:10px 13px;font-size:12px;white-space:nowrap;opacity:.88}
+.nav a.active{background:rgba(255,255,255,.14);opacity:1}
+.mobile-home{padding:12px 10px 90px}
+.mobile-banner{overflow:hidden;border-radius:15px;padding:17px 16px;margin-bottom:12px;color:#fff;background:radial-gradient(circle at 88% 18%,rgba(255,255,255,.26),transparent 26%),linear-gradient(128deg,#173864,#2d67a5);box-shadow:0 9px 22px rgba(20,53,96,.16)}
+.mobile-banner .eyebrow{font-size:10px;letter-spacing:1.2px;opacity:.75}
+.mobile-banner h2{font-size:21px;line-height:1.32;margin:8px 0 7px}
+.mobile-banner p{font-size:12px;line-height:1.6;margin:0;opacity:.84}
+.mobile-stats{margin-top:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.mobile-stat{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 3px;text-align:center}
+.mobile-stat b{display:block;font-size:14px}
+.mobile-stat span{display:block;font-size:9px;opacity:.74;margin-top:2px}
+.quick-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin:0 0 12px!important}
+.quick-item{min-width:0;background:#fff;border:1px solid var(--line);border-radius:13px;padding:10px 3px 9px;text-align:center;box-shadow:0 3px 10px rgba(20,35,60,.035)}
+.quick-icon{width:34px;height:34px;margin:0 auto 6px;border-radius:11px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);font-size:13px;font-weight:800}
+.quick-item span{display:block;font-size:10px;color:#4e596b;white-space:nowrap}
+.feed-section{display:block!important;background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.feed-title{display:flex!important;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line)}
+.feed-title b{font-size:15px}
+.feed-title span{margin-left:auto;font-size:10px;color:var(--muted)}
+.feed-row{display:grid!important;grid-template-columns:38px minmax(0,1fr) 43px!important;gap:10px;align-items:center;padding:13px 12px;border-bottom:1px solid #edf0f4}
+.feed-row:last-child{border-bottom:0}
+.feed-tag{width:36px;height:36px;border-radius:11px;background:#f0f4fa;color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:800}
+.feed-row.hot .feed-tag{background:#fff0ed;color:var(--accent)}
+.feed-row h3{font-size:13px;line-height:1.42;margin:0 0 5px;font-weight:750;word-break:break-word}
+.feed-meta{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-num{font-size:9px;line-height:1.55;color:#8791a1;text-align:right}
+.campus-strip{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px;background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
+.campus-chip{min-width:0;border-radius:10px;background:#f7f9fc;padding:10px 7px}
+.campus-chip b{display:block;font-size:11px;margin-bottom:5px}
+.campus-chip span{display:block;font-size:9px;color:var(--muted);line-height:1.42}
+.bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:40;width:min(430px,100%);height:66px;background:rgba(255,255,255,.98);border-top:1px solid var(--line);display:grid!important;grid-template-columns:repeat(5,1fr)!important;padding-bottom:max(3px,env(safe-area-inset-bottom));box-shadow:0 -6px 18px rgba(20,35,60,.06)}
+.bottom-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:#7a8493}
+.bottom-nav a.active{color:var(--brand);font-weight:700}
+.bottom-nav i{font-style:normal;font-size:17px;line-height:1}
+.push{position:fixed;z-index:80;left:50%;top:max(9px,env(safe-area-inset-top));transform:translateX(-50%);width:min(406px,calc(100% - 18px));padding:13px 14px 14px;border:1px solid #dce2eb;border-radius:17px;background:rgba(255,255,255,.995);box-shadow:0 18px 42px rgba(13,32,62,.28);cursor:pointer}
+.push-head{display:flex;align-items:center;gap:7px;font-size:10px;color:#667085}
+.push-icon{width:27px;height:27px;border-radius:8px;background:var(--brand);display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.push-time{margin-left:auto}
+.unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(231,93,60,.11)}
+.push-title{font-size:14px;font-weight:800;line-height:1.4;margin:6px 0 3px}
+.push-sub{font-size:10px;color:#7d8796;line-height:1.45}
+@media(max-width:430px){
+  body.scene-page{background:var(--bg)}
+  .scene-shell{max-width:none;box-shadow:none}
+  .push{width:calc(100% - 14px)}
+}
+@media(min-width:431px){
+  .scene-shell{border-left:1px solid rgba(0,0,0,.03);border-right:1px solid rgba(0,0,0,.03)}
+}
+
+</style>
+</head>
+<body class="scene-page">
+<div class="push show" id="push" onclick="location.href='thread.html'">
+  <div class="push-head">
+    <div class="push-icon">江</div>
+    <b>江城大学校园社区</b>
+    <span class="unread-dot"></span>
+    <span class="push-time">刚刚</span>
+  </div>
+  <div class="push-title">我校“顶级”富二代陆川：千万拆迁款撑起来的假面人生</div>
+  <div class="push-sub">帖子热度正在快速上升 · 已有 638 条讨论 · 点击查看</div>
+</div>
+
+<div class="scene-shell">
+  <header class="site-header">
+    <div class="topbar">
+      <a class="logo" href="index.html">
+        <div class="logo-mark">江</div>
+        <div>
+          <div class="logo-title">江城大学校园社区</div>
+          <div class="logo-sub">JCU CAMPUS FORUM</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <a class="icon-btn" href="notices.html">消息 <b style="color:#e75d3c">6</b></a>
+        <div class="avatar">游</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="active">首页</a>
+        <a>实时</a>
+        <a>热榜</a>
+        <a>版块</a>
+        <a>树洞</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="mobile-home">
+    <section class="mobile-banner">
+      <div class="eyebrow">JIANGCHENG UNIVERSITY</div>
+      <h2>今晚的江大<br>正在发生什么？</h2>
+      <p>校园热点、生活互助、课程交流与匿名树洞，实时更新。</p>
+      <div class="mobile-stats">
+        <div class="mobile-stat"><b>8,903</b><span>在线</span></div>
+        <div class="mobile-stat"><b>1,276</b><span>今日新帖</span></div>
+        <div class="mobile-stat"><b>28,419</b><span>今日访问</span></div>
+      </div>
+    </section>
+
+    <section class="quick-grid">
+      <div class="quick-item"><div class="quick-icon">热</div><span>实时热榜</span></div>
+      <div class="quick-item"><div class="quick-icon">生</div><span>江大生活</span></div>
+      <div class="quick-item"><div class="quick-icon">树</div><span>匿名树洞</span></div>
+      <div class="quick-item"><div class="quick-icon">闲</div><span>二手闲置</span></div>
+    </section>
+
+    <section class="feed-section">
+      <div class="feed-title"><b>校园实时热榜</b><span>每分钟更新</span></div>
+      <a class="feed-row hot" href="thread.html">
+        <div class="feed-tag">爆</div>
+        <div><h3>我校“顶级”富二代陆川：千万拆迁款撑起来的假面人生</h3><div class="feed-meta">刚刚 · 吐槽爆料 · 热度飙升</div></div>
+        <div class="feed-num">2.8万<br>638评</div>
+      </a>
+      <div class="feed-row hot">
+        <div class="feed-tag">热</div>
+        <div><h3>云顶会所今晚到底发生了什么？有人现场听见了</h3><div class="feed-meta">2分钟前 · 江大生活</div></div>
+        <div class="feed-num">1.6万<br>309评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">问</div>
+        <div><h3>每次开的车都不一样，是租车平台还是朋友的？</h3><div class="feed-meta">4分钟前 · 校园问答</div></div>
+        <div class="feed-num">9346<br>172评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">图</div>
+        <div><h3>求证：照片里那块表是真的，但人设为什么还是假的</h3><div class="feed-meta">6分钟前 · 吐槽爆料</div></div>
+        <div class="feed-num">7281<br>96评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">荐</div>
+        <div><h3>别急着网暴，爆料帖里的证据链完整吗？</h3><div class="feed-meta">11分钟前 · 理性讨论</div></div>
+        <div class="feed-num">4521<br>134评</div>
+      </div>
+    </section>
+
+    <section class="campus-strip">
+      <div class="campus-chip"><b>校园公告</b><span>本周车辆出入登记流程调整</span></div>
+      <div class="campus-chip"><b>校媒动态</b><span>新闻系摄影作品征集开启</span></div>
+      <div class="campus-chip"><b>生活互助</b><span>后街砂锅店口味测评汇总</span></div>
+    </section>
+
+    <section class="feed-section">
+      <div class="feed-title"><b>大家都在看</b><span>更多内容</span></div>
+      <div class="feed-row">
+        <div class="feed-tag">校</div>
+        <div><h3>本周校园车辆出入登记调整通知</h3><div class="feed-meta">16分钟前 · 保卫处联络员</div></div>
+        <div class="feed-num">2.1万<br>45评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">问</div>
+        <div><h3>新闻系方学姐今天是不是也在云顶？</h3><div class="feed-meta">18分钟前 · 匿名同学</div></div>
+        <div class="feed-num">1.1万<br>201评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">食</div>
+        <div><h3>后街砂锅店到底哪家最正宗？求本地人推荐</h3><div class="feed-meta">31分钟前 · 江大生活</div></div>
+        <div class="feed-num">1245<br>57评</div>
+      </div>
+      <div class="feed-row">
+        <div class="feed-tag">闲</div>
+        <div><h3>毕业季宿舍好物出清：台灯、显示器支架、收纳箱</h3><div class="feed-meta">36分钟前 · 二手闲置</div></div>
+        <div class="feed-num">682<br>23评</div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <a class="active"><i>⌂</i><span>首页</span></a>
+    <a><i>♨</i><span>热榜</span></a>
+    <a><i>＋</i><span>发布</span></a>
+    <a href="notices.html"><i>◉</i><span>消息</span></a>
+    <a href="user.html"><i>◌</i><span>我的</span></a>
+  </nav>
+</div>
+</body>
+</html>
