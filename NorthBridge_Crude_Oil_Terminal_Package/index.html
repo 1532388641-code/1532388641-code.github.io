@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NorthBridge Markets | Global Futures Terminal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="brand-zone">
+        <button class="icon-button mobile-only" id="menuBtn" aria-label="Open menu">☰</button>
+        <div class="brand-mark">NB</div>
+        <div class="brand-copy">
+          <strong>NorthBridge Markets</strong>
+          <span>Global Futures & Equities Terminal</span>
+        </div>
+      </div>
+
+      <div class="symbol-search">
+        <span class="search-icon">⌕</span>
+        <input id="symbolSearch" value="CL · WTI Crude Oil Futures" aria-label="Search symbol" />
+        <button id="searchBtn">Search</button>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="connection-chip"><i></i> LIVE FEED</div>
+        <button class="top-action" data-open-modal="alertsModal">Alerts <b id="alertCount">3</b></button>
+        <button class="top-action" data-panel="accountPanel">Account</button>
+        <div class="user-pill">
+          <span class="avatar">LC</span>
+          <div><strong>Lu Chuan</strong><small>Professional Client</small></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="ticker-strip" id="tickerStrip">
+      <button data-symbol="CL"><b>CL</b><span id="tickerCL">82.63</span><em class="up" id="tickerCLMove">+1.38%</em></button>
+      <button data-symbol="BZ"><b>BRENT</b><span id="tickerBZ">86.14</span><em class="up">+1.02%</em></button>
+      <button data-symbol="GC"><b>GOLD</b><span id="tickerGC">2,391.30</span><em class="up">+0.48%</em></button>
+      <button data-symbol="ES"><b>S&P FUT</b><span id="tickerES">5,511.25</span><em class="up">+0.91%</em></button>
+      <button data-symbol="NQ"><b>NASDAQ FUT</b><span id="tickerNQ">19,824.50</span><em class="up">+1.26%</em></button>
+      <button data-symbol="DXY"><b>DXY</b><span id="tickerDXY">103.42</span><em class="down">-0.16%</em></button>
+      <button data-symbol="USDCNH"><b>USD/CNH</b><span id="tickerCNH">7.1182</span><em class="down">-0.07%</em></button>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <nav>
+        <button class="nav-btn active" data-panel="marketPanel"><span>▥</span>Market</button>
+        <button class="nav-btn" data-panel="chartPanel"><span>⌁</span>Advanced Chart</button>
+        <button class="nav-btn" data-panel="positionsPanel"><span>▤</span>Positions</button>
+        <button class="nav-btn" data-panel="ordersPanel"><span>⇄</span>Orders</button>
+        <button class="nav-btn" data-panel="strategyPanel"><span>◇</span>Strategy</button>
+        <button class="nav-btn" data-panel="accountPanel"><span>▣</span>Account</button>
+      </nav>
+
+      <div class="sidebar-section">
+        <div class="side-title">SCENE CONTROLS</div>
+        <button class="scene-btn" data-scene="dip">Sharp Dip</button>
+        <button class="scene-btn" data-scene="rebound">Fast Rebound</button>
+        <button class="scene-btn" data-scene="volatile">High Volatility</button>
+        <button class="scene-btn" data-scene="calm">Normal Market</button>
+      </div>
+
+      <div class="sidebar-section compact">
+        <div class="side-title">SYSTEM</div>
+        <div class="system-line"><span>Data Connection</span><strong class="good">Stable</strong></div>
+        <div class="system-line"><span>Order Routing</span><strong class="good">Ready</strong></div>
+        <div class="system-line"><span>Risk Engine</span><strong class="good">Online</strong></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="page active" id="marketPanel">
+        <div class="market-layout">
+          <section class="panel watch-panel">
+            <div class="panel-header">
+              <div><h2>Market Watch</h2><p>Multi-asset futures monitor</p></div>
+              <button class="small-button" id="addSymbolBtn">+ Add</button>
+            </div>
+            <div class="watch-tabs">
+              <button class="watch-tab active" data-watch="futures">Futures</button>
+              <button class="watch-tab" data-watch="indices">Indices</button>
+              <button class="watch-tab" data-watch="fx">FX</button>
+            </div>
+            <div class="dense-table watch-table" id="watchTable"></div>
+            <div class="breadth-block">
+              <div class="section-label">Global Risk Sentiment</div>
+              <div class="sentiment-track"><i id="sentimentFill"></i></div>
+              <div class="sentiment-labels"><span>Risk-Off</span><b id="sentimentText">Risk-On</b><span>Risk-On</span></div>
+            </div>
+          </section>
+
+          <section class="panel chart-terminal">
+            <div class="instrument-header">
+              <div>
+                <div class="symbol-name"><b id="symbolCode">CL</b><span id="symbolTitle">WTI Crude Oil Futures</span></div>
+                <div class="price-line"><strong id="lastPrice">82.63</strong><span class="up" id="priceMove">+1.13  +1.38%</span></div>
+              </div>
+              <div class="ohlc-grid">
+                <div><span>Open</span><b id="openVal">81.54</b></div>
+                <div><span>High</span><b id="highVal">83.08</b></div>
+                <div><span>Low</span><b id="lowVal">80.96</b></div>
+                <div><span>Volume</span><b id="volumeVal">284,631</b></div>
+                <div><span>Open Interest</span><b id="oiVal">1,824,906</b></div>
+              </div>
+            </div>
+
+            <div class="chart-toolbar">
+              <div class="timeframes">
+                <button data-tf="1m">1m</button>
+                <button data-tf="5m" class="active">5m</button>
+                <button data-tf="15m">15m</button>
+                <button data-tf="1h">1H</button>
+                <button data-tf="4h">4H</button>
+                <button data-tf="1d">1D</button>
+              </div>
+              <div class="indicator-tools">
+                <button data-indicator="ma" class="active">MA</button>
+                <button data-indicator="boll">BOLL</button>
+                <button data-indicator="macd" class="active">MACD</button>
+                <button data-indicator="rsi">RSI</button>
+                <button data-open-modal="settingsModal">⚙</button>
+                <button id="fullscreenBtn">⛶</button>
+              </div>
+            </div>
+
+            <div class="chart-stage" id="chartStage">
+              <canvas id="mainCanvas"></canvas>
+              <div class="crosshair-label" id="crosshairLabel">CL 82.63</div>
+              <div class="chart-price-marker" id="priceMarker">82.63</div>
+            </div>
+            <div class="subchart-stage"><canvas id="subCanvas"></canvas></div>
+            <div class="chart-footer">
+              <span class="ma5">MA5 82.14</span>
+              <span class="ma10">MA10 81.76</span>
+              <span class="ma20">MA20 80.95</span>
+              <span class="macd">MACD 0.42</span>
+              <span class="status-live">● LIVE UPDATES</span>
+            </div>
+          </section>
+
+          <section class="panel orderbook-panel">
+            <div class="panel-header compact-head">
+              <div><h2>Order Book</h2><p>Depth & recent trades</p></div>
+              <button class="small-button" id="depthToggle">Depth 10</button>
+            </div>
+            <div class="book-header"><span>Level</span><span>Price</span><span>Size</span></div>
+            <div class="book-list asks" id="askBook"></div>
+            <div class="book-mid">
+              <strong id="bookMidPrice">82.63</strong>
+              <span class="up" id="bookMidMove">+1.38%</span>
+            </div>
+            <div class="book-list bids" id="bidBook"></div>
+
+            <div class="section-divider"></div>
+            <div class="section-label row-label"><span>Time & Sales</span><button id="pauseTapeBtn">Pause</button></div>
+            <div class="tape-list" id="tapeList"></div>
+          </section>
+        </div>
+
+        <div class="bottom-grid">
+          <section class="panel positions-mini">
+            <div class="panel-header compact-head">
+              <div><h2>Open Positions</h2><p>Active exposure</p></div>
+              <button class="small-button" data-panel="positionsPanel">View All</button>
+            </div>
+            <div class="positions-table" id="miniPositions"></div>
+          </section>
+
+          <section class="panel order-ticket">
+            <div class="panel-header compact-head">
+              <div><h2>Order Ticket</h2><p>Staged entries and exits</p></div>
+              <div class="buy-sell-toggle"><button class="active buy" data-side="BUY">BUY</button><button class="sell" data-side="SELL">SELL</button></div>
+            </div>
+            <div class="ticket-grid">
+              <label><span>Contract</span><select id="contractSelect"><option>CL Front Month</option><option>CL Next Month</option><option>Brent Front Month</option></select></label>
+              <label><span>Order Type</span><select id="orderType"><option>Limit</option><option>Market</option><option>Stop Limit</option></select></label>
+              <label><span>Quantity</span><input id="orderQty" value="25" inputmode="numeric" /></label>
+              <label><span>Limit Price</span><input id="orderPrice" value="82.35" inputmode="decimal" /></label>
+              <label><span>Take Profit</span><input id="takeProfit" value="83.60" inputmode="decimal" /></label>
+              <label><span>Stop Loss</span><input id="stopLoss" value="81.72" inputmode="decimal" /></label>
+            </div>
+            <div class="ticket-summary">
+              <div><span>Estimated Margin</span><strong id="marginEstimate">CNY 1,436,000</strong></div>
+              <div><span>Risk Check</span><strong class="good">Passed</strong></div>
+              <div><span>Strategy</span><strong>Staged Entry</strong></div>
+            </div>
+            <div class="ticket-actions">
+              <button class="secondary" id="previewOrderBtn">Preview</button>
+              <button class="primary buy-primary" id="placeOrderBtn">Place Buy Order</button>
+            </div>
+          </section>
+
+          <section class="panel flow-panel">
+            <div class="panel-header compact-head"><div><h2>Capital Flow</h2><p>Institutional participation</p></div></div>
+            <div class="flow-chart"><canvas id="flowCanvas"></canvas></div>
+            <div class="flow-legend">
+              <div><span>Large Orders</span><strong class="up" id="largeFlow">+1.82B</strong></div>
+              <div><span>Medium Orders</span><strong class="up" id="mediumFlow">+620M</strong></div>
+              <div><span>Retail</span><strong class="down" id="retailFlow">-410M</strong></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="chartPanel">
+        <div class="full-chart-page panel">
+          <div class="panel-header">
+            <div><h2>Advanced Multi-Chart Workspace</h2><p>Price structure, momentum, volume and position management</p></div>
+            <div class="workspace-actions"><button id="layout1Btn" class="active">1 Chart</button><button id="layout2Btn">2 Charts</button><button id="resetChartBtn">Reset</button></div>
+          </div>
+          <div class="multi-chart-grid" id="multiChartGrid">
+            <div class="multi-chart-card"><div class="mini-chart-title">CL · 5 Minute</div><canvas id="multiCanvas1"></canvas></div>
+            <div class="multi-chart-card hidden" id="multiChart2"><div class="mini-chart-title">CL · 1 Hour</div><canvas id="multiCanvas2"></canvas></div>
+          </div>
+          <div class="analysis-grid">
+            <div class="analysis-card"><h3>Trend Structure</h3><p>Price remains above the 20-period moving average after a deep intraday washout and recovery.</p><div class="signal-row"><span>Trend</span><strong class="up">Bullish Recovery</strong></div></div>
+            <div class="analysis-card"><h3>Entry Logic</h3><p>Use smaller entries near support, reduce exposure into rapid extensions, and avoid a single all-in order.</p><div class="signal-row"><span>Execution</span><strong>Staged</strong></div></div>
+            <div class="analysis-card"><h3>Exit Logic</h3><p>Take partial profit into strength and close the final position when momentum begins to fade.</p><div class="signal-row"><span>Discipline</span><strong class="good">Active</strong></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="positionsPanel">
+        <div class="content-page panel">
+          <div class="panel-header">
+            <div><h2>Positions</h2><p>Current futures exposure and staged exits</p></div>
+            <div class="page-actions"><button id="reduceBtn">Reduce Position</button><button class="danger" id="closeAllBtn">Close All Positions</button></div>
+          </div>
+          <div class="position-summary-grid">
+            <div><span>Open Contracts</span><strong id="openContracts">90</strong></div>
+            <div><span>Average Entry</span><strong id="avgEntry">80.74</strong></div>
+            <div><span>Unrealized P/L</span><strong class="up" id="unrealizedPnl">CNY +8,420,000</strong></div>
+            <div><span>Margin Utilization</span><strong id="marginUtil">41.6%</strong></div>
+          </div>
+          <div class="large-position-table" id="largePositionTable"></div>
+          <div class="pnl-chart-card"><div class="section-label">Intraday Equity Curve</div><canvas id="pnlCanvas"></canvas></div>
+        </div>
+      </section>
+
+      <section class="page" id="ordersPanel">
+        <div class="content-page panel">
+          <div class="panel-header">
+            <div><h2>Orders & Executions</h2><p>Working orders, filled orders and staged trade history</p></div>
+            <div class="page-actions"><button id="cancelSelectedBtn">Cancel Selected</button><button id="exportOrdersBtn">Export</button></div>
+          </div>
+          <div class="order-filter-row">
+            <button class="order-filter active" data-order-filter="all">All</button>
+            <button class="order-filter" data-order-filter="working">Working</button>
+            <button class="order-filter" data-order-filter="filled">Filled</button>
+            <button class="order-filter" data-order-filter="cancelled">Cancelled</button>
+          </div>
+          <div class="order-history" id="orderHistory"></div>
+        </div>
+      </section>
+
+      <section class="page" id="strategyPanel">
+        <div class="content-page panel">
+          <div class="panel-header"><div><h2>Strategy Monitor</h2><p>Staged crude-oil execution plan based on the drama's trading sequence</p></div><button id="runScenarioBtn">Run Strategy Simulation</button></div>
+          <div class="strategy-grid">
+            <article><span>01</span><h3>Wait for the Washout</h3><p>Do not chase the first move. Let volatility push price into the lower support zone.</p><b id="stage1Status">Monitoring</b></article>
+            <article><span>02</span><h3>Build in Tranches</h3><p>Add smaller positions at multiple levels instead of committing all capital at once.</p><b id="stage2Status">Ready</b></article>
+            <article><span>03</span><h3>Take Profit into Strength</h3><p>Scale out when momentum expands and liquidity becomes favorable.</p><b id="stage3Status">Ready</b></article>
+            <article><span>04</span><h3>Flatten the Final Position</h3><p>Close the remaining contracts when the final momentum target is reached.</p><b id="stage4Status">Ready</b></article>
+          </div>
+          <div class="scenario-log panel-inset" id="scenarioLog"><div>Strategy engine ready.</div></div>
+        </div>
+      </section>
+
+      <section class="page" id="accountPanel">
+        <div class="content-page panel">
+          <div class="panel-header">
+            <div><h2>Account & Settlement</h2><p>Trading account summary and final settlement statement</p></div>
+            <div class="page-actions"><button id="hideBalanceBtn">Hide Values</button><button id="statementBtn">Settlement Statement</button></div>
+          </div>
+          <div class="account-summary-grid">
+            <div><span>Account Type</span><strong>International Futures · CNY Settlement</strong></div>
+            <div><span>Account Status</span><strong class="good">Active</strong></div>
+            <div><span>Available Margin</span><strong class="maskable">CNY 5,820,000.00</strong></div>
+            <div><span>Current Equity</span><strong class="maskable">CNY 15,420,000.00</strong></div>
+          </div>
+          <div class="settlement-card hidden" id="settlementCard">
+            <div class="settlement-label">FINAL REALIZED PROFIT</div>
+            <div class="settlement-value maskable">CNY 39,000,000.00</div>
+            <div class="settlement-note">All crude-oil futures positions closed · Settlement completed</div>
+            <div class="settlement-metrics">
+              <div><span>Initial Trading Capital</span><strong class="maskable">CNY 7,000,000.00</strong></div>
+              <div><span>Realized Trading Profit</span><strong class="up maskable">CNY +39,000,000.00</strong></div>
+              <div><span>Open Positions</span><strong>0</strong></div>
+              <div><span>Settlement Status</span><strong class="good">Completed</strong></div>
+            </div>
+          </div>
+          <div class="account-detail-grid">
+            <div class="panel-inset"><h3>Risk Controls</h3><ul><li>Staged position sizing</li><li>Defined stop levels</li><li>Partial profit-taking</li><li>No overnight open exposure after final exit</li></ul></div>
+            <div class="panel-inset"><h3>Account Permissions</h3><ul><li>International crude-oil futures</li><li>Limit / market / stop-limit orders</li><li>Real-time Level II quotes</li><li>CNY settlement access</li></ul></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav mobile-only">
+      <button class="active" data-panel="marketPanel">Market</button>
+      <button data-panel="chartPanel">Chart</button>
+      <button data-panel="positionsPanel">Position</button>
+      <button data-panel="ordersPanel">Orders</button>
+      <button data-panel="accountPanel">Account</button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop hidden" id="orderModal">
+    <div class="modal-card">
+      <div class="modal-header"><h2>Order Preview</h2><button data-close-modal>×</button></div>
+      <div class="preview-grid" id="orderPreview"></div>
+      <div class="modal-actions"><button class="secondary" data-close-modal>Back</button><button class="primary buy-primary" id="confirmOrderBtn">Confirm Order</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="alertsModal">
+    <div class="modal-card small-modal">
+      <div class="modal-header"><h2>Market Alerts</h2><button data-close-modal>×</button></div>
+      <div class="alert-list">
+        <div><b>CL Momentum Alert</b><span>Price moved above the upper intraday range.</span></div>
+        <div><b>High Volume Alert</b><span>Volume exceeded the recent five-period average.</span></div>
+        <div><b>Risk Check</b><span>Margin remains within the configured threshold.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="settingsModal">
+    <div class="modal-card small-modal">
+      <div class="modal-header"><h2>Chart Settings</h2><button data-close-modal>×</button></div>
+      <label class="setting-row"><span>Grid Lines</span><input type="checkbox" id="gridToggle" checked /></label>
+      <label class="setting-row"><span>Live Animation</span><input type="checkbox" id="animationToggle" checked /></label>
+      <label class="setting-row"><span>Price Marker</span><input type="checkbox" id="markerToggle" checked /></label>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
