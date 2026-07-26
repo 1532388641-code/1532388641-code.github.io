@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>江城银行｜金融市场业务管理系统</title>
+  <style>
+:root{
+  --navy:#06345f;
+  --navy-deep:#052949;
+  --blue:#0b5da8;
+  --blue-bright:#1676c4;
+  --cyan:#21a9d7;
+  --paper:#f5f7fa;
+  --line:#dbe3eb;
+  --text:#24384a;
+  --muted:#6c7d8d;
+  --green:#1e9c66;
+  --gold:#cba35a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;color:var(--text);background:#eef2f6;overflow:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+#app,.screen{width:100%;height:100%}
+.screen{display:none}
+.screen.active{display:block}
+
+/* Login */
+.login-screen{position:relative;background:linear-gradient(120deg,#073763 0%,#0b4b7e 50%,#0e6598 100%);color:#fff;overflow:hidden}
+.login-bg-grid{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:54px 54px;transform:perspective(850px) rotateX(58deg) scale(1.7) translateY(16%);transform-origin:center bottom}
+.login-screen:after{content:"";position:absolute;left:-6%;bottom:-28%;width:76%;height:72%;border-radius:50%;border:1px solid rgba(255,255,255,.14);box-shadow:0 0 0 70px rgba(255,255,255,.035),0 0 0 140px rgba(255,255,255,.02)}
+.login-orb{position:absolute;border-radius:50%;filter:blur(2px);background:radial-gradient(circle at 30% 30%,rgba(90,213,255,.25),rgba(15,93,152,.02) 70%)}
+.orb-a{width:500px;height:500px;right:18%;top:-250px}.orb-b{width:600px;height:600px;left:-250px;bottom:-310px}
+.login-header{position:absolute;z-index:2;top:0;left:0;right:0;height:96px;padding:0 6.3vw;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.18);background:rgba(2,35,66,.22);backdrop-filter:blur(7px)}
+.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:48px;height:48px;display:grid;place-items:center;color:inherit}.brand-mark svg{width:100%;height:100%}.brand-cn{font-size:26px;font-weight:700;letter-spacing:3px}.brand-en{font-size:10px;letter-spacing:2.2px;margin-top:3px;opacity:.78}.brand-light{color:#fff}.system-name{margin-left:34px;padding-left:34px;border-left:1px solid rgba(255,255,255,.35);font-size:18px;letter-spacing:3px;font-weight:400}
+.login-layout{position:relative;z-index:2;height:100%;display:grid;grid-template-columns:1fr 470px;gap:8vw;align-items:center;padding:100px 10vw 60px 11vw}
+.login-intro{max-width:690px}.eyebrow{font-size:13px;letter-spacing:4px;color:#7ed8ff;margin-bottom:24px}.login-intro h1{font-size:52px;line-height:1.35;letter-spacing:3px;margin:0 0 24px;font-weight:650;text-shadow:0 8px 30px rgba(0,0,0,.16)}.login-intro p{max-width:620px;font-size:17px;line-height:1.9;color:rgba(255,255,255,.72)}.intro-tags{display:flex;gap:16px;flex-wrap:wrap;margin-top:36px}.intro-tags span{font-size:13px;padding:10px 16px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);border-radius:4px;color:rgba(255,255,255,.85)}
+.login-card{background:#fff;color:var(--text);padding:38px 42px 32px;border-radius:6px;box-shadow:0 26px 70px rgba(0,19,41,.34);border-top:4px solid var(--cyan)}.card-title{font-size:27px;font-weight:700;color:var(--navy);letter-spacing:2px}.card-subtitle{font-size:13px;color:#8391a0;margin:8px 0 26px}.field-label{display:block;font-size:13px;color:#52677b;margin:15px 0 8px}.input-wrap{height:48px;border:1px solid #cbd6e0;background:#f9fbfd;border-radius:3px;display:flex;align-items:center;padding:0 14px;transition:.2s}.input-wrap:focus-within{border-color:var(--blue-bright);box-shadow:0 0 0 3px rgba(22,118,196,.08)}.input-icon{font-size:9px;color:#5e7890;margin-right:12px}.input-wrap input{border:0;outline:none;background:transparent;width:100%;font-size:15px;letter-spacing:.5px;color:#263d52}.captcha-row{display:grid;grid-template-columns:1fr 125px;gap:16px;align-items:end}.small-input input{letter-spacing:7px;text-align:center}.captcha-box{height:48px;background:repeating-linear-gradient(135deg,#eaf2f8 0,#eaf2f8 8px,#dce9f3 8px,#dce9f3 9px);border:1px solid #cbd6e0;color:#0b558d;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:23px;font-style:italic;letter-spacing:6px;user-select:none}.security-row{margin:20px 0 22px;background:#f2f8fb;border:1px solid #d6e8f2;padding:12px 14px;display:flex;align-items:center;gap:12px}.security-dot{width:10px;height:10px;border-radius:50%;background:#29a86a;box-shadow:0 0 0 4px rgba(41,168,106,.12)}.security-row strong{font-size:13px;display:block;color:#315168}.security-row span{font-size:11px;color:#82919d}.primary-btn{width:100%;height:50px;border:0;border-radius:3px;color:#fff;background:linear-gradient(90deg,#07518e,#0b72b6);font-size:16px;font-weight:600;letter-spacing:4px;box-shadow:0 8px 18px rgba(5,81,142,.2)}.primary-btn:hover{filter:brightness(1.06)}.login-foot{text-align:center;margin-top:18px;font-size:11px;color:#98a5b0}.login-footer{position:absolute;z-index:2;left:6.3vw;right:6.3vw;bottom:18px;display:flex;gap:38px;font-size:11px;color:rgba(255,255,255,.55)}
+
+/* Login verification */
+.verify-screen{background:linear-gradient(145deg,#f4f7fa,#e8eef4);position:relative}.verify-screen:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,55,99,.04) 1px,transparent 1px),linear-gradient(rgba(5,55,99,.04) 1px,transparent 1px);background-size:50px 50px}.verify-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:520px;text-align:center;background:#fff;padding:46px 54px 40px;box-shadow:0 24px 65px rgba(11,49,82,.16);border-top:4px solid var(--blue)}.verify-logo{position:relative;width:78px;height:78px;margin:0 auto 20px}.spinner-ring{position:absolute;inset:0;border-radius:50%;border:4px solid #dbeaf5;border-top-color:var(--blue);animation:spin 1s linear infinite}.verify-check{position:absolute;inset:12px;border-radius:50%;background:#eff7fb;color:var(--blue);display:grid;place-items:center;font-size:26px;font-weight:700}@keyframes spin{to{transform:rotate(360deg)}}.verify-box h2{font-size:21px;color:var(--navy);margin:0 0 24px}.verify-progress{height:5px;background:#e8edf2;overflow:hidden;margin-bottom:26px}.verify-progress div{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s ease}.verify-list{list-style:none;margin:0;padding:0;text-align:left;border-top:1px solid #e8edf2}.verify-list li{padding:12px 0;border-bottom:1px solid #edf1f4;font-size:13px;color:#7f8e9b;display:flex;align-items:center}.verify-list li span{width:18px;height:18px;border-radius:50%;margin-right:11px;border:1px solid #cad5df;position:relative}.verify-list li.done{color:#245574}.verify-list li.done span{border-color:var(--green);background:var(--green)}.verify-list li.done span:after{content:"✓";position:absolute;color:#fff;font-size:11px;left:3px;top:0}.verify-status{font-size:12px;color:#5f7180;margin-top:22px}
+
+/* System */
+.system-screen{background:#eef3f7}.topbar{position:absolute;left:0;right:0;top:0;height:74px;background:#fff;display:flex;align-items:center;padding:0 28px;border-bottom:1px solid #d7e0e8;box-shadow:0 2px 8px rgba(22,54,80,.05);z-index:5}.brand-dark{color:var(--navy)}.brand.compact .brand-mark{width:38px;height:38px}.brand.compact .brand-cn{font-size:21px}.brand.compact .brand-en{font-size:8px}.top-divider{height:30px;width:1px;background:#d8e1e8;margin:0 22px}.top-title{font-size:17px;color:#3c5163;letter-spacing:2px}.top-actions{margin-left:auto;display:flex;align-items:center;height:100%;gap:18px}.network{font-size:12px;color:#507083}.network i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#29a86a;margin-right:7px;box-shadow:0 0 0 4px rgba(41,168,106,.1)}.top-chip{height:32px;display:flex;align-items:center;padding:0 12px;background:#f5f8fb;border:1px solid #dbe4eb;font-size:12px;color:#688094}.user-box{height:100%;display:flex;align-items:center;gap:10px;border-left:1px solid #e2e7ec;padding-left:22px}.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#0b5da8,#1aa0d2);color:#fff;display:grid;place-items:center;font-size:14px}.user-box b{display:block;font-size:13px}.user-box span{display:block;font-size:10px;color:#83909b;margin-top:2px}
+.sidebar{position:absolute;top:74px;bottom:30px;left:0;width:230px;background:linear-gradient(180deg,#073961,#062e50);padding:20px 12px;color:#fff}.side-section-title{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:3px;padding:2px 17px 13px}.nav-item{width:100%;height:46px;border:0;background:transparent;color:rgba(255,255,255,.72);text-align:left;padding:0 18px;border-radius:3px;margin-bottom:4px;font-size:14px;transition:.18s}.nav-item span{display:inline-block;width:28px;color:#69bfe8;font-size:16px}.nav-item:hover,.nav-item.active{background:linear-gradient(90deg,rgba(32,156,211,.35),rgba(21,121,173,.12));color:#fff;border-left:3px solid #38b7ed;padding-left:15px}.nav-item.muted{color:rgba(255,255,255,.58)}.side-line{height:1px;background:rgba(255,255,255,.12);margin:16px 14px}.side-bottom{position:absolute;left:18px;right:18px;bottom:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);display:flex;gap:10px;align-items:center;padding:12px}.safe-badge{width:34px;height:34px;border-radius:8px;background:rgba(38,182,225,.16);display:grid;place-items:center;color:#63d1f1;font-size:12px}.side-bottom b{display:block;font-size:11px}.side-bottom span{font-size:9px;color:rgba(255,255,255,.45)}
+.workspace{position:absolute;top:74px;bottom:30px;left:230px;right:0;padding:18px 24px 28px;overflow:auto}.breadcrumb{font-size:12px;color:#7b8b98;margin-bottom:13px}.breadcrumb b{color:#38536b}.panel{background:#fff;min-height:calc(100vh - 163px);border:1px solid #dfe6ec;box-shadow:0 3px 12px rgba(32,66,92,.04);display:none}.panel.active{display:block}.panel-header{height:84px;border-bottom:1px solid #e3e8ed;padding:18px 24px;display:flex;align-items:center;justify-content:space-between}.panel-header h2{margin:0;font-size:20px;color:#173c5a}.panel-header p{margin:7px 0 0;color:#7d8b97;font-size:12px}.case-code{font-size:11px;color:#728392;background:#f5f8fa;border:1px solid #e3e8ed;padding:9px 12px}.stepper{display:flex;align-items:center;justify-content:center;padding:21px 0 18px;border-bottom:1px solid #edf1f4;background:#fbfcfd}.step{position:relative;width:250px;display:flex;align-items:center;color:#9aa6af;font-size:12px}.step:not(:last-child):after{content:"";position:absolute;left:36px;right:12px;top:15px;height:1px;background:#d7dfe6;z-index:0}.step span{position:relative;z-index:1;width:30px;height:30px;border-radius:50%;border:1px solid #ccd6de;background:#fff;display:grid;place-items:center;margin-right:11px}.step b{font-weight:500}.step.done,.step.current{color:#185a88}.step.done span{background:var(--green);color:#fff;border-color:var(--green)}.step.current span{background:var(--blue);color:#fff;border-color:var(--blue)}
+.verify-card-grid{display:grid;gap:16px;padding:20px 22px 10px}.verify-card-grid.two-up{grid-template-columns:1fr 1fr}.verify-card-grid.three-up{grid-template-columns:1fr 1fr 1fr}.data-card{border:1px solid #e0e7ed;background:#fff}.data-card-title{height:43px;background:#f5f8fa;border-bottom:1px solid #e0e7ed;display:flex;align-items:center;font-size:13px;font-weight:650;color:#30536d;padding:0 16px}.data-card-title span{width:24px;height:24px;border-radius:3px;background:#0b68a9;color:#fff;display:grid;place-items:center;font-size:10px;margin-right:9px}.info-grid{display:grid;grid-template-columns:1fr 1fr}.info-grid>div{min-height:63px;padding:12px 16px;border-right:1px solid #edf1f4;border-bottom:1px solid #edf1f4}.info-grid>div:nth-child(2n){border-right:0}.info-grid>div:nth-last-child(-n+2){border-bottom:0}.info-grid label,.account-summary label,.hero-metrics label,.info-list-block label{display:block;font-size:10px;color:#8996a0;margin-bottom:7px}.info-grid strong,.info-list-block strong{font-size:13px;color:#2b4357;font-weight:600}.info-list-block{padding:10px 0}.info-list-block>div{padding:12px 16px;border-bottom:1px solid #edf1f4}.info-list-block>div:last-child{border-bottom:0}.tag{display:inline-flex!important;align-items:center;justify-content:center;min-width:48px;padding:4px 9px;border-radius:2px;font-size:11px!important}.tag-green{color:#16885b!important;background:#eaf7f1}.tag-blue{color:#176b9f!important;background:#eaf4fb}
+.check-list{margin:10px 22px 0;border:1px solid #dde8e2;background:#f7fbf9;display:grid}.check-list.four-cols{grid-template-columns:repeat(4,1fr)}.check-list>div{padding:13px 15px;border-right:1px solid #e0ebe5;display:grid;grid-template-columns:26px 1fr;grid-template-rows:1fr 1fr}.check-list>div:last-child{border-right:0}.check-ok{grid-row:1/3;width:19px;height:19px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:11px;margin-top:3px}.check-list b{font-size:12px;color:#355c4c}.check-list small{font-size:10px;color:#86988f;margin-top:3px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:16px 22px 0}.mini-card{border:1px solid #e0e7ed;background:#fbfcfd;padding:16px 18px}.mini-title{font-size:13px;font-weight:650;color:#294e69;margin-bottom:12px}.mini-card ul{margin:0;padding-left:18px;color:#53697c;font-size:12px;line-height:1.9}.mini-card.stretch{height:100%}
+.panel-actions{display:flex;justify-content:flex-end;gap:12px;padding:20px 22px}.secondary-btn{height:42px;padding:0 24px;border:1px solid #cbd6de;background:#fff;color:#516779;border-radius:2px}.primary-btn.wide{width:270px;height:42px;font-size:13px;letter-spacing:1px}
+.detail-head{height:88px}.status-line{font-size:11px;color:var(--green);margin-bottom:5px}.status-line span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}.detail-actions{display:flex;gap:8px}.icon-btn{height:34px;border:1px solid #d3dce4;background:#fff;color:#52677a;padding:0 14px;border-radius:2px;font-size:11px}.balance-hero{margin:18px 22px 15px;background:linear-gradient(105deg,#063a65,#0a5b91 68%,#0c6fa5);color:#fff;min-height:150px;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;padding:26px 34px;position:relative;overflow:hidden}.balance-hero:after{content:"";position:absolute;right:-80px;top:-140px;width:380px;height:380px;border-radius:50%;border:1px solid rgba(255,255,255,.16);box-shadow:0 0 0 55px rgba(255,255,255,.025),0 0 0 110px rgba(255,255,255,.018)}.balance-label{font-size:12px;color:rgba(255,255,255,.67);letter-spacing:1px}.balance-number{font-family:Arial,sans-serif;font-size:45px;font-weight:600;letter-spacing:1px;margin:8px 0 7px}.balance-number span{font-size:25px;margin-right:8px;font-weight:400}.balance-note{font-size:10px;color:rgba(255,255,255,.62)}.hero-metrics{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);border-left:1px solid rgba(255,255,255,.24)}.hero-metrics>div{padding-left:22px}.hero-metrics label{color:rgba(255,255,255,.58);font-size:10px}.hero-metrics strong{font-family:Arial,sans-serif;display:block;font-size:17px}.hero-metrics .up{color:#8df1bf}.account-summary{margin:0 22px 15px;border:1px solid #e0e7ed;display:grid;grid-template-columns:repeat(6,1fr);background:#fff}.account-summary>div{padding:14px 15px;border-right:1px solid #edf1f4}.account-summary>div:last-child{border-right:0}.account-summary strong{font-size:12px;color:#2c4357}
+.detail-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:15px;margin:0 22px 15px}.bottom-grid{grid-template-columns:1fr 1fr}.small-panel{height:100%}.table-card{margin:0 22px 15px;border:1px solid #e0e7ed;background:#fff}.table-card.no-margin{margin:0}.table-head{height:58px;padding:0 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e0e7ed}.table-head h3{font-size:14px;margin:0;color:#29495f}.table-head p{font-size:9px;color:#8a97a2;margin:4px 0 0}.table-filter{font-size:10px;border:1px solid #d8e1e8;padding:8px 10px;color:#66798a}.table-card table{width:100%;border-collapse:collapse;font-size:11px}.table-card th{height:34px;text-align:left;background:#f5f8fa;color:#6d7f8e;font-weight:500;padding:0 14px;border-bottom:1px solid #e1e7ec}.table-card td{height:38px;padding:0 14px;border-bottom:1px solid #edf1f4;color:#40576a}.table-card tbody tr:last-child td{border-bottom:0}.amount-in{color:#19885c!important;font-weight:600}
+.risk-strip{margin:0 22px 20px;background:#f4faf7;border-left:3px solid var(--green);display:flex;align-items:center;padding:12px 15px}.risk-icon{width:27px;height:27px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;margin-right:12px}.risk-strip b{display:block;font-size:11px;color:#2c5b48}.risk-strip span{font-size:9px;color:#809388}.risk-chip{margin-left:auto;padding:6px 10px;background:#e6f6ed;border:1px solid #d2ebdd;font-size:10px;color:#2c7f58}
+.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px 22px}.dashboard-grid.three-cards{grid-template-columns:repeat(3,1fr)}.dash-card{border:1px solid #e0e7ed;background:#fff;padding:18px 18px 16px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}.dash-card.emphasis{background:linear-gradient(135deg,#073a63,#0b5e95);border-color:#0a5d93;color:#fff}.dash-card label{font-size:11px;color:#8798a6}.dash-card.emphasis label,.dash-card.emphasis span{color:rgba(255,255,255,.72)}.dash-card strong{font-size:24px;color:#21435d;font-weight:700;margin:8px 0 6px}.dash-card.emphasis strong{color:#fff}.dash-card span{font-size:11px;color:#7e8d98;line-height:1.6}
+.home-split{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;padding:0 22px 22px}.section-gap{margin:0 22px 22px;padding-top:0}
+.system-footer{position:absolute;left:230px;right:0;bottom:0;height:30px;background:#fff;border-top:1px solid #dce4ea;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:9px;color:#8795a0}
+
+@media(max-width:1400px){.verify-card-grid.three-up{grid-template-columns:1fr 1fr}.dashboard-grid{grid-template-columns:repeat(2,1fr)}.account-summary{grid-template-columns:repeat(3,1fr)}.account-summary>div:nth-child(3n){border-right:0}.detail-grid,.home-split,.bottom-grid{grid-template-columns:1fr}.check-list.four-cols{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1200px){.login-layout{padding-left:6vw;padding-right:6vw;gap:5vw}.login-intro h1{font-size:42px}.login-card{width:420px}.balance-number{font-size:38px}.hero-metrics{grid-template-columns:1fr}.verify-card-grid.two-up,.verify-card-grid.three-up,.mini-grid{grid-template-columns:1fr}.dashboard-grid,.dashboard-grid.three-cards,.check-list.four-cols{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+  <div id="app">
+    <section class="screen login-screen active" id="loginScreen">
+      <div class="login-bg-grid"></div>
+      <div class="login-orb orb-a"></div>
+      <div class="login-orb orb-b"></div>
+
+      <header class="login-header">
+        <div class="brand brand-light">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <path d="M8 41c10-3 15-11 24-24 9 13 14 21 24 24-4 9-13 15-24 15S12 50 8 41Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M13 40h38M20 31h24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-cn">江城银行</div>
+            <div class="brand-en">JIANGCHENG BANK</div>
+          </div>
+        </div>
+        <div class="system-name">金融市场业务管理系统</div>
+      </header>
+
+      <div class="login-layout">
+        <div class="login-intro">
+          <div class="eyebrow">INSTITUTIONAL FINANCE PLATFORM</div>
+          <h1>安全、准确、高效的<br/>资金结算管理平台</h1>
+          <p>面向江城银行内部授权人员提供账户核验、专户查询、资金结算、风控复核与客户信息管理服务。</p>
+          <div class="intro-tags">
+            <span>多重身份校验</span>
+            <span>专线加密传输</span>
+            <span>业务留痕审计</span>
+            <span>结算专户核验</span>
+          </div>
+        </div>
+
+        <div class="login-card">
+          <div class="card-title">用户登录</div>
+          <div class="card-subtitle">请输入操作员信息并完成安全认证</div>
+
+          <label class="field-label" for="operator">操作员编号</label>
+          <div class="input-wrap">
+            <span class="input-icon">●</span>
+            <input id="operator" autocomplete="off" value="JC-FM-0217" />
+          </div>
+
+          <label class="field-label" for="password">登录密码</label>
+          <div class="input-wrap">
+            <span class="input-icon">◆</span>
+            <input id="password" type="password" value="jc2024bank" />
+          </div>
+
+          <div class="captcha-row">
+            <div>
+              <label class="field-label" for="captcha">动态验证码</label>
+              <div class="input-wrap small-input">
+                <input id="captcha" value="7629" maxlength="4" />
+              </div>
+            </div>
+            <div class="captcha-box" aria-label="验证码">7 6 2 9</div>
+          </div>
+
+          <div class="security-row">
+            <div class="security-dot"></div>
+            <div>
+              <strong>安全介质已连接</strong>
+              <span>USB Key · 证书有效</span>
+            </div>
+          </div>
+
+          <button class="primary-btn" id="loginBtn">登 录 系 统</button>
+          <div class="login-foot">本系统仅限江城银行授权人员使用</div>
+        </div>
+      </div>
+
+      <footer class="login-footer">
+        <span>江城银行股份有限公司</span>
+        <span>系统版本 V6.3.12</span>
+        <span>金融科技中心 · 内部系统</span>
+      </footer>
+    </section>
+
+    <section class="screen verify-screen" id="verifyScreen">
+      <div class="verify-box">
+        <div class="verify-logo">
+          <div class="spinner-ring"></div>
+          <div class="verify-check">✓</div>
+        </div>
+        <h2>正在登录金融市场业务管理系统</h2>
+        <div class="verify-progress"><div id="progressBar"></div></div>
+        <ul class="verify-list" id="verifyList">
+          <li data-step="1"><span></span>操作员身份校验</li>
+          <li data-step="2"><span></span>数字证书验证</li>
+          <li data-step="3"><span></span>业务权限加载</li>
+          <li data-step="4"><span></span>连接资金清算专线</li>
+        </ul>
+        <div class="verify-status" id="verifyStatus">正在校验操作员身份...</div>
+      </div>
+    </section>
+
+    <section class="screen system-screen" id="systemScreen">
+      <header class="topbar">
+        <div class="brand brand-dark compact">
+          <div class="brand-mark">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M8 41c10-3 15-11 24-24 9 13 14 21 24 24-4 9-13 15-24 15S12 50 8 41Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M13 40h38M20 31h24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-cn">江城银行</div>
+            <div class="brand-en">JIANGCHENG BANK</div>
+          </div>
+        </div>
+        <div class="top-divider"></div>
+        <div class="top-title">金融市场业务管理系统</div>
+        <div class="top-actions">
+          <div class="network"><i></i>专线连接正常</div>
+          <div class="top-chip">总行营业部 / 金融市场部</div>
+          <div class="user-box">
+            <div class="avatar">陈</div>
+            <div><b>陈伟</b><span>客户经理</span></div>
+          </div>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <div class="side-section-title">业务导航</div>
+        <button class="nav-item" data-view="home"><span>▦</span>工作台</button>
+        <button class="nav-item" data-view="customer"><span>◎</span>客户信息核验</button>
+        <button class="nav-item active" data-view="account"><span>▤</span>账户综合查询</button>
+        <button class="nav-item" data-view="settlement"><span>⇄</span>资金结算管理</button>
+        <button class="nav-item" data-view="risk"><span>△</span>风险监控</button>
+        <div class="side-line"></div>
+        <button class="nav-item muted"><span>⌕</span>操作日志</button>
+        <button class="nav-item muted"><span>⚙</span>系统设置</button>
+        <div class="side-bottom">
+          <div class="safe-badge">盾</div>
+          <div><b>安全等级：高</b><span>已启用双因子认证</span></div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="breadcrumb">首页 / 账户管理 / <b>账户综合查询</b></div>
+
+        <section class="panel view active" id="accountView">
+          <div class="panel-header">
+            <div>
+              <h2>客户账户信息核验</h2>
+              <p>请核对客户身份、账户属性及结算信息，确认无误后进入账户详情。</p>
+            </div>
+            <div class="case-code">业务场景：房产交易贷款审核 / 期货结算专户核验</div>
+          </div>
+
+          <div class="stepper">
+            <div class="step done"><span>1</span><b>读取客户资料</b></div>
+            <div class="step current"><span>2</span><b>核对账户信息</b></div>
+            <div class="step"><span>3</span><b>查看账户详情</b></div>
+          </div>
+
+          <div class="verify-card-grid three-up">
+            <div class="data-card">
+              <div class="data-card-title"><span>01</span>客户基本信息</div>
+              <div class="info-grid">
+                <div><label>客户姓名</label><strong>陆川</strong></div>
+                <div><label>客户类型</label><strong>个人客户</strong></div>
+                <div><label>证件类型</label><strong>居民身份证</strong></div>
+                <div><label>证件号码</label><strong>110101********2719</strong></div>
+                <div><label>风险等级</label><strong class="tag tag-green">低风险</strong></div>
+                <div><label>客户状态</label><strong class="tag tag-blue">正常</strong></div>
+              </div>
+            </div>
+
+            <div class="data-card">
+              <div class="data-card-title"><span>02</span>账户核验信息</div>
+              <div class="info-grid">
+                <div><label>账户类型</label><strong>期货结算专户</strong></div>
+                <div><label>币种</label><strong>人民币 CNY</strong></div>
+                <div><label>账号</label><strong>6217 **** **** 7628</strong></div>
+                <div><label>开户机构</label><strong>江城银行总行营业部</strong></div>
+                <div><label>账户状态</label><strong class="tag tag-green">正常</strong></div>
+                <div><label>司法冻结</label><strong>无</strong></div>
+              </div>
+            </div>
+
+            <div class="data-card">
+              <div class="data-card-title"><span>03</span>关联业务信息</div>
+              <div class="info-grid">
+                <div><label>业务类型</label><strong>房产贷款资料核查</strong></div>
+                <div><label>资料提交方</label><strong>客户本人</strong></div>
+                <div><label>结算属性</label><strong>专户结算资金</strong></div>
+                <div><label>来源说明</label><strong>期货交易盈利结转</strong></div>
+                <div><label>反洗钱校验</label><strong class="tag tag-blue">已通过</strong></div>
+                <div><label>资金用途核验</label><strong class="tag tag-green">一致</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="check-list four-cols">
+            <div><span class="check-ok">✓</span><b>身份信息一致</b><small>公安联网核查通过</small></div>
+            <div><span class="check-ok">✓</span><b>账户状态正常</b><small>无冻结、止付或异常限制</small></div>
+            <div><span class="check-ok">✓</span><b>资金来源可追溯</b><small>结算流水完整，交易对手明确</small></div>
+            <div><span class="check-ok">✓</span><b>用途说明一致</b><small>用于房产交易资金核验</small></div>
+          </div>
+
+          <div class="mini-grid">
+            <div class="mini-card">
+              <div class="mini-title">资料核查结果</div>
+              <ul>
+                <li>客户身份认证通过</li>
+                <li>账户归属信息匹配</li>
+                <li>专户权限标识正常</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-title">业务提示</div>
+              <ul>
+                <li>当前账户支持大额结算核验</li>
+                <li>资金状态适用于贷款审批参考</li>
+                <li>如需留档可导出账户概览</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-title">经办信息</div>
+              <ul>
+                <li>经办部门：金融市场部</li>
+                <li>办理渠道：内部系统核验</li>
+                <li>复核意见：可继续办理</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="secondary-btn">返回重查</button>
+            <button class="primary-btn wide" id="enterAccountBtn">核验无误，进入账户详情</button>
+          </div>
+        </section>
+
+        <section class="panel view" id="detailView">
+          <div class="panel-header detail-head">
+            <div>
+              <div class="status-line"><span></span>账户状态正常</div>
+              <h2>期货结算专户</h2>
+              <p>账户尾号 7628 · 人民币结算账户 · 资金核验结果正常</p>
+            </div>
+            <div class="detail-actions">
+              <button class="icon-btn">打印</button>
+              <button class="icon-btn">导出</button>
+              <button class="icon-btn" id="backVerifyBtn">返回核验</button>
+            </div>
+          </div>
+
+          <div class="balance-hero">
+            <div class="hero-left">
+              <div class="balance-label">账户余额（人民币）</div>
+              <div class="balance-number"><span>¥</span>39,000,000.00</div>
+              <div class="balance-note">账户状态稳定 · 可作为本次业务核验参考依据</div>
+            </div>
+            <div class="hero-metrics">
+              <div><label>可用余额</label><strong>39,000,000.00</strong></div>
+              <div><label>冻结金额</label><strong>0.00</strong></div>
+              <div><label>当期结转</label><strong class="up">+39,000,000.00</strong></div>
+            </div>
+          </div>
+
+          <div class="account-summary">
+            <div><label>户名</label><strong>陆川</strong></div>
+            <div><label>账号</label><strong>6217 **** **** 7628</strong></div>
+            <div><label>账户性质</label><strong>期货结算资金专用</strong></div>
+            <div><label>结算机构</label><strong>江城期货有限公司</strong></div>
+            <div><label>账户归属</label><strong>个人客户专户</strong></div>
+            <div><label>账户评级</label><strong class="tag tag-green">A级</strong></div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="table-card no-margin">
+              <div class="table-head">
+                <div>
+                  <h3>资金构成明细</h3>
+                  <p>当前账户余额构成情况</p>
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr><th>项目</th><th>说明</th><th>金额（元）</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>期货结算盈利</td><td>原油行情结算收益</td><td class="amount-in">39,000,000.00</td><td><span class="tag tag-green">已入账</span></td></tr>
+                  <tr><td>冻结资金</td><td>司法冻结 / 风险冻结</td><td>0.00</td><td><span class="tag tag-blue">无</span></td></tr>
+                  <tr><td>限制金额</td><td>止付 / 监管限制</td><td>0.00</td><td><span class="tag tag-blue">无</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="data-card small-panel">
+              <div class="data-card-title"><span>04</span>账户权限信息</div>
+              <div class="info-list-block">
+                <div><label>查询权限</label><strong>已开通</strong></div>
+                <div><label>大额结算权限</label><strong>已开通</strong></div>
+                <div><label>网银联动状态</label><strong>正常</strong></div>
+                <div><label>专户识别码</label><strong>FTR-39M-7628</strong></div>
+                <div><label>用途说明</label><strong>资金核验 / 购房结算参考</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-head">
+              <div>
+                <h3>近期资金流水</h3>
+                <p>仅展示最近五笔已完成业务记录</p>
+              </div>
+              <div class="table-filter">专户流水　⌄</div>
+            </div>
+            <table>
+              <thead>
+                <tr><th>序号</th><th>业务摘要</th><th>交易金额（元）</th><th>账户余额（元）</th><th>业务状态</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>01</td><td>期货结算资金入账</td><td class="amount-in">+19,000,000.00</td><td>39,000,000.00</td><td><span class="tag tag-green">成功</span></td></tr>
+                <tr><td>02</td><td>期货交易盈利结转</td><td class="amount-in">+20,000,000.00</td><td>20,000,000.00</td><td><span class="tag tag-green">成功</span></td></tr>
+                <tr><td>03</td><td>保证金资金归集</td><td>0.00</td><td>0.00</td><td><span class="tag tag-blue">已核验</span></td></tr>
+                <tr><td>04</td><td>交易风险复核</td><td>0.00</td><td>0.00</td><td><span class="tag tag-blue">通过</span></td></tr>
+                <tr><td>05</td><td>结算账户建立</td><td>0.00</td><td>0.00</td><td><span class="tag tag-green">成功</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="detail-grid bottom-grid">
+            <div class="mini-card stretch">
+              <div class="mini-title">结算信息备注</div>
+              <ul>
+                <li>该账户为客户名下期货结算专用账户。</li>
+                <li>当前余额可覆盖本次房产交易所需资金核验要求。</li>
+                <li>系统复核未发现异常预警、司法限制或可疑交易提示。</li>
+              </ul>
+            </div>
+            <div class="mini-card stretch">
+              <div class="mini-title">风控结论</div>
+              <ul>
+                <li>账户风险等级：低风险</li>
+                <li>大额资金来源说明完整</li>
+                <li>可继续办理后续贷款审批及资料留档</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="risk-strip">
+            <div class="risk-icon">✓</div>
+            <div><b>账户风险监测正常</b><span>未发现异常交易、司法冻结、止付限制或反洗钱预警。</span></div>
+            <div class="risk-chip">已完成系统复核</div>
+          </div>
+        </section>
+
+        <section class="panel view" id="homeView">
+          <div class="panel-header">
+            <div>
+              <h2>工作台</h2>
+              <p>金融市场业务管理系统首页概览</p>
+            </div>
+            <div class="case-code">当前角色：客户经理 / 授权查询岗</div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="dash-card emphasis">
+              <label>今日待处理核验</label>
+              <strong>08</strong>
+              <span>含账户核查、贷款材料复核、客户专户确认</span>
+            </div>
+            <div class="dash-card">
+              <label>当前在线模块</label>
+              <strong>账户综合查询</strong>
+              <span>系统运行稳定</span>
+            </div>
+            <div class="dash-card">
+              <label>专户查询状态</label>
+              <strong>正常</strong>
+              <span>查询权限已授权</span>
+            </div>
+            <div class="dash-card">
+              <label>风险提示</label>
+              <strong>0 条异常</strong>
+              <span>未发现高风险预警</span>
+            </div>
+          </div>
+          <div class="home-split">
+            <div class="table-card no-margin">
+              <div class="table-head">
+                <div>
+                  <h3>业务通知</h3>
+                  <p>系统公告与内部提醒</p>
+                </div>
+              </div>
+              <table>
+                <thead><tr><th>类型</th><th>内容</th><th>状态</th></tr></thead>
+                <tbody>
+                  <tr><td>系统公告</td><td>金融市场业务管理系统运行正常</td><td><span class="tag tag-green">已读取</span></td></tr>
+                  <tr><td>业务提醒</td><td>大额资金核验需同步复核客户用途说明</td><td><span class="tag tag-blue">待确认</span></td></tr>
+                  <tr><td>风控提示</td><td>请按流程留存账户核验结果截图或导出文件</td><td><span class="tag tag-blue">提示</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mini-card stretch">
+              <div class="mini-title">快捷办理</div>
+              <ul>
+                <li>客户身份联网核查</li>
+                <li>账户专户属性确认</li>
+                <li>大额资金来源审阅</li>
+                <li>结算专户资料导出</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel view" id="customerView">
+          <div class="panel-header">
+            <div>
+              <h2>客户信息核验</h2>
+              <p>客户身份、账户归属及风险评级信息</p>
+            </div>
+            <div class="case-code">客户类别：个人客户</div>
+          </div>
+          <div class="verify-card-grid two-up">
+            <div class="data-card">
+              <div class="data-card-title"><span>01</span>客户档案</div>
+              <div class="info-grid">
+                <div><label>姓名</label><strong>陆川</strong></div>
+                <div><label>证件类型</label><strong>居民身份证</strong></div>
+                <div><label>客户等级</label><strong>普通个人客户</strong></div>
+                <div><label>客户状态</label><strong class="tag tag-green">正常</strong></div>
+                <div><label>联系信息</label><strong>已留存</strong></div>
+                <div><label>风险评级</label><strong class="tag tag-blue">低风险</strong></div>
+              </div>
+            </div>
+            <div class="data-card">
+              <div class="data-card-title"><span>02</span>核验结果</div>
+              <div class="info-list-block">
+                <div><label>身份联网核查</label><strong>通过</strong></div>
+                <div><label>客户留档资料</label><strong>完整</strong></div>
+                <div><label>反洗钱名单筛查</label><strong>未命中</strong></div>
+                <div><label>风险提示</label><strong>无异常</strong></div>
+                <div><label>建议结论</label><strong>可继续办理</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel view" id="settlementView">
+          <div class="panel-header">
+            <div>
+              <h2>资金结算管理</h2>
+              <p>展示结算专户的关键结算状态与资金去向</p>
+            </div>
+            <div class="case-code">结算类型：期货结算专户</div>
+          </div>
+          <div class="dashboard-grid three-cards">
+            <div class="dash-card emphasis"><label>结算账户余额</label><strong>39,000,000.00</strong><span>人民币</span></div>
+            <div class="dash-card"><label>可用资金</label><strong>39,000,000.00</strong><span>可用于资金核验</span></div>
+            <div class="dash-card"><label>冻结资金</label><strong>0.00</strong><span>无冻结限制</span></div>
+          </div>
+          <div class="table-card no-margin section-gap">
+            <div class="table-head">
+              <div>
+                <h3>结算业务摘要</h3>
+                <p>当前专户结算相关信息</p>
+              </div>
+            </div>
+            <table>
+              <thead><tr><th>项目</th><th>内容</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>结算机构</td><td>江城期货有限公司</td><td><span class="tag tag-green">正常</span></td></tr>
+                <tr><td>结算属性</td><td>客户自有结算专用资金</td><td><span class="tag tag-green">正常</span></td></tr>
+                <tr><td>账户用途</td><td>结算资金归集 / 业务核验</td><td><span class="tag tag-blue">已登记</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel view" id="riskView">
+          <div class="panel-header">
+            <div>
+              <h2>风险监控</h2>
+              <p>账户风控、反洗钱与交易异常排查情况</p>
+            </div>
+            <div class="case-code">监控结果：正常</div>
+          </div>
+          <div class="dashboard-grid three-cards">
+            <div class="dash-card"><label>反洗钱筛查</label><strong>未命中</strong><span>名单校验正常</span></div>
+            <div class="dash-card"><label>司法冻结</label><strong>无</strong><span>无冻结信息</span></div>
+            <div class="dash-card"><label>异常交易预警</label><strong>0 条</strong><span>未发现异常</span></div>
+          </div>
+          <div class="mini-grid section-gap">
+            <div class="mini-card">
+              <div class="mini-title">风控结论</div>
+              <ul>
+                <li>账户状态正常</li>
+                <li>交易链路清晰</li>
+                <li>客户风险可控</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-title">复核意见</div>
+              <ul>
+                <li>可用于业务办理参考</li>
+                <li>建议留存账户详情页</li>
+                <li>后续办理无需额外限制</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <div class="mini-title">系统提示</div>
+              <ul>
+                <li>已完成账户风控扫描</li>
+                <li>已完成用途一致性核查</li>
+                <li>已完成专户属性确认</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="system-footer">
+        <span>江城银行金融科技中心提供技术支持</span>
+        <span>当前机构：总行营业部　|　终端编号：JC-TRM-0621</span>
+      </footer>
+    </section>
+  </div>
+  <script>
+const loginScreen = document.getElementById('loginScreen');
+const verifyScreen = document.getElementById('verifyScreen');
+const systemScreen = document.getElementById('systemScreen');
+const loginBtn = document.getElementById('loginBtn');
+const enterAccountBtn = document.getElementById('enterAccountBtn');
+const backVerifyBtn = document.getElementById('backVerifyBtn');
+const progressBar = document.getElementById('progressBar');
+const verifyStatus = document.getElementById('verifyStatus');
+const steps = [...document.querySelectorAll('#verifyList li')];
+
+function showScreen(screen) {
+  [loginScreen, verifyScreen, systemScreen].forEach(el => el.classList.remove('active'));
+  screen.classList.add('active');
+}
+
+function runLogin() {
+  loginBtn.disabled = true;
+  loginBtn.textContent = '正在登录...';
+  showScreen(verifyScreen);
+  progressBar.style.width = '0%';
+  steps.forEach(step => step.classList.remove('done'));
+
+  const messages = [
+    '正在校验操作员身份...',
+    '正在验证数字证书...',
+    '正在加载账户查询权限...',
+    '正在连接资金清算专线...',
+    '验证通过，正在进入系统...'
+  ];
+
+  let index = 0;
+  const timer = setInterval(() => {
+    if (index < 4) steps[index].classList.add('done');
+    progressBar.style.width = `${Math.min((index + 1) * 24, 100)}%`;
+    verifyStatus.textContent = messages[Math.min(index + 1, messages.length - 1)];
+    index++;
+    if (index >= 5) {
+      clearInterval(timer);
+      setTimeout(() => {
+        showScreen(systemScreen);
+        loginBtn.disabled = false;
+        loginBtn.textContent = '登 录 系 统';
+      }, 450);
+    }
+  }, 520);
+}
+
+loginBtn.addEventListener('click', runLogin);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' && loginScreen.classList.contains('active')) runLogin();
+});
+
+function switchView(targetId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(targetId).classList.add('active');
+}
+
+if (enterAccountBtn) enterAccountBtn.addEventListener('click', () => switchView('detailView'));
+if (backVerifyBtn) backVerifyBtn.addEventListener('click', () => switchView('accountView'));
+
+document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    btn.classList.add('active');
+    const map = {
+      home: 'homeView',
+      customer: 'customerView',
+      account: 'accountView',
+      settlement: 'settlementView',
+      risk: 'riskView'
+    };
+    switchView(map[btn.dataset.view]);
+  });
+});
+
+</script>
+</body>
+</html>
