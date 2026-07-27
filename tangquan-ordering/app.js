@@ -91,7 +91,7 @@ function changeQty(id, delta) {
   orderStep = "cart";
   pendingClear = false;
   persist();
-  render();
+  syncCartUI(id);
   showToast(delta > 0 ? "已加入点菜单" : "已调整数量");
 }
 
@@ -101,7 +101,7 @@ function removeDish(id) {
   orderStep = "cart";
   pendingClear = false;
   persist();
-  render();
+  syncCartUI(id);
   showToast(`${dish?.name || "菜品"}已删除`);
 }
 
@@ -110,7 +110,7 @@ function clearCart() {
   orderStep = "cart";
   pendingClear = false;
   persist();
-  render();
+  syncCartUI();
   showToast("购物车已清空");
 }
 
@@ -133,6 +133,43 @@ function renderQty(d, compact = false) {
     <b>${n}</b>
     <button class="plus" data-add="${d.id}" aria-label="增加${d.name}">＋</button>
   </div>`;
+}
+
+function syncCartUI(changedId) {
+  if (changedId) {
+    const dish = dishes.find(item => item.id === changedId);
+    if (dish) {
+      document.querySelectorAll(`[data-dish="${changedId}"] .dish-foot`).forEach(foot => {
+        foot.innerHTML = `<div class="price"><small>尊享</small>不限量</div>${renderQty(dish)}`;
+      });
+    }
+  } else {
+    document.querySelectorAll("[data-dish]").forEach(card => {
+      const dish = dishes.find(item => item.id === card.dataset.dish);
+      const foot = card.querySelector(".dish-foot");
+      if (dish && foot) foot.innerHTML = `<div class="price"><small>尊享</small>不限量</div>${renderQty(dish)}`;
+    });
+  }
+
+  const count = cartCount();
+  const kinds = kindCount();
+  const cartBadge = document.querySelector(".cart-count");
+  const cartLabel = document.querySelector(".cart-label span");
+  const total = document.querySelector(".total strong");
+  const checkout = document.querySelector(".checkout");
+  if (cartBadge) cartBadge.textContent = count;
+  if (cartLabel) cartLabel.textContent = count ? `${kinds} 种，共 ${count} 份` : "点击菜品右下角添加";
+  if (total) total.innerHTML = `${kinds}<em>种</em> · ${count}<em>份</em>`;
+  if (checkout) checkout.disabled = !count;
+
+  if (cartOpen && orderStep === "cart") {
+    const content = document.querySelector(".sheet-content");
+    const sheetTotal = document.querySelector(".sheet-total");
+    const submit = document.querySelector(".sheet-submit");
+    if (content) content.innerHTML = renderCartContent();
+    if (sheetTotal) sheetTotal.innerHTML = `<span>共 ${kinds} 种菜品</span><strong>${count} <small>份</small></strong>`;
+    if (submit) submit.disabled = !count;
+  }
 }
 
 function renderCartContent() {
@@ -240,7 +277,7 @@ function render() {
             <div class="fresh-note"><i></i>后厨实时接单</div>
           </div>
           <div class="dish-grid">
-            ${filtered.length ? filtered.map(d => `<article class="dish-card">
+            ${filtered.length ? filtered.map(d => `<article class="dish-card" data-dish="${d.id}">
               <div class="food-photo">
                 <img src="${d.image}" alt="${d.name}" loading="lazy">
                 ${d.badge ? `<span class="badge">${d.badge}</span>` : ""}
@@ -297,22 +334,7 @@ function render() {
     render();
     window.scrollTo({ top: 190, behavior: "smooth" });
   }));
-  document.querySelectorAll("[data-add]").forEach(button => button.addEventListener("click", () => changeQty(button.dataset.add, 1)));
-  document.querySelectorAll("[data-minus]").forEach(button => button.addEventListener("click", () => changeQty(button.dataset.minus, -1)));
   document.querySelectorAll("[data-service]").forEach(button => button.addEventListener("click", () => showToast("已呼叫服务员，请稍候")));
-  document.querySelectorAll("[data-remove]").forEach(button => button.addEventListener("click", () => removeDish(button.dataset.remove)));
-  document.querySelectorAll("[data-note]").forEach(button => button.addEventListener("click", () => {
-    const note = button.dataset.note;
-    selectedNotes.has(note) ? selectedNotes.delete(note) : selectedNotes.add(note);
-    button.classList.toggle("active");
-  }));
-  document.querySelector("[data-clear-cart]")?.addEventListener("click", () => {
-    if (pendingClear) return clearCart();
-    pendingClear = true;
-    render();
-    showToast("再次点击即可清空全部菜品");
-  });
-
   const overlay = document.querySelector("#overlay");
   document.querySelectorAll("[data-open-cart]").forEach(button => button.addEventListener("click", () => {
     cartOpen = true;
@@ -357,3 +379,31 @@ function render() {
 }
 
 render();
+
+document.addEventListener("click", event => {
+  const add = event.target.closest("[data-add]");
+  if (add) return changeQty(add.dataset.add, 1);
+
+  const minus = event.target.closest("[data-minus]");
+  if (minus) return changeQty(minus.dataset.minus, -1);
+
+  const remove = event.target.closest("[data-remove]");
+  if (remove) return removeDish(remove.dataset.remove);
+
+  const noteButton = event.target.closest("[data-note]");
+  if (noteButton) {
+    const note = noteButton.dataset.note;
+    selectedNotes.has(note) ? selectedNotes.delete(note) : selectedNotes.add(note);
+    noteButton.classList.toggle("active");
+    return;
+  }
+
+  const clear = event.target.closest("[data-clear-cart]");
+  if (clear) {
+    if (pendingClear) return clearCart();
+    pendingClear = true;
+    clear.classList.add("armed");
+    clear.textContent = "再次点击确认清空";
+    showToast("再次点击即可清空全部菜品");
+  }
+});
