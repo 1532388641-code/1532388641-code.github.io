@@ -162,7 +162,7 @@ function syncCartUI(changedId) {
   if (total) total.innerHTML = `${kinds}<em>种</em> · ${count}<em>份</em>`;
   if (checkout) checkout.disabled = !count;
 
-  if (cartOpen && orderStep === "cart") {
+  if (orderStep === "cart") {
     const content = document.querySelector(".sheet-content");
     const sheetTotal = document.querySelector(".sheet-total");
     const submit = document.querySelector(".sheet-submit");
