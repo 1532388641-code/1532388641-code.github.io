@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>双色球开奖</title>
+  <style>
+    :root { --red:#e7272d; --deep:#9e1119; --blue:#1767d6; --ink:#1d2638; --gold:#e7b53f; --paper:#f7f7f3; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); font-family:"Microsoft YaHei", "PingFang SC", Arial, sans-serif; background:radial-gradient(circle at 70% 8%, #fff4c9 0 6%, transparent 25%), linear-gradient(135deg,#f4f5f8 0%,#eceef3 100%); }
+    .topbar { height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 clamp(22px,6vw,96px); background:linear-gradient(90deg,#bd1220,#e4282f); color:#fff; box-shadow:0 3px 14px #8d0e1d44; }
+    .brand { font-weight:800; font-size:24px; letter-spacing:1px; } .brand small { margin-left:10px; font-size:12px; opacity:.86; font-weight:500; letter-spacing:0; }
+    .live { font-size:13px; background:#ffffff21; border:1px solid #ffffff52; border-radius:20px; padding:7px 12px; } .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#ffd553; margin-right:6px; box-shadow:0 0 0 3px #ffd55333; }
+    main { max-width:1050px; margin:0 auto; padding:64px 24px 46px; text-align:center; }
+    .eyebrow { color:#a12d34; font-size:13px; letter-spacing:3px; font-weight:700; } h1 { margin:13px 0 10px; font-size:clamp(32px,5vw,54px); letter-spacing:2px; } .sub { color:#707786; margin:0; font-size:15px; }
+    .card { position:relative; overflow:hidden; max-width:890px; margin:38px auto 22px; padding:38px clamp(18px,5vw,54px) 32px; border-radius:26px; background:#fff; box-shadow:0 18px 52px #29324b1c; } .card:before { content:""; position:absolute; top:-130px; right:-105px; width:310px; height:310px; border-radius:50%; background:#fff1f1; }
+    .round { position:relative; z-index:1; display:flex; justify-content:space-between; gap:20px; padding-bottom:22px; border-bottom:1px solid #edf0f4; font-size:14px; color:#6d7482; text-align:left; } .round strong { color:#263248; }
+    .balls { position:relative; z-index:1; display:flex; justify-content:center; align-items:center; gap:clamp(9px,2vw,19px); min-height:188px; padding:32px 0 24px; flex-wrap:wrap; }
+    .ball { width:clamp(54px,8vw,82px); height:clamp(54px,8vw,82px); display:grid; place-items:center; border-radius:50%; color:#fff; font-size:clamp(20px,3vw,31px); font-weight:800; transform:scale(.35) translateY(75px); opacity:0; box-shadow:inset -8px -9px 14px #00000024, inset 8px 8px 12px #fff5, 0 9px 17px #1622442c; transition:transform .52s cubic-bezier(.19,1.45,.42,1), opacity .28s; }
+    .ball.show { transform:scale(1) translateY(0); opacity:1; } .ball.red { background:linear-gradient(140deg,#ff5257,#c80e1b); } .ball.blue { background:linear-gradient(140deg,#519cff,#1253bc); }
+    .ball.placeholder { background:#eef1f6; color:#c1c8d2; box-shadow:none; transform:scale(1); opacity:1; font-size:18px; }
+    .status { min-height:24px; color:#5c6677; font-size:15px; } .status strong { color:var(--red); }
+    .controls { display:flex; justify-content:center; gap:12px; margin-top:24px; } button { appearance:none; cursor:pointer; border:0; padding:13px 27px; border-radius:9px; font:700 15px "Microsoft YaHei",sans-serif; transition:.18s; } #start { color:#fff; background:linear-gradient(135deg,#ef3540,#c90e1b); box-shadow:0 8px 17px #c30d1c34; } #start:hover { transform:translateY(-2px); } #reset { color:#a0232b; background:#fff0f1; } button:disabled { opacity:.55; cursor:not-allowed; transform:none!important; }
+    .note { margin:24px auto 0; color:#848b97; font-size:12px; line-height:1.8; } .ticket { display:flex; justify-content:center; align-items:center; gap:10px; margin:24px auto 0; padding:13px; max-width:530px; border:1px dashed #d9dde5; border-radius:12px; background:#fafbfc; color:#5e6675; font-size:13px; } .ticket span { font-weight:800; color:#c5202a; letter-spacing:1px; }
+    footer { padding:22px; text-align:center; color:#98a0ad; font-size:12px; }
+    @media (max-width:600px) { .topbar { height:58px; padding:0 18px; } .brand { font-size:20px; } .brand small { display:none; } main { padding-top:42px; } .card { padding:25px 16px; } .round { display:block; line-height:1.9; } .balls { gap:9px; min-height:155px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand">双色球开奖</div><div class="live"><i class="dot"></i>开奖进行中</div></header>
+  <main>
+    <div class="eyebrow">幸运号码 · 即刻揭晓</div>
+    <h1>双色球开奖</h1>
+    <p class="sub">模拟开奖</p>
+    <section class="card" aria-label="双色球模拟开奖">
+      <div class="round"><span>开奖状态：<strong id="state">等待开奖</strong></span><span>红球 6 个 + 蓝球 1 个</span></div>
+      <div class="balls" id="balls" aria-live="polite"></div>
+      <div class="status" id="status">点击“开始开奖”，见证幸运号码揭晓</div>
+      <div class="controls"><button id="start">开始开奖</button></div>
+    </section>
+    <p class="note">本页面仅作模拟展示，号码不代表真实开奖结果。</p>
+  </main>
+  <footer>理性购彩 · 快乐生活</footer>
+  <script>
+    const winningNumbers = ['03','07','12','18','24','31','09'];
+    const balls = document.getElementById('balls'), start = document.getElementById('start'), state = document.getElementById('state'), status = document.getElementById('status');
+    function placeholders(){ balls.innerHTML=''; for(let i=0;i<7;i++){const b=document.createElement('div');b.className='ball placeholder';b.textContent='?';balls.appendChild(b)} }
+    function delay(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
+    async function reveal(){ start.disabled=true; placeholders(); state.textContent='正在开奖'; status.textContent='开奖设备启动，请稍候…'; await delay(750); const els=[...balls.children]; for(let i=0;i<winningNumbers.length;i++){ const b=els[i]; b.className='ball '+(i===6?'blue':'red'); b.textContent=winningNumbers[i]; b.classList.add('show'); status.innerHTML=`正在揭晓第 <strong>${i+1}</strong> 个号码…`; await delay(i===5?1000:820); } state.textContent='开奖完成'; status.innerHTML='<strong>号码已全部揭晓！</strong>'; start.disabled=false; }
+    start.addEventListener('click',reveal); placeholders();
+  </script>
+</body>
+</html>
