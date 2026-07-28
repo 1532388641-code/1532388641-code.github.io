@@ -15,7 +15,7 @@ for (let row = 0; row < MAP_TILE_ROWS; row += 1) {
   for (let column = 0; column < MAP_TILE_COLUMNS; column += 1) {
     const image = new Image();
     image.decoding = 'async';
-    image.src = `./assets/map-tiles/tile-${row}-${column}.jpg?v=20260729-3`;
+    image.src = `./assets/map-tiles-hq/tile-${row}-${column}.jpg?v=20260729-4`;
     mapTiles.push({ image, row, column });
   }
 }
