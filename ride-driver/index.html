@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#e9edef">
+  <title>顺路出行 · 司机端</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    .driver-app{position:fixed;inset:0}
+    body.modal-open{overflow:hidden;overscroll-behavior:none}
+    #completeModal{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      height:100svh;
+      height:100dvh;
+      min-height:100svh;
+      align-items:flex-end;
+      overflow:hidden;
+      padding-top:calc(12px + env(safe-area-inset-top));
+    }
+    #completeModal .complete-sheet{
+      display:flex;
+      flex-direction:column;
+      width:100%;
+      max-height:calc(100vh - 12px - env(safe-area-inset-top));
+      max-height:calc(100dvh - 12px - env(safe-area-inset-top));
+      padding:0 20px calc(24px + env(safe-area-inset-bottom));
+      overflow:hidden;
+      overscroll-behavior:contain;
+    }
+    #completeModal .complete-scroll{
+      min-height:0;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      padding-top:22px;
+      scrollbar-width:none;
+    }
+    #completeModal .complete-scroll::-webkit-scrollbar{display:none}
+    #completeModal .complete-scroll>p{
+      margin:6px 0;
+      color:#7d8793;
+      font-size:13px;
+      text-align:center;
+    }
+    #completeModal .complete-sheet>.primary-action{
+      flex:0 0 auto;
+      margin-top:16px;
+    }
+    @media(max-height:720px){
+      #completeModal .complete-scroll{padding-top:14px}
+      #completeModal .success-check{
+        width:54px;
+        height:54px;
+        margin-bottom:10px;
+        font-size:28px;
+      }
+      #completeModal .complete-sheet h2{
+        margin-bottom:2px;
+        font-size:18px;
+      }
+      #completeModal .complete-sheet p{font-size:12px}
+      #completeModal .income{
+        margin:12px 0 0;
+        padding:12px 14px;
+      }
+      #completeModal .complete-sheet>.primary-action{
+        margin-top:10px;
+        padding:11px;
+      }
+    }
+    @media(min-width:700px){
+      #completeModal .complete-sheet{
+        width:min(520px,68vw);
+        margin:0 auto;
+        border-radius:24px 24px 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="driver-app" aria-label="网约车司机端">
+    <section class="map-stage" id="mapStage" aria-label="动态导航地图">
+      <canvas id="navCanvas" aria-label="可拖动缩放的城市导航地图"></canvas>
+      <div class="vehicle-marker" id="fixedVehicle" aria-hidden="true"><i></i></div>
+
+      <header class="navigation-card">
+        <div class="turn-icon" id="turnIcon" aria-hidden="true">↱</div>
+        <div class="navigation-copy">
+          <p id="navInstruction">订单已接，请开始接驾</p>
+          <div><strong id="navDistance">2.1公里</strong><span id="navTime">预计6分钟到达上车点</span></div>
+        </div>
+        <button class="nav-audio is-on" id="audioButton" type="button" aria-label="关闭语音导航">◖))</button>
+      </header>
+
+      <div class="free-view" id="freeView">自由浏览中</div>
+      <div class="map-actions" aria-label="地图控制">
+        <div class="speed-limit" aria-label="限速60">60</div>
+        <button id="recenterButton" type="button" aria-label="定位回正">⌖</button>
+        <button id="zoomInButton" type="button" aria-label="放大地图">＋</button>
+        <button id="zoomOutButton" type="button" aria-label="缩小地图">－</button>
+      </div>
+      <div class="road-progress"><span id="roadName">松江路</span><b id="laneHint">准备出发</b></div>
+    </section>
+
+    <section class="order-sheet" id="orderSheet" aria-label="当前订单">
+      <div class="sheet-handle"></div>
+      <div class="order-heading">
+        <div><p id="orderEyebrow">已接单 · 拼车订单 · 2位乘客</p><h1 id="orderTitle">前往第1位乘客上车点</h1></div>
+        <span id="fareText">预估¥23.60</span>
+      </div>
+      <div class="passenger-row">
+        <div class="avatar">丁</div>
+        <div class="passenger-copy"><strong>丁磊 <small>尾号0513</small></strong><p id="passengerStatus">艺术学院南门 · 乘客正在等候</p></div>
+        <button id="callButton" type="button" aria-label="联系乘客">☎</button>
+        <button id="messageButton" type="button" aria-label="查看乘客消息">▣<i></i></button>
+      </div>
+      <div class="stops" id="stopsList"></div>
+      <div class="platform-note"><span>⌁</span><p id="platformNote">平台已规划最优拼车路线，请按导航接送。</p></div>
+      <button class="primary-action" id="primaryAction" type="button">开始接驾</button>
+    </section>
+
+    <section class="modal-layer" id="verifyModal" aria-hidden="true" aria-label="验证乘客手机尾号">
+      <div class="verify-sheet">
+        <div class="sheet-handle"></div>
+        <button class="close-button" data-close="verifyModal" type="button" aria-label="关闭验证">×</button>
+        <div id="verifyForm">
+          <div class="verify-icon">✓</div><h2>确认乘客已上车</h2><p>请输入乘客手机尾号完成核验</p>
+          <div class="digit-boxes" id="digitBoxes" aria-label="已输入的手机尾号"><span></span><span></span><span></span><span></span></div>
+          <p class="verify-error" id="verifyError" role="alert"></p>
+          <div class="keypad" id="keypad">
+            <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
+            <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
+            <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
+            <button class="blank" type="button" disabled></button><button type="button" data-key="0">0</button><button type="button" data-key="back" aria-label="删除">⌫</button>
+          </div>
+        </div>
+        <div class="verify-success" id="verifySuccess"><div class="success-check">✓</div><h2>尾号验证成功</h2><p>丁磊 · 尾号0513</p></div>
+      </div>
+    </section>
+
+    <section class="modal-layer" id="messageModal" aria-hidden="true" aria-label="乘客消息">
+      <div class="message-sheet">
+        <div class="sheet-handle"></div>
+        <button class="close-button" data-close="messageModal" type="button" aria-label="关闭消息">×</button>
+        <p class="message-meta">李刚 <span>乘客</span></p>
+        <div class="message-bubble">我赶时间，能先送我吗？</div>
+        <p class="message-tip">乘客提出加5元优先送达</p>
+        <div class="quick-replies"><button type="button" data-reply="好的，稍等">好的，稍等</button><button type="button" data-reply="请按平台顺序乘车">请按平台顺序乘车</button></div>
+        <div class="message-actions"><button id="keepRoute" type="button">按平台路线</button><button id="priorityRoute" type="button">加5元优先送</button></div>
+      </div>
+    </section>
+
+    <section class="modal-layer" id="callModal" aria-hidden="true" aria-label="虚拟呼叫乘客">
+      <div class="call-sheet">
+        <div class="sheet-handle"></div>
+        <div class="call-avatar">丁</div><h2>联系乘客丁磊</h2><p>平台将使用虚拟号码保护双方隐私</p>
+        <div class="call-actions"><button data-close="callModal" type="button">取消</button><button id="dialButton" type="button">模拟拨号</button></div>
+      </div>
+    </section>
+
+    <section class="modal-layer" id="completeModal" aria-hidden="true" aria-label="订单完成">
+      <div class="complete-sheet">
+        <div class="complete-scroll">
+          <div class="success-check">✓</div><h2>订单已完成</h2><p>两位乘客均已安全送达</p>
+          <div class="income"><span>本单收入</span><strong id="finalIncome">¥23.60</strong></div>
+        </div>
+        <button class="primary-action" id="resetButton" type="button">返回接单首页</button>
+      </div>
+    </section>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+  <script src="./script.js"></script>
+</body>
+</html>
