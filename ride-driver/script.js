@@ -6,10 +6,20 @@ const lerp = (a, b, amount) => a + (b - a) * amount;
 const canvas = $('#navCanvas');
 const ctx = canvas.getContext('2d');
 const stage = $('#mapStage');
-const mapImage = new Image();
-mapImage.src = './assets/city-map-web.jpg?v=20260729';
 
 const WORLD = { width: 945, height: 1680 };
+const MAP_TILE_COLUMNS = 4;
+const MAP_TILE_ROWS = 8;
+const mapTiles = [];
+for (let row = 0; row < MAP_TILE_ROWS; row += 1) {
+  for (let column = 0; column < MAP_TILE_COLUMNS; column += 1) {
+    const image = new Image();
+    image.decoding = 'async';
+    image.src = `./assets/map-tiles/tile-${row}-${column}.jpg?v=20260729-3`;
+    mapTiles.push({ image, row, column });
+  }
+}
+
 const DURATION = 20000;
 const routeDefs = {
   pickup: { km: 2.1, minutes: 6, destination: '艺术学院南门', points: [[454,1327],[465,1270],[482,1205],[501,1138],[520,1060]] },
@@ -205,8 +215,16 @@ function renderMap() {
   ctx.scale(view.scale, view.scale);
   ctx.translate(-state.camera.x, -state.camera.y);
 
-  if (mapImage.complete && mapImage.naturalWidth) ctx.drawImage(mapImage, 0, 0, WORLD.width, WORLD.height);
-  else { ctx.fillStyle = '#e4e7df'; ctx.fillRect(0, 0, WORLD.width, WORLD.height); }
+  ctx.fillStyle = '#e4e7df';
+  ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+  mapTiles.forEach((tile) => {
+    if (!tile.image.complete || !tile.image.naturalWidth) return;
+    const x0 = WORLD.width * tile.column / MAP_TILE_COLUMNS - (tile.column ? .5 : 0);
+    const y0 = WORLD.height * tile.row / MAP_TILE_ROWS - (tile.row ? .5 : 0);
+    const x1 = WORLD.width * (tile.column + 1) / MAP_TILE_COLUMNS + (tile.column < MAP_TILE_COLUMNS - 1 ? .5 : 0);
+    const y1 = WORLD.height * (tile.row + 1) / MAP_TILE_ROWS + (tile.row < MAP_TILE_ROWS - 1 ? .5 : 0);
+    ctx.drawImage(tile.image, x0, y0, x1 - x0, y1 - y0);
+  });
 
   roundedLabel('松江路', WORLD.width * .28, WORLD.height * .62, -.12);
   roundedLabel('北城大道', WORLD.width * .56, WORLD.height * .47, .35);
@@ -504,7 +522,7 @@ document.addEventListener('visibilitychange', () => {
   else if (state.hiddenAt && state.driving) { state.startedAt += performance.now() - state.hiddenAt; state.hiddenAt = 0; }
 });
 window.addEventListener('resize', resizeCanvas);
-mapImage.addEventListener('load', resizeCanvas);
+mapTiles.forEach((tile) => tile.image.addEventListener('load', resizeCanvas));
 
 renderStops();
 resizeCanvas();
