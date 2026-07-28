@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#193b72">
+  <title>校门口惊现白色欧陆，车牌54321倒顺号！- 江城大学校园社区</title>
+  <style>
+    :root{
+      --brand:#193b72;--brand-2:#25579a;--brand-soft:#eef4fb;--accent:#e75d3c;
+      --ink:#172033;--muted:#6b7280;--line:#e6e9ef;--paper:#fff;--bg:#f4f6f9;
+      --green:#2f8f62;--shadow:0 8px 26px rgba(20,36,70,.08)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,textarea{font:inherit}
+    .site-header{
+      position:sticky;top:0;z-index:30;background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--line);backdrop-filter:blur(12px)
+    }
+    .topbar{max-width:1180px;margin:auto;height:66px;display:flex;align-items:center;gap:22px;padding:0 18px}
+    .logo{display:flex;align-items:center;gap:11px;min-width:max-content}
+    .logo-mark{
+      width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,var(--brand),#3876bb);
+      color:#fff;display:grid;place-items:center;font-weight:800;box-shadow:0 5px 15px rgba(25,59,114,.25)
+    }
+    .logo-title{font-size:19px;font-weight:800;letter-spacing:.5px}
+    .logo-sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .search{
+      flex:1;max-width:520px;height:39px;border:1px solid #dfe4ec;border-radius:10px;
+      display:flex;align-items:center;background:#f8fafc;overflow:hidden
+    }
+    .search input{border:0;outline:0;background:transparent;padding:0 13px;flex:1;min-width:0}
+    .search button{border:0;background:var(--brand);color:#fff;height:100%;padding:0 18px}
+    .header-actions{margin-left:auto;display:flex;gap:11px;align-items:center}
+    .icon-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;color:#465066}
+    .avatar{
+      width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;
+      background:linear-gradient(145deg,#5578a9,#1e3d6d);flex:none
+    }
+    .nav{background:var(--brand);color:#fff}
+    .nav-inner{max-width:1180px;margin:auto;display:flex;gap:5px;padding:0 18px;overflow-x:auto}
+    .nav a{padding:11px 16px;font-size:14px;white-space:nowrap;opacity:.88}
+    .nav a.active{background:rgba(255,255,255,.14);opacity:1}
+    .container{max-width:1180px;margin:20px auto;padding:0 18px}
+    .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .breadcrumb span{margin:0 6px;color:#a0a8b5}
+    .grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+    .thread-card,.comments-card{overflow:hidden}
+    .thread-top{padding:24px 24px 18px;border-bottom:1px solid var(--line)}
+    .thread-tag{
+      display:inline-block;padding:5px 9px;border-radius:7px;background:#fff0ed;color:var(--accent);
+      font-size:12px;font-weight:800;margin-bottom:10px
+    }
+    .thread-title{font-size:27px;line-height:1.35;margin:0 0 14px;letter-spacing:.2px}
+    .author-line{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+    .author-line .avatar{width:34px;height:34px;font-size:13px;background:linear-gradient(145deg,#263f66,#7890b2)}
+    .author-name{color:#34445e;font-weight:700}
+    .badge{display:inline-block;font-size:11px;padding:3px 7px;border-radius:6px;background:#fff0ed;color:#b44f36}
+    .small{font-size:12px}.muted{color:var(--muted)}
+    .thread-stats{margin-left:auto;display:flex;gap:15px}
+    .thread-body{padding:25px;font-size:16px;line-height:1.95}
+    .thread-body p{margin:0 0 17px}
+    .lead{
+      padding:17px 18px;background:#f7f9fc;border-left:4px solid #7293bc;border-radius:0 10px 10px 0;
+      color:#435069;margin-bottom:20px
+    }
+    .post-image{
+      position:relative;aspect-ratio:16/9;margin:18px 0 21px;border:1px dashed #b9c6d8;border-radius:12px;
+      overflow:hidden;background:linear-gradient(135deg,#f5f8fc,#eaf0f7);display:grid;place-items:center
+    }
+    .post-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+    .post-image.has-image img{display:block}
+    .post-image.has-image .image-placeholder{display:none}
+    .image-placeholder{text-align:center;color:#718097;padding:24px}
+    .placeholder-icon{
+      width:52px;height:42px;margin:0 auto 11px;border:2px solid #9daec3;border-radius:8px;
+      position:relative
+    }
+    .placeholder-icon:before{
+      content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:#9daec3;right:8px;top:7px
+    }
+    .placeholder-icon:after{
+      content:"";position:absolute;left:7px;right:7px;bottom:7px;height:18px;
+      background:linear-gradient(140deg,transparent 0 22%,#9daec3 23% 48%,transparent 49% 56%,#9daec3 57%);
+      clip-path:polygon(0 100%,32% 24%,50% 62%,68% 38%,100% 100%)
+    }
+    .image-placeholder b{display:block;font-size:14px;color:#52647c;margin-bottom:4px}
+    .image-placeholder span{font-size:12px}
+    .quote{margin:18px 0;padding:15px 17px;border-radius:12px;background:#eef4fb;color:#2a466d;font-weight:700}
+    .thread-tools{
+      padding:15px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#fbfcfe;
+      overflow-x:auto
+    }
+    .tool-btn{
+      border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 13px;color:#47536a;
+      white-space:nowrap;cursor:pointer
+    }
+    .tool-btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .comments-card{margin-top:16px}
+    .comments-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+    .card-title{font-size:17px;font-weight:800}
+    .live-pill{
+      margin-left:auto;border:1px solid #b7dcc8;background:#effaf4;color:var(--green);
+      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px
+    }
+    .live-dot{
+      width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(47,143,98,.1);
+      animation:pulse 1.2s infinite
+    }
+    @keyframes pulse{50%{opacity:.35}}
+    .comment{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding:17px 20px;border-bottom:1px solid #edf0f4}
+    .comment .avatar{width:40px;height:40px;font-size:12px}
+    .comment-head{display:flex;align-items:center;gap:8px;font-size:13px}
+    .comment-name{font-weight:800;color:#34445e}.comment-time{color:#9aa1ad;font-size:12px}
+    .floor{margin-left:auto;color:#8d95a2;font-size:12px}
+    .comment-text{font-size:15px;line-height:1.7;margin-top:7px;word-break:break-word}
+    .comment-actions{display:flex;gap:16px;color:#8a93a2;font-size:12px;margin-top:8px}
+    .compose{padding:16px 20px;background:#fbfcfe;border-top:1px solid var(--line)}
+    .compose textarea{width:100%;min-height:84px;border:1px solid #dfe4ec;border-radius:10px;padding:12px;resize:vertical;outline:none}
+    .compose-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+    .btn{border:0;border-radius:9px;background:var(--brand);color:#fff;padding:9px 16px}
+    .side-card{padding:17px;margin-bottom:16px}.side-title{font-size:16px;font-weight:800;margin-bottom:13px}
+    .simple-desc{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.55}
+    .hot-item{display:grid;grid-template-columns:24px 1fr auto;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px}
+    .hot-item:last-child{border-bottom:0}
+    .rank{width:20px;height:20px;border-radius:6px;background:#eef1f6;color:#687286;display:grid;place-items:center;font-size:11px;font-weight:800}
+    .rank.top{background:#fff0ec;color:var(--accent)}
+    .footer{max-width:1180px;margin:34px auto;padding:20px 18px 38px;color:#8a93a2;font-size:12px;text-align:center}
+    @media(max-width:800px){
+      .topbar{height:58px;padding:0 12px;gap:10px}.logo-mark{width:35px;height:35px;border-radius:10px}
+      .logo-title{font-size:16px}.logo-sub,.search,.header-actions .icon-btn{display:none}
+      .nav-inner{padding:0 8px}.nav a{padding:10px 12px;font-size:13px}
+      .container{margin:12px auto;padding:0 10px}.grid{grid-template-columns:1fr}aside{display:none}
+      .thread-top{padding:16px 14px 13px}.thread-title{font-size:20px;line-height:1.4}.thread-stats{display:none}
+      .thread-body{padding:16px 14px;font-size:14px;line-height:1.85}
+      .thread-tools{padding:11px 12px;gap:8px}.tool-btn{padding:8px 10px;font-size:12px}
+      .comments-head{padding:13px 14px}.comment{grid-template-columns:36px minmax(0,1fr);padding:14px 12px;gap:10px}
+      .comment .avatar{width:34px;height:34px;font-size:10px}.comment-text{font-size:14px}
+      .compose{padding:14px}.compose textarea{min-height:74px}.card{border-radius:12px;box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="topbar">
+      <a class="logo" href="#"><div class="logo-mark">江</div><div><div class="logo-title">江城大学校园社区</div><div class="logo-sub">Jiangcheng University Campus Forum</div></div></a>
+      <form class="search" onsubmit="return false"><input aria-label="搜索帖子" placeholder="搜索帖子、用户或版块"><button type="button">搜索</button></form>
+      <div class="header-actions"><a class="icon-btn" href="#">消息 <b style="color:#e75d3c">6</b></a><div class="avatar">游</div></div>
+    </div>
+    <nav class="nav"><div class="nav-inner"><a href="#">首页</a><a href="#" class="active">江大生活</a><a href="#">学习交流</a><a href="#">社团活动</a><a href="#">二手闲置</a><a href="#">情感树洞</a><a href="#">吐槽爆料</a></div></nav>
+  </header>
+  <main class="container">
+    <div class="breadcrumb"><a href="#">首页</a><span>›</span><a href="#">江大生活</a><span>›</span><a href="#">校园热帖</a><span>›</span>正文</div>
+    <div class="grid">
+      <section>
+        <article class="card thread-card">
+          <div class="thread-top"><div class="thread-tag">校园热帖 · 热度飙升</div><h1 class="thread-title">校门口惊现白色欧陆，车牌54321倒顺号！这届新生里藏了哪路神仙？</h1><div class="author-line"><div class="avatar">墙</div><div><div><span class="author-name">江大校园墙</span> <span class="badge">楼主</span></div><div class="small muted">发布于 09:18 · IP属地：江城</div></div><div class="thread-stats"><span>浏览 <b>23,417</b></span><span>回复 <b>12</b></span></div></div></div>
+          <div class="thread-body">
+            <div class="lead">昨天学校门口那辆白色宾利欧陆已经把朋友圈刷爆了。原本以为只是普通豪车，今天有人把车牌拍清楚后，事情好像更夸张了。</div>
+            <p>先说车：白色宾利欧陆，停在校门外没多久。真正让人倒吸一口凉气的不是车型，而是那块车牌——<b>54321，标准倒顺号</b>。懂行的都知道，这种号码不是单纯“多花点钱”就能拿到的。</p>
+            <!-- 明天把图片命名为 post-image.jpg，上传到本页面同一目录即可自动显示。 -->
+            <div class="post-image"><img src="post-image.jpg" alt="白色欧陆与54321车牌的帖子插图" onload="this.parentElement.classList.add('has-image')" onerror="this.style.display='none'"><div class="image-placeholder"><div class="placeholder-icon" aria-hidden="true"></div><b>帖子插图位置</b><span>明日插入：白色欧陆 / 54321 车牌图片</span></div></div>
+            <p>听现场同学说，从车上下来的像是几个刚入学的新生。车停得很低调，人也没在校门口逗留，但这配置实在低调不起来。现在全校都在猜，咱们这届新生里到底藏了什么级别的人物。</p>
+            <div class="quote">补充：目前只确认车辆在校门口出现，请勿根据模糊照片人肉或围堵当事人。</div>
+            <p>有认识车牌或者昨晚在现场的同学吗？理性吃瓜，别带未经证实的姓名和个人信息。</p>
+          </div>
+          <div class="thread-tools"><button class="tool-btn primary" onclick="document.getElementById('comments').scrollIntoView()">查看评论</button><button class="tool-btn">👍 赞 3,286</button><button class="tool-btn">收藏 715</button><button class="tool-btn">分享</button><button class="tool-btn">举报</button></div>
+        </article>
+        <section class="card comments-card" id="comments">
+          <div class="comments-head"><div class="card-title">全部回复 <span class="muted">12</span></div><div class="live-pill"><span class="live-dot"></span>实时刷新中</div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#b45a4d,#713f32)">懂</div><div><div class="comment-head"><span class="comment-name">懂车但不多</span><span class="comment-time">刚刚</span><span class="floor">1L</span></div><div class="comment-text">欧陆不算啥，你们看车牌！54321倒顺号，有钱都拿不到，这才是真狠人。</div><div class="comment-actions"><span>👍 618</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#9a7043,#6d4c2d)">新</div><div><div class="comment-head"><span class="comment-name">新生群潜水员</span><span class="comment-time">刚刚</span><span class="floor">2L</span></div><div class="comment-text">看来咱们这届新生里藏了个逆天的富二代！</div><div class="comment-actions"><span>👍 496</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#5d8e56,#365f3b)">昨</div><div><div class="comment-head"><span class="comment-name">昨天就在现场</span><span class="comment-time">1分钟前</span><span class="floor">3L</span></div><div class="comment-text">昨天朋友圈就刷爆了，今天终于有人把车牌拍清楚。真人比照片里还低调，完全没摆架子。</div><div class="comment-actions"><span>👍 311</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#448879,#315b55)">北</div><div><div class="comment-head"><span class="comment-name">北门守望者</span><span class="comment-time">1分钟前</span><span class="floor">4L</span></div><div class="comment-text">我看见车里下来三个男生，年纪都不大，往校内走了，应该真是新生。</div><div class="comment-actions"><span>👍 267</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#4c7ca2,#325472)">车</div><div><div class="comment-head"><span class="comment-name">车辆工程小白</span><span class="comment-time">2分钟前</span><span class="floor">5L</span></div><div class="comment-text">白色欧陆已经很显眼了，配这个牌才是真的夸张，怪不得一路上都有人回头。</div><div class="comment-actions"><span>👍 202</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#5f66a1,#41456d)">一</div><div><div class="comment-head"><span class="comment-name">一食堂排队中</span><span class="comment-time">2分钟前</span><span class="floor">6L</span></div><div class="comment-text">已经有人说是京城来的了，消息到底哪儿传出来的？别最后全靠大家脑补。</div><div class="comment-actions"><span>👍 178</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#8e5d9d,#563c68)">江</div><div><div class="comment-head"><span class="comment-name">江大百晓生</span><span class="comment-time">3分钟前</span><span class="floor">7L</span></div><div class="comment-text">车牌比车更说明问题。能拿到这种倒顺号，家里绝对不只是“有点钱”。</div><div class="comment-actions"><span>👍 156</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#a85978,#713b53)">匿</div><div><div class="comment-head"><span class="comment-name">匿名用户5432</span><span class="comment-time">3分钟前</span><span class="floor">8L</span></div><div class="comment-text">我比较好奇车主本人怎么想，啥也没做就成校园传说了。</div><div class="comment-actions"><span>👍 141</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#b26c54,#744737)">迎</div><div><div class="comment-head"><span class="comment-name">迎新志愿者</span><span class="comment-time">4分钟前</span><span class="floor">9L</span></div><div class="comment-text">今天迎新会，人估计已经去礼堂了。大家看看就行，别堵人。</div><div class="comment-actions"><span>👍 233</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#768d49,#4e6133)">吃</div><div><div class="comment-head"><span class="comment-name">吃瓜也要讲证据</span><span class="comment-time">4分钟前</span><span class="floor">10L</span></div><div class="comment-text">只凭一辆车就给人安排身世不合适，没准是家里人送来的呢。</div><div class="comment-actions"><span>👍 119</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#398294,#295966)">计</div><div><div class="comment-head"><span class="comment-name">计算机院夜猫子</span><span class="comment-time">5分钟前</span><span class="floor">11L</span></div><div class="comment-text">热帖第一了，宿舍群现在全在猜是哪位新生，校园墙服务器顶住。</div><div class="comment-actions"><span>👍 97</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="comment"><div class="avatar" style="background:linear-gradient(145deg,#4671a8,#2d4c78)">版</div><div><div class="comment-head"><span class="comment-name">版务-小江</span><span class="badge" style="background:#f0f7ff;color:#2a66a5">版务</span><span class="comment-time">5分钟前</span><span class="floor">12L</span></div><div class="comment-text">提醒：请勿发布车主姓名、联系方式或偷拍视频，违规内容将直接删除。</div><div class="comment-actions"><span>👍 286</span><span>回复</span><span>举报</span></div></div></div>
+          <div class="compose"><textarea aria-label="回复内容" placeholder="理性讨论，请勿发布个人隐私或未经核实的信息"></textarea><div class="compose-row"><span class="small muted">登录后参与讨论</span><button class="btn">发表回复</button></div></div>
+        </section>
+      </section>
+      <aside>
+        <div class="card side-card"><div class="side-title">楼主资料</div><div style="display:flex;gap:11px;align-items:center"><div class="avatar">墙</div><div><b>江大校园墙</b><div class="small muted">注册 1,206 天 · 发帖 842</div></div></div><div class="simple-desc" style="margin-top:14px">记录江大新鲜事。投稿请附可核验信息，拒绝人肉与隐私骚扰。</div></div>
+        <div class="card side-card"><div class="side-title">相关热帖</div><a class="hot-item" href="#"><span class="rank top">1</span><span>54321倒顺号到底有多稀有</span><span>1.8w</span></a><a class="hot-item" href="#"><span class="rank top">2</span><span>白色欧陆昨晚出现时间线</span><span>1.2w</span></a><a class="hot-item" href="#"><span class="rank top">3</span><span>这届新生到底藏了多少大佬</span><span>9634</span></a><a class="hot-item" href="#"><span class="rank">4</span><span>迎新会现场座位指南</span><span>4218</span></a></div>
+      </aside>
+    </div>
+  </main>
+  <footer class="footer">江城大学校园社区 · 请理性发言，保护个人隐私</footer>
+</body>
+</html>
