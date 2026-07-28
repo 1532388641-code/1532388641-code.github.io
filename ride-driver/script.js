@@ -7,7 +7,7 @@ const canvas = $('#navCanvas');
 const ctx = canvas.getContext('2d');
 const stage = $('#mapStage');
 const mapImage = new Image();
-mapImage.src = './assets/city-map-ai.png';
+mapImage.src = './assets/city-map-web.jpg?v=20260729';
 
 const WORLD = { width: 945, height: 1680 };
 const DURATION = 20000;
