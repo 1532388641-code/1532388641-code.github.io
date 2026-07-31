@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>双色球开奖</title>
+  <title>超级大乐透开奖</title>
   <style>
     :root { --red:#e7272d; --deep:#9e1119; --blue:#1767d6; --ink:#1d2638; --gold:#e7b53f; --paper:#f7f7f3; }
     * { box-sizing:border-box; }
@@ -27,13 +27,13 @@
   </style>
 </head>
 <body>
-  <header class="topbar"><div class="brand">双色球开奖</div><div class="live"><i class="dot"></i>开奖进行中</div></header>
+  <header class="topbar"><div class="brand">体彩超级大乐透</div><div class="live"><i class="dot"></i>开奖进行中</div></header>
   <main>
-    <div class="eyebrow">幸运号码 · 即刻揭晓</div>
-    <h1>双色球开奖</h1>
-    <p class="sub">模拟开奖</p>
-    <section class="card" aria-label="双色球模拟开奖">
-      <div class="round"><span>开奖状态：<strong id="state">等待开奖</strong></span><span>红球 6 个 + 蓝球 1 个</span></div>
+    <div class="eyebrow">中国体育彩票 · 超级大乐透</div>
+    <h1>超级大乐透开奖</h1>
+    <p class="sub">第 26074 期</p>
+    <section class="card" aria-label="超级大乐透开奖">
+      <div class="round"><span>开奖状态：<strong id="state">等待开奖</strong></span><span>前区 5 个 + 后区 2 个</span></div>
       <div class="balls" id="balls" aria-live="polite"></div>
       <div class="status" id="status">点击“开始开奖”，见证幸运号码揭晓</div>
       <div class="controls"><button id="start">开始开奖</button></div>
@@ -41,11 +41,11 @@
   </main>
   <footer>理性购彩 · 快乐生活</footer>
   <script>
-    const winningNumbers = ['03','07','12','18','24','31','09'];
+    const winningNumbers = ['10','11','21','33','35','05','06'];
     const balls = document.getElementById('balls'), start = document.getElementById('start'), state = document.getElementById('state'), status = document.getElementById('status');
     function placeholders(){ balls.innerHTML=''; for(let i=0;i<7;i++){const b=document.createElement('div');b.className='ball placeholder';b.textContent='?';balls.appendChild(b)} }
     function delay(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
-    async function reveal(){ start.disabled=true; placeholders(); state.textContent='正在开奖'; status.textContent='开奖设备启动，请稍候…'; await delay(750); const els=[...balls.children]; for(let i=0;i<winningNumbers.length;i++){ const b=els[i]; b.className='ball '+(i===6?'blue':'red'); b.textContent=winningNumbers[i]; b.classList.add('show'); status.innerHTML=`正在揭晓第 <strong>${i+1}</strong> 个号码…`; await delay(i===5?1000:820); } state.textContent='开奖完成'; status.innerHTML='<strong>号码已全部揭晓！</strong>'; start.disabled=false; }
+    async function reveal(){ start.disabled=true; placeholders(); state.textContent='正在开奖'; status.textContent='开奖设备启动，请稍候…'; await delay(750); const els=[...balls.children]; for(let i=0;i<winningNumbers.length;i++){ const b=els[i]; b.className='ball '+(i>=5?'blue':'red'); b.textContent=winningNumbers[i]; b.classList.add('show'); status.innerHTML=`正在揭晓第 <strong>${i+1}</strong> 个号码…`; await delay(i===4?1000:820); } state.textContent='开奖完成'; status.innerHTML='<strong>号码已全部揭晓！</strong>'; start.disabled=false; }
     start.addEventListener('click',reveal); placeholders();
   </script>
 </body>
